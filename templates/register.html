@@ -3,25 +3,25 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width">
-  <link rel="stylesheet" href="common_style.css">
+  <link rel="stylesheet" href="../assets/css/common_style.css">
   <title>INU OJ</title>
 </head>
 <body>
   <ul id="input_list" v-cloak>
     This is register page.
     <form action="regi-complete" method="post">
-      <li>아이디 <input type="text" v-model="id"></input></li>
+      <li>아이디 <input type="text" name = "id" v-model="id"></input></li>
       <li id="id_wrong" v-if="check_length(3, 20, id)==false">아이디는 3~20글자여야 합니다.</li>
       <li id="id_wrong" v-else-if="check_format()==false">아이디는 영어/숫자로만 이루어져야 합니다.</li>
-      <li>비밀번호 <input type="password" v-model="pass"></input></li>
+      <li>비밀번호 <input type="password" name = "pass" v-model="pass"></input></li>
       <li id="id_wrong" v-if="check_length(8, 20, pass)==false">비밀번호는 8~20글자여야 합니다.
       <li>비밀번호 확인 <input type="password" v-model="pass_confirm"></input></li>
       <li id="id_wrong" v-if="pass != pass_confirm">비밀번호가 다릅니다.</li>
-      <li>이메일 주소 <input type="email" v-model="email"></input></li>
+      <li>이메일 주소 <input type="email" name = "email" v-model="email"></input></li>
       <li id="id_wrong" v-if="check_email() == false">올바른 이메일 주소를 입력하세요.</li>
       <input type="submit">가입하기</input>
     </form>
   </ul>
   <script src="https://unpkg.com/vue/dist/vue.js"></script>
-  <script src="register.js"></script>
+  <script src="../assets/js/register.js"></script>
 </body>
