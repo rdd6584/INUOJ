@@ -33,7 +33,7 @@ var input_list = new Vue({
       form.append('id', this.id);
       form.append('pass', this.pass);
       form.append('email', this.email);
-      axios.post("/regi-complete", form)
+      axios.post("/regi-done", form)
         .then(res => {
           console.log(res.data);
         })
@@ -42,7 +42,7 @@ var input_list = new Vue({
         });
     },
     sendJson: function() {
-      axios.post("/regi-complete",
+      axios.post("/regi-done",
       {id:this.id, pass:this.pass, email:this.email})
         .then(res => {
           console.log(res.data);
