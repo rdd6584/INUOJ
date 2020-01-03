@@ -3,14 +3,14 @@ package httprsp
 func isNotNull(x paramInfo) bool {
 	if x.Type == 0 {
 		if x.Value == "-1" {
-			return true
+			return false
 		}
 	} else if x.Type == 1 {
 		if x.Value == "" {
-			return true
+			return false
 		}
 	}
-	return false
+	return true
 }
 func addParam(str *string, x paramInfo) {
 	if x.Type == 0 {

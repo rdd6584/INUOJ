@@ -2,9 +2,9 @@ package httprsp
 
 import (
 	"database/sql"
-	"fmt"
 	"log"
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -47,6 +47,7 @@ func regiValid(c *gin.Context) {
 	if err != nil {
 		log.Fatal(err)
 	}
+
 	if res == "1" {
 		c.JSON(http.StatusOK, gin.H{"status": "ok"})
 
@@ -62,24 +63,47 @@ func regiComplete(c *gin.Context) {
 		return
 	}
 
-	result, err := Udb.Exec("INSERT INTO users VALUES(?, ?, ?)", json.ID, json.Password, json.Email)
+	_, err := Udb.Exec("INSERT INTO users VALUES(?, ?, ?)", json.ID, json.Password, json.Email)
 	if err != nil {
 		log.Fatal(err)
-	}
-	n, _ := result.RowsAffected()
-	if n == 1 {
-		fmt.Println("1 row inserted.")
 	}
 	c.JSON(http.StatusOK, json)
 }
 
-func getStatus(c *gin.Context) { // 페이지 번호 필요
+func getNumOfSubmit(c *gin.Context) {
+
+}
+
+func getStatus(c *gin.Context) {
 	id := paramInfo{"id", 1, c.Query("id")}
 	prob := paramInfo{"prob_no", 0, c.DefaultQuery("prob_no", "-1")}
 	res := paramInfo{"result", 0, c.DefaultQuery("result", "-1")}
 	lang := paramInfo{"lang", 0, c.DefaultQuery("lang", "-1")}
+	page := c.DefaultQuery("top", "1")
 
 	qry := "select * from submits " + makeWhere(id, prob, res, lang)
-	qry += "order by subm_no desc limit ?, 15"
-	Udb.Query(qry)
+	qry += "order by subm_no desc limit ?, ?"
+
+	top, _ := strconv.Atoi(page)
+	top = (top - 1) * pageSize
+	rows, err := Udb.Query(qry, top, pageSize)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer rows.Close()
+	log.Println(qry, top)
+
+	var arr []submitInfo
+	var tmp submitInfo
+	for rows.Next() {
+		err := rows.Scan(&tmp.SubmNo, &tmp.ID, &tmp.ProbNo, &tmp.Result,
+			&tmp.Lang, &tmp.RunTime, &tmp.Memory, &tmp.Codelen, &tmp.SubmTime)
+		if err != nil {
+			log.Fatal(err)
+		}
+		arr = append(arr, tmp)
+	}
+	log.Println(arr)
+
+	c.JSON(http.StatusOK, arr)
 }
