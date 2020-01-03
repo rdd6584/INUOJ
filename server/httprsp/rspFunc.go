@@ -11,22 +11,8 @@ import (
 
 var Udb *sql.DB
 
-type regiInfo struct {
-	ID       string `form:"id" json:"id" binding:"required"`
-	Password string `form:"pass" json:"pass" binding:"required"`
-	Email    string `form:"email" json:"email" binding:"required"`
-}
-type loginInfo struct {
-	ID       string `form:"id" json:"id" binding:"required"`
-	Password string `form:"pass" json:"pass" binding:"required"`
-}
-
 func toMain(c *gin.Context) {
-	c.HTML(http.StatusOK, "mainPage.html", gin.H{})
-}
-
-func login(c *gin.Context) {
-	c.HTML(http.StatusOK, "login.html", gin.H{})
+	c.HTML(http.StatusOK, "index.html", gin.H{})
 }
 
 func loginSuc(c *gin.Context) {
@@ -48,10 +34,6 @@ func loginSuc(c *gin.Context) {
 	}
 }
 
-func register(c *gin.Context) {
-	c.HTML(http.StatusOK, "register.html", gin.H{})
-}
-
 func regiValid(c *gin.Context) {
 	tid := c.Query("id")
 	temail := c.Query("email")
@@ -60,7 +42,7 @@ func regiValid(c *gin.Context) {
 	if tid != "" {
 		err = Udb.QueryRow("SELECT NOT EXISTS (SELECT * FROM users where id=?)", tid).Scan(&res)
 	} else {
-		err = Udb.QueryRow("SELECT NOT EXISTS (SELECT * FROM users where email=?)", temail).Scan(&res)
+		err = Udb.QueryRow("SELECT NOT EXISTS (SELECT * FROM usjers where email=?)", temail).Scan(&res)
 	}
 	if err != nil {
 		log.Fatal(err)
@@ -89,4 +71,15 @@ func regiComplete(c *gin.Context) {
 		fmt.Println("1 row inserted.")
 	}
 	c.JSON(http.StatusOK, json)
+}
+
+func getStatus(c *gin.Context) { // 페이지 번호 필요
+	id := paramInfo{"id", 1, c.Query("id")}
+	prob := paramInfo{"prob_no", 0, c.DefaultQuery("prob_no", "-1")}
+	res := paramInfo{"result", 0, c.DefaultQuery("result", "-1")}
+	lang := paramInfo{"lang", 0, c.DefaultQuery("lang", "-1")}
+
+	qry := "select * from submits " + makeWhere(id, prob, res, lang)
+	qry += "order by subm_no desc limit ?, 15"
+	Udb.Query(qry)
 }

@@ -12,7 +12,7 @@ import (
 func main() {
 	r := gin.Default()
 	r.Static("/templates/static", "./templates/static")
-	r.LoadHTMLGlob("templates/htmls/*")
+	r.LoadHTMLGlob("templates/public/*")
 
 	var err error
 	httprsp.Udb, err = sql.Open("mysql", "root:20190325@tcp(127.0.0.1:3306)/inuoj")
