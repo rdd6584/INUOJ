@@ -13,6 +13,11 @@ type loginInfo struct {
 	Password string `form:"pass" json:"pass" binding:"required"`
 }
 
+type loginRes struct {
+	Status bool `json:"status"`
+	Auth   bool `json:"auth"`
+}
+
 type paramInfo struct {
 	Name  string
 	Type  int    // int: 0, string: 1
@@ -29,4 +34,9 @@ type submitInfo struct {
 	Memory   int    `json:"memory"`
 	Codelen  int    `json:"codelen"`
 	SubmTime string `json:"subm_time"`
+}
+
+type submitPage struct {
+	DataNum int          `json:"data_num"`
+	Datas   []submitInfo `json:"datas"`
 }
