@@ -6,6 +6,7 @@ import (
 
 func ResRouter(e *gin.Engine) {
 	e.GET("/", toMain)
+
 	app := e.Group("/api")
 	{
 		app.POST("/regi-done", regiComplete)  // id, pass, email 정보 저장
