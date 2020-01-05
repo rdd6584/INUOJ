@@ -10,6 +10,7 @@
           :rules="idRules"
           :counter="20"
           label="아이디"
+          @keydown="valCheck(1)"
           required
         ></v-text-field>
 
@@ -33,6 +34,7 @@
           v-model="email"
           :rules="emailRules"
           label="E-mail"
+          @keydown="valCheck(2)"
           required
         ></v-text-field>
         <v-btn
@@ -62,12 +64,14 @@ import sha256 from 'js-sha256'
       ],
       passConf: '',
       email: '@inu.ac.kr',
+      idCheck: false,
+      emailCheck: false,
     }),
     methods: {
       register () {
           axios.post('/regi-done', {
             id : this.id,
-            pass : this.pass,
+            pass : sha256(this.pass),
             email : this.email,
           }).then(res => {
             alert("회원가입이 완료되었습니다.")
@@ -77,29 +81,27 @@ import sha256 from 'js-sha256'
           })
       },
       valCheck(req) {
-        var ret = false
-        if (req === 1) {
-          axios.get(`/register/valid?id=${this.id}`)
-          .then(res => {ret = res.data.status})
-        }
-        else if (req === 2) {
-          axios.get(`/register/valid?email=${this.email}`)
-          .then(res => {ret = res.data.status})
-        }
-        return ret
-      }
+        var query=""
+        if (req == 1) query = `id=${this.id}`
+        else if (req == 2) query = `email=${this.email}`
+        axios.get(`/register/valid?` + query)
+        .then(res => {
+          if (req == 1) this.idCheck = res.data.status
+          else if (req == 2) this.emailCheck = res.data.status
+        })
+      },
     },
     computed: {
       idRules() {
         const rules=[v => !!v || 'ID를 입력하세요',]
         rules.push(v => (/^[a-zA-Z0-9]+/.test(v) && v.length >= 2 && v.length <= 20) || '아이디는 2~20글자이며 알파벳과 숫자로만 구성됩니다.',)
-        rules.push(this.valCheck(1) || '중복되는 ID가 있습니다.')
+        rules.push(this.idCheck || '중복되는 ID가 있습니다.')
         return rules
       },
       emailRules() {
         const rules=[v => !!v || '이메일을 입력하세요',]
         rules.push(v => /^[a-zA-Z0-9]+@inu\.ac\.kr/.test(v) || '이메일은 @inu.ac.kr로 끝나야 합니다.')
-        rules.push(this.valCheck(2) || '중복되는 이메일이 있습니다.')
+        rules.push(this.emailCheck || '중복되는 이메일이 있습니다.')
         return rules
       },
       passConfRules() {

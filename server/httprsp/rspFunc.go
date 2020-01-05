@@ -61,7 +61,7 @@ func regiComplete(c *gin.Context) {
 		return
 	}
 
-	_, err := Udb.Exec("INSERT INTO users VALUES(?, ?, ?)", json.ID, json.Password, json.Email)
+	_, err := Udb.Exec("INSERT INTO users VALUES(?, ?, ?, 0)", json.ID, json.Password, json.Email)
 	if err != nil {
 		log.Fatal(err)
 	}
