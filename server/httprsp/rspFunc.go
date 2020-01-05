@@ -141,8 +141,5 @@ func authComplete(c *gin.Context) {
 			}
 		}
 	}
-	if err != nil {
-		log.Println(err)
-	}
 	c.JSON(http.StatusOK, gin.H{"status": res})
 }

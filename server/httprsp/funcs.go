@@ -86,7 +86,7 @@ func sendMail(rcpt string) {
 		panic(err)
 	}
 	if res {
-		_, err = Udb.Exec("insert into authtokes(email, token) values(?, ?)", rcpt, authkey)
+		_, err = Udb.Exec("insert into authtokens(email, token) values(?, ?)", rcpt, authkey)
 	} else {
 		_, err = Udb.Exec("update authtokens set token=?, auth_time=current_timestamp where email=?", authkey, rcpt)
 	}
