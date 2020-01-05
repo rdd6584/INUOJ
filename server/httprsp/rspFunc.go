@@ -26,7 +26,7 @@ func loginSuc(c *gin.Context) {
 	var ret loginRes
 	err := Udb.QueryRow("select password, auth from users where id=?", json.ID).Scan(&dbPass, &ret.Auth)
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 	}
 
 	ret.Status = (dbPass != json.Password)
@@ -44,7 +44,7 @@ func regiValid(c *gin.Context) {
 		err = Udb.QueryRow("SELECT NOT EXISTS (SELECT * FROM users where email=?)", temail).Scan(&res)
 	}
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 	}
 	c.JSON(http.StatusOK, gin.H{"status": res})
 }
@@ -65,7 +65,7 @@ func regiComplete(c *gin.Context) {
 	if res {
 		_, err = Udb.Exec("INSERT INTO users VALUES(?, ?, ?, 0)", json.ID, json.Password, json.Email)
 		if err != nil {
-			log.Fatal(err)
+			log.Println(err)
 		}
 		sendMail(json.Email)
 	}
@@ -86,12 +86,12 @@ func getStatus(c *gin.Context) {
 	var json submitPage
 	err := Udb.QueryRow("select count(*) from submits " + qry).Scan(&json.DataNum)
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 	}
 
 	rows, err := Udb.Query("select * from submits "+qry+"order by subm_no desc limit ?, ?", top, pageSize)
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 	}
 	defer rows.Close()
 
@@ -109,6 +109,7 @@ func getStatus(c *gin.Context) {
 }
 
 func authComplete(c *gin.Context) {
+
 	var json authInfo
 	var err error
 	if err = c.ShouldBind(&json); err != nil {
@@ -117,19 +118,31 @@ func authComplete(c *gin.Context) {
 	}
 
 	var res bool
-	Udb.QueryRow("select exists (select * from authtokens where email=?, token=?)", json.Email, json.Token).Scan(&res)
+	tx, err := Udb.Begin()
+	if err != nil {
+		log.Panic(err)
+	}
+	defer tx.Rollback()
+
+	tx.QueryRow("select exists (select * from authtokens where email=? and token=?)", json.Email, json.Token).Scan(&res)
 	if res {
-		_, err = Udb.Exec("update users set auth=1 where email=?", json.Email)
+		_, err = tx.Exec("update users set auth=1 where email=?", json.Email)
 		if err != nil {
-			panic(err)
-		}
-		Udb.Exec("delete from authtokens where email=?", json.Email)
-		if err != nil {
-			panic(err)
+			log.Panic(err)
+		} else {
+			_, err = tx.Exec("delete from authtokens where email=?", json.Email)
+			if err != nil {
+				log.Panic(err)
+			} else {
+				err = tx.Commit()
+				if err != nil {
+					log.Panic(err)
+				}
+			}
 		}
 	}
 	if err != nil {
-		panic(err)
+		log.Println(err)
 	}
 	c.JSON(http.StatusOK, gin.H{"status": res})
 }
