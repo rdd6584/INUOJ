@@ -14,7 +14,7 @@ func main() {
 	r.Static("/css", "./css")
 	r.Static("/img", "./img")
 	r.Static("/js", "./js")
-	r.LoadHTMLGlob("public/*.html")
+	r.LoadHTMLGlob("*.html")
 
 	var err error
 	httprsp.Udb, err = sql.Open("mysql", "root:20190325@tcp(127.0.0.1:3306)/inuoj")
