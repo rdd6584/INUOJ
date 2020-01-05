@@ -65,15 +65,31 @@ func sendMail(rcpt string) {
 
 	from := "inuojteam@gmail.com"
 	to := []string{rcpt}
+	authkey := makeAuthKey()
 
 	// 메시지 작성
 	headerSubject := "Subject: INUOJ 이메일 주소 인증\r\n\r\n"
 	body := "아래 링크를 누르시면 이메일 인증이 완료됩니다.\r\n"
-	link := "localhost/auth-done?token=" + makeAuthKey() + "&email=" + to[0]
+	link := domain + "/auth?token=" + authkey + "&email=" + to[0]
 	msg := []byte(headerSubject + body + link)
 
 	// 메일 보내기
-	err := smtp.SendMail("smtp.gmail.com:587", auth, from, to, msg)
+	var err error
+	err = smtp.SendMail("smtp.gmail.com:587", auth, from, to, msg)
+	if err != nil {
+		panic(err)
+	}
+
+	var res bool
+	err = Udb.QueryRow("SELECT NOT EXISTS (SELECT * FROM authtokens where email=?)", rcpt).Scan(&res)
+	if err != nil {
+		panic(err)
+	}
+	if res {
+		_, err = Udb.Exec("insert into authtokes values(?, ?)", rcpt, authkey)
+	} else {
+		_, err = Udb.Exec("update authtokens set token=?, auth_time=current_timestamp where email=?", authkey, rcpt)
+	}
 	if err != nil {
 		panic(err)
 	}

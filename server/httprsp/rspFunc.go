@@ -67,7 +67,7 @@ func regiComplete(c *gin.Context) {
 		if err != nil {
 			log.Fatal(err)
 		}
-
+		sendMail(json.Email)
 	}
 	c.JSON(http.StatusOK, gin.H{"status": res})
 }
@@ -109,5 +109,27 @@ func getStatus(c *gin.Context) {
 }
 
 func authComplete(c *gin.Context) {
+	var json authInfo
+	var err error
+	if err = c.ShouldBind(&json); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
 
+	var res bool
+	Udb.QueryRow("select exists (select * from authtokens where email=?, token=?)", json.Email, json.Token).Scan(&res)
+	if res {
+		_, err = Udb.Exec("update users set auth=1 where email=?", json.Email)
+		if err != nil {
+			panic(err)
+		}
+		Udb.Exec("delete from authtokens where email=?", json.Email)
+		if err != nil {
+			panic(err)
+		}
+	}
+	if err != nil {
+		panic(err)
+	}
+	c.JSON(http.StatusOK, gin.H{"status": res})
 }

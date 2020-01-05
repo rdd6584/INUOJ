@@ -1,6 +1,9 @@
 package httprsp
 
-const pageSize int = 15
+const (
+	pageSize int    = 15
+	domain   string = "localhost"
+)
 
 type regiInfo struct {
 	ID       string `form:"id" json:"id" binding:"required"`
@@ -22,6 +25,11 @@ type paramInfo struct {
 	Name  string
 	Type  int    // int: 0, string: 1
 	Value string // int: -1, string: "" is null
+}
+
+type authInfo struct {
+	Email string `json:"email"`
+	Token string `json:"token"`
 }
 
 type submitInfo struct {
