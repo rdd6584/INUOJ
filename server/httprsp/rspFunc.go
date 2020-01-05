@@ -57,8 +57,12 @@ func regiComplete(c *gin.Context) {
 		return
 	}
 
+<<<<<<< HEAD
+	_, err := Udb.Exec("INSERT INTO users VALUES(?, ?, ?, 0)", json.ID, json.Password, json.Email)
+=======
 	var res bool
 	err = Udb.QueryRow("SELECT NOT EXISTS (SELECT * FROM users where id=? or email=?)", json.ID, json.Email).Scan(&res)
+>>>>>>> 54e3bac34e9f9dd34bf8003e7496411152b331a1
 	if err != nil {
 		log.Fatal(err)
 	}

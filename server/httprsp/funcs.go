@@ -1,6 +1,10 @@
 package httprsp
 
-import "net/smtp"
+import (
+	"crypto/rand"
+	"math/big"
+	"net/smtp"
+)
 
 func isNotNull(x paramInfo) bool {
 	if x.Type == 0 {
@@ -40,17 +44,33 @@ func makeWhere(x ...paramInfo) string {
 	return ret
 }
 
-func sendMail() {
-	auth := smtp.PlainAuth("", "@gmail.com", "pwd", "smtp.gmail.com")
+func makeAuthKey() string {
+	ret := ""
+	for i := 0; i < 20; i++ {
+		var x *big.Int
+		x, _ = rand.Int(rand.Reader, big.NewInt(2))
+		if x.Int64() == 1 {
+			x, _ = rand.Int(rand.Reader, big.NewInt(26))
+			ret += string(rune(x.Int64() + 65))
+		} else {
+			x, _ = rand.Int(rand.Reader, big.NewInt(100))
+			ret += x.String()
+		}
+	}
+	return ret
+}
 
-	from := "orihehe@gmail.com"
-	to := []string{"rdd573@naver.com"} // 복수 수신자 가능
+func sendMail(rcpt string) {
+	auth := smtp.PlainAuth("", "inuojteam@gmail.com", "inu20190325", "smtp.gmail.com")
+
+	from := "inuojteam@gmail.com"
+	to := []string{rcpt}
 
 	// 메시지 작성
-	headerSubject := "Subject: 테스트\r\n"
-	headerBlank := "\r\n"
-	body := "메일 테스트입니다\r\n"
-	msg := []byte(headerSubject + headerBlank + body)
+	headerSubject := "Subject: INUOJ 이메일 주소 인증\r\n\r\n"
+	body := "아래 링크를 누르시면 이메일 인증이 완료됩니다.\r\n"
+	link := "localhost/auth-done?token=" + makeAuthKey() + "&email=" + to[0]
+	msg := []byte(headerSubject + body + link)
 
 	// 메일 보내기
 	err := smtp.SendMail("smtp.gmail.com:587", auth, from, to, msg)
