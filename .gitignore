@@ -4,6 +4,9 @@ server/pkg/
 templates/.DS_Store
 templates/node_modules
 templates/dist
+css
+js
+public
 
 # local env files
 .env.local

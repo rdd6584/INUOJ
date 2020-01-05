@@ -10,7 +10,7 @@
           :rules="idRules"
           :counter="20"
           label="아이디"
-          @keydown="valCheck(1)"
+          @keyup="valCheck(1)"
           required
         ></v-text-field>
 
@@ -34,7 +34,7 @@
           v-model="email"
           :rules="emailRules"
           label="E-mail"
-          @keydown="valCheck(2)"
+          @keyup="valCheck(2)"
           required
         ></v-text-field>
         <v-btn
@@ -69,13 +69,16 @@ import sha256 from 'js-sha256'
     }),
     methods: {
       register () {
-          axios.post('/regi-done', {
+          axios.post('/api/regi-done', {
             id : this.id,
             pass : sha256(this.pass),
             email : this.email,
           }).then(res => {
-            alert("회원가입이 완료되었습니다.")
-            this.$router.push({path:'/login'})
+            if (res.data.status) {
+              alert("회원가입이 완료되었습니다.")
+              this.$router.push({path:'/login'})
+            }
+            else alert('회원가입 도중 오류가 발생했습니다.')
           }).catch(err => {
             alert('회원가입 도중 오류가 발생했습니다.')
           })
@@ -84,7 +87,7 @@ import sha256 from 'js-sha256'
         var query=""
         if (req == 1) query = `id=${this.id}`
         else if (req == 2) query = `email=${this.email}`
-        axios.get(`/register/valid?` + query)
+        axios.get(`/api/register/valid?` + query)
         .then(res => {
           if (req == 1) this.idCheck = res.data.status
           else if (req == 2) this.emailCheck = res.data.status

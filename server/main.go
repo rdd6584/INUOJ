@@ -12,8 +12,8 @@ import (
 func main() {
 	r := gin.Default()
 	r.Static("/css", "./css")
-	r.Static("/img", "./img")
 	r.Static("/js", "./js")
+	r.Static("/img", "./img")
 	r.LoadHTMLGlob("*.html")
 
 	var err error
