@@ -15,11 +15,6 @@ func toMain(c *gin.Context) {
 	c.HTML(http.StatusOK, "index.html", gin.H{})
 }
 
-func test(c *gin.Context) {
-	sendMail()
-	c.JSON(http.StatusOK, gin.H{})
-}
-
 func loginSuc(c *gin.Context) {
 	var json loginInfo
 	if err := c.ShouldBind(&json); err != nil {
@@ -56,16 +51,24 @@ func regiValid(c *gin.Context) {
 
 func regiComplete(c *gin.Context) {
 	var json regiInfo
-	if err := c.ShouldBind(&json); err != nil {
+	var err error
+	if err = c.ShouldBind(&json); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	_, err := Udb.Exec("INSERT INTO users VALUES(?, ?, ?)", json.ID, json.Password, json.Email)
+	var res bool
+	err = Udb.QueryRow("SELECT NOT EXISTS (SELECT * FROM users where id=? or email=?)", json.ID, json.Email).Scan(&res)
 	if err != nil {
 		log.Fatal(err)
 	}
-	c.JSON(http.StatusOK, json)
+	if res {
+		_, err = Udb.Exec("INSERT INTO users VALUES(?, ?, ?, 0)", json.ID, json.Password, json.Email)
+		if err != nil {
+			log.Fatal(err)
+		}
+	}
+	c.JSON(http.StatusOK, gin.H{"status": res})
 }
 
 func getStatus(c *gin.Context) {
@@ -78,7 +81,6 @@ func getStatus(c *gin.Context) {
 	qry := makeWhere(id, prob, res, lang)
 	top, _ := strconv.Atoi(page)
 	top = (top - 1) * pageSize
-	log.Println(qry)
 
 	var json submitPage
 	err := Udb.QueryRow("select count(*) from submits " + qry).Scan(&json.DataNum)
