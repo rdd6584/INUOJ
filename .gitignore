@@ -1,6 +1,7 @@
 server/bin/
 server/src/
 server/pkg/
+server/httprsp/publy.go
 templates/.DS_Store
 templates/node_modules
 templates/dist

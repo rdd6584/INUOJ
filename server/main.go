@@ -1,7 +1,7 @@
 package main
 
 import (
-	"INUOJ/server/httprsp"
+	rsp "INUOJ/server/httprsp"
 	"database/sql"
 	"log"
 
@@ -17,12 +17,12 @@ func main() {
 	r.LoadHTMLGlob("*.html")
 
 	var err error
-	httprsp.Udb, err = sql.Open("mysql", "root:20190325@tcp(127.0.0.1:3306)/inuoj")
+	rsp.Udb, err = sql.Open("mysql", "root:20190325@tcp(127.0.0.1:3306)/inuoj")
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer httprsp.Udb.Close()
-	httprsp.ResRouter(r)
+	defer rsp.Udb.Close()
+	rsp.ResRouter(r)
 
-	r.Run(":80")
+	r.Run(":8000")
 }

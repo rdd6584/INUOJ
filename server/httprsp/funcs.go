@@ -2,9 +2,24 @@ package httprsp
 
 import (
 	"crypto/rand"
+	"log"
 	"math/big"
 	"net/smtp"
 )
+
+func loginSuc(userID string, userPass string) bool {
+	var dbPass string
+	var res bool
+	err := Udb.QueryRow("select password, auth from users where id=?", userID).Scan(&dbPass, &res)
+	if err != nil {
+		log.Println(err)
+	}
+
+	if dbPass != userPass {
+		return false
+	}
+	return res
+}
 
 func isNotNull(x paramInfo) bool {
 	if x.Type == 0 {
@@ -61,9 +76,9 @@ func makeAuthKey() string {
 }
 
 func sendMail(rcpt string) {
-	auth := smtp.PlainAuth("", "inuojteam@gmail.com", "inu20190325", "smtp.gmail.com")
+	auth := smtp.PlainAuth("", mailSender, mailPass, "smtp.gmail.com")
 
-	from := "inuojteam@gmail.com"
+	from := mailSender
 	to := []string{rcpt}
 	authkey := makeAuthKey()
 
