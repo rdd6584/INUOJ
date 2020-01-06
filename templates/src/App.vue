@@ -6,9 +6,25 @@
       color="white"
       dense
     >
-      <v-toolbar-title class="pa-3">INUOJ</v-toolbar-title>
-        <v-btn router :to="{path : '/register'}" text class="pa-2">회원가입</v-btn>
-        <v-btn router :to="{path : '/login'}" text class="pa-0">로그인</v-btn>
+      <v-btn router :to="{path : '/'}" class="pa-3">LOGO</v-btn>
+      <v-btn v-if="$f.getUserValid() != true" router :to="{path : '/register'}" text>회원가입</v-btn>
+      <v-btn v-if="$f.getUserValid() != true" router :to="{path : '/login'}" text>로그인</v-btn>
+      <v-btn v-if="$f.getUserValid() == true" text
+      router :to= "{
+        name : 'users',
+        params: {
+          userId: $store.state.userID
+        },
+      }">{{$store.state.userID}}</v-btn>
+
+      <v-btn v-if="$f.getUserValid() == true" text
+      router :to= "{
+        name : 'status',
+        query: {
+          prob_no: 0, id, lang, result, page
+        },
+      }">채점 현황</v-btn>
+      <v-btn router :to="{path : '/test'}" text class="pa-0">테스트</v-btn>
     </v-app-bar>
     <v-content>
       <router-view></router-view>

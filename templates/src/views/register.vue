@@ -10,6 +10,7 @@
           :rules="idRules"
           :counter="20"
           label="아이디"
+          maxlength="20"
           @keyup="valCheck(1)"
           required
         ></v-text-field>
@@ -19,6 +20,7 @@
           :rules="passRules"
           type="password"
           label="비밀번호"
+          maxlength="20"
           required
         ></v-text-field>
 
@@ -27,6 +29,7 @@
           :rules="passConfRules"
           type="password"
           label="비밀번호 확인"
+          maxlength="20"
           required
         ></v-text-field>
 
@@ -34,6 +37,7 @@
           v-model="email"
           :rules="emailRules"
           label="E-mail"
+          maxlength="50"
           @keyup="valCheck(2)"
           required
         ></v-text-field>
@@ -51,8 +55,6 @@
 </template>
 
 <script>
-import axios from 'axios'
-import sha256 from 'js-sha256'
   export default {
     data: () => ({
       valid: true,
@@ -69,9 +71,9 @@ import sha256 from 'js-sha256'
     }),
     methods: {
       register () {
-          axios.post('/api/regi-done', {
+          this.$axios.post('/api/regi-done', {
             id : this.id,
-            pass : sha256(this.pass),
+            pass : $sha256(this.pass),
             email : this.email,
           }).then(res => {
             if (res.data.status) {
@@ -87,7 +89,7 @@ import sha256 from 'js-sha256'
         var query=""
         if (req == 1) query = `id=${this.id}`
         else if (req == 2) query = `email=${this.email}`
-        axios.get(`/api/register/valid?` + query)
+        this.$axios.get(`/api/register/valid?` + query)
         .then(res => {
           if (req == 1) this.idCheck = res.data.status
           else if (req == 2) this.emailCheck = res.data.status

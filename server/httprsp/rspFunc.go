@@ -67,9 +67,9 @@ func regiComplete(c *gin.Context) {
 		if err != nil {
 			log.Println(err)
 		}
-		sendMail(json.Email)
 	}
 	c.JSON(http.StatusOK, gin.H{"status": res})
+	go sendMail(json.Email)
 }
 
 func getStatus(c *gin.Context) {
@@ -109,7 +109,7 @@ func getStatus(c *gin.Context) {
 }
 
 func authComplete(c *gin.Context) {
-
+	log.Println("pass")
 	var json authInfo
 	var err error
 	if err = c.ShouldBind(&json); err != nil {
@@ -123,7 +123,6 @@ func authComplete(c *gin.Context) {
 		log.Panic(err)
 	}
 	defer tx.Rollback()
-
 	tx.QueryRow("select exists (select * from authtokens where email=? and token=?)", json.Email, json.Token).Scan(&res)
 	if res {
 		_, err = tx.Exec("update users set auth=1 where email=?", json.Email)
