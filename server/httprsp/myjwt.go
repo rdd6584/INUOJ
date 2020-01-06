@@ -1,6 +1,7 @@
 package httprsp
 
 import (
+	"errors"
 	"log"
 	"time"
 
@@ -15,7 +16,15 @@ type User struct {
 var authMiddleware *jwt.GinJWTMiddleware
 var identityKey = "id"
 
-func initJWT() (authMiddleware *jwt.GinJWTMiddleware) {
+// My Errors
+var (
+	errMatchIDPass = errors.New("failLogin")
+	errEmailAuth   = errors.New("failAuth")
+)
+
+type JwtAuthorizator func(data interface{}, c *gin.Context) bool
+
+func initJWT(jwtAuthorizator JwtAuthorizator) (authMiddleware *jwt.GinJWTMiddleware) {
 	var err error
 	authMiddleware, err = jwt.New(&jwt.GinJWTMiddleware{
 		Realm:       "test zone",
@@ -45,45 +54,37 @@ func initJWT() (authMiddleware *jwt.GinJWTMiddleware) {
 			password := loginVals.Password
 
 			if loginSuc(userID, password) {
-				return &User{
-					UserID: userID,
-				}, nil
+				if userAuthValid(userID) {
+					return &User{
+						UserID: userID,
+					}, nil
+				}
+				return nil, errEmailAuth
 			}
-
-			return nil, jwt.ErrFailedAuthentication
+			return nil, errMatchIDPass
 		},
-		Authorizator: func(data interface{}, c *gin.Context) bool {
-			if _, ok := data.(*User); ok {
-				return true
-			}
-			return false
-		},
+		Authorizator: jwtAuthorizator,
 		Unauthorized: func(c *gin.Context, code int, message string) {
 			c.JSON(code, gin.H{
-				"code":    code,
-				"message": message,
+				"code":   code,
+				"status": message,
 			})
 		},
-		// TokenLookup is a string in the form of "<source>:<name>" that is used
-		// to extract token from the request.
-		// Optional. Default value "header:Authorization".
-		// Possible values:
-		// - "header:<name>"
-		// - "query:<name>"
-		// - "cookie:<name>"
-		// - "param:<name>"
 		TokenLookup: "header: Authorization, query: token, cookie: jwt",
-		// TokenLookup: "query:token",
-		// TokenLookup: "cookie:token",
 
-		// TokenHeadName is a string in the header. Default value is "Bearer"
 		TokenHeadName: "INUser",
 
-		// TimeFunc provides the current time. You can override it to use another time value. This is useful for testing or if your server uses a different time zone than your tokens.
 		TimeFunc: time.Now,
 	})
 	if err != nil {
 		log.Fatal("JWT Error:" + err.Error())
 	}
 	return
+}
+
+func loginUserAuthorizator(data interface{}, c *gin.Context) bool {
+	if _, ok := data.(*User); ok {
+		return true
+	}
+	return false
 }

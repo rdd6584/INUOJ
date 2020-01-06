@@ -9,14 +9,19 @@ import (
 
 func loginSuc(userID string, userPass string) bool {
 	var dbPass string
-	var res bool
-	err := Udb.QueryRow("select password, auth from users where id=?", userID).Scan(&dbPass, &res)
+	err := Udb.QueryRow("select password from users where id=?", userID).Scan(&dbPass)
 	if err != nil {
 		log.Println(err)
 	}
+	log.Println(dbPass, userPass)
+	return (dbPass == userPass)
+}
 
-	if dbPass != userPass {
-		return false
+func userAuthValid(userID string) bool {
+	var res bool
+	err := Udb.QueryRow("select auth from users where id=?", userID).Scan(&res)
+	if err != nil {
+		log.Println(err)
 	}
 	return res
 }

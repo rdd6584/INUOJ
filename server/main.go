@@ -24,5 +24,5 @@ func main() {
 	defer rsp.Udb.Close()
 	rsp.ResRouter(r)
 
-	r.Run(":8000")
+	r.Run(":80")
 }
