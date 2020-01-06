@@ -28,7 +28,7 @@ func userAuthValid(userID string) bool {
 
 func isNotNull(x paramInfo) bool {
 	if x.Type == 0 {
-		if x.Value == "-1" {
+		if x.Value == "0" {
 			return false
 		}
 	} else if x.Type == 1 {
@@ -101,7 +101,7 @@ func sendMail(rcpt string) {
 	}
 
 	var res bool
-	err = Udb.QueryRow("SELECT NOT EXISTS (SELECT * FROM authtokens where email=?)", rcpt).Scan(&res)
+	err = Udb.QueryRow("select not exists (select * from authtokens where email=?)", rcpt).Scan(&res)
 	if err != nil {
 		panic(err)
 	}

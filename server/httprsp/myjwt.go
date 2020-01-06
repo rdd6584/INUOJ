@@ -9,10 +9,6 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type User struct {
-	UserID string
-}
-
 var authMiddleware *jwt.GinJWTMiddleware
 var identityKey = "id"
 
@@ -32,17 +28,17 @@ func initJWT(jwtAuthorizator JwtAuthorizator) (authMiddleware *jwt.GinJWTMiddlew
 		MaxRefresh:  time.Hour * 6,
 		IdentityKey: identityKey,
 		PayloadFunc: func(data interface{}) jwt.MapClaims {
-			if v, ok := data.(*User); ok {
+			if v, ok := data.(*user); ok {
 				return jwt.MapClaims{
-					identityKey: v.UserID,
+					identityKey: v.ID,
 				}
 			}
 			return jwt.MapClaims{}
 		},
 		IdentityHandler: func(c *gin.Context) interface{} {
 			claims := jwt.ExtractClaims(c)
-			return &User{
-				UserID: claims[identityKey].(string),
+			return &user{
+				ID: claims[identityKey].(string),
 			}
 		},
 		Authenticator: func(c *gin.Context) (interface{}, error) {
@@ -55,8 +51,8 @@ func initJWT(jwtAuthorizator JwtAuthorizator) (authMiddleware *jwt.GinJWTMiddlew
 
 			if loginSuc(userID, password) {
 				if userAuthValid(userID) {
-					return &User{
-						UserID: userID,
+					return &user{
+						ID: userID,
 					}, nil
 				}
 				return nil, errEmailAuth
@@ -83,7 +79,7 @@ func initJWT(jwtAuthorizator JwtAuthorizator) (authMiddleware *jwt.GinJWTMiddlew
 }
 
 func loginUserAuthorizator(data interface{}, c *gin.Context) bool {
-	if _, ok := data.(*User); ok {
+	if _, ok := data.(*user); ok {
 		return true
 	}
 	return false

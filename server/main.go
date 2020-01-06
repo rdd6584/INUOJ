@@ -17,7 +17,7 @@ func main() {
 	r.LoadHTMLGlob("*.html")
 
 	var err error
-	rsp.Udb, err = sql.Open("mysql", "root:20190325@tcp(127.0.0.1:3306)/inuoj")
+	rsp.Udb, err = sql.Open("mysql", rsp.OurMysql)
 	if err != nil {
 		log.Fatal(err)
 	}

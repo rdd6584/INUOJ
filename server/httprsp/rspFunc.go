@@ -22,9 +22,9 @@ func regiValid(c *gin.Context) {
 	var res bool
 	log.Println("pass")
 	if tid != "" {
-		err = Udb.QueryRow("SELECT NOT EXISTS (SELECT * FROM users where id=?)", tid).Scan(&res)
+		err = Udb.QueryRow("select not exists (select * from users where id=?)", tid).Scan(&res)
 	} else {
-		err = Udb.QueryRow("SELECT NOT EXISTS (SELECT * FROM users where email=?)", temail).Scan(&res)
+		err = Udb.QueryRow("select not exists (select * from users where email=?)", temail).Scan(&res)
 	}
 	log.Println("pass")
 	if err != nil {
@@ -43,18 +43,38 @@ func regiComplete(c *gin.Context) {
 	}
 
 	var res bool
-	err = Udb.QueryRow("SELECT NOT EXISTS (SELECT * FROM users where id=? or email=?)", json.ID, json.Email).Scan(&res)
+	err = Udb.QueryRow("select not exists (select * from users where id=? or email=?)", json.ID, json.Email).Scan(&res)
 	if err != nil {
 		log.Fatal(err)
 	}
 	if res {
-		_, err = Udb.Exec("INSERT INTO users VALUES(?, ?, ?, 0)", json.ID, json.Password, json.Email)
+		_, err = Udb.Exec("insert into users values(?, ?, ?, 0)", json.ID, json.Password, json.Email)
 		if err != nil {
 			log.Println(err)
 		}
 	}
 	c.JSON(http.StatusOK, gin.H{"status": res})
 	go sendMail(json.Email)
+}
+
+func reSendMail(c *gin.Context) { // 횟수 제한 구현 필요
+	var json user
+	var err error
+	if err = c.ShouldBind(&json); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	var res bool
+	err = Udb.QueryRow("select auth from users where id=?", json.ID).Scan(&res)
+	if err != nil {
+		log.Fatal(err)
+	}
+	if !res {
+		var email string
+		err = Udb.QueryRow("select email from users where id=?", json.ID).Scan(&email)
+		go sendMail(email)
+	}
+	c.JSON(http.StatusOK, gin.H{"status": res})
 }
 
 func getStatus(c *gin.Context) {
@@ -94,7 +114,6 @@ func getStatus(c *gin.Context) {
 }
 
 func mailAuth(c *gin.Context) {
-	log.Println("pass")
 	var json authInfo
 	var err error
 	if err = c.ShouldBind(&json); err != nil {

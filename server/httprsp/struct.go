@@ -5,6 +5,10 @@ const (
 	domain   string = "localhost"
 )
 
+type user struct {
+	ID string `json:"id"`
+}
+
 type regiInfo struct {
 	ID       string `form:"id" json:"id" binding:"required"`
 	Password string `form:"pass" json:"pass" binding:"required"`
