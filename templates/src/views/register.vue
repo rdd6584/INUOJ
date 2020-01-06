@@ -73,7 +73,7 @@
       register () {
           this.$axios.post('/api/regi-done', {
             id : this.id,
-            pass : $sha256(this.pass),
+            pass : this.$sha256(this.pass),
             email : this.email,
           }).then(res => {
             if (res.data.status) {

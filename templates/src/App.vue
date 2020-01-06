@@ -32,6 +32,12 @@
   </v-app>
 </template>
 
+<style>
+    .centered-input >>> input {
+      text-align: center
+    }
+</style>
+
 <script>
   export default {
     data: () => ({
