@@ -7,12 +7,25 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
 )
 
 var Udb *sql.DB
 
-func toMain(c *gin.Context) {
-	c.HTML(http.StatusOK, "index.html", gin.H{})
+func editUserInfo(c *gin.Context) {
+	var json editInfo
+	var err error
+	if err = c.ShouldBindBodyWith(&json, binding.JSON); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	log.Println(json)
+	if !isCorrectInfo(json.ID, json.Password) {
+		c.JSON(http.StatusBadRequest, gin.H{"status": "fail"})
+		return
+	}
+	editPass(json.ID, json.NewPassword)
+	c.JSON(http.StatusOK, gin.H{"status": "ok"})
 }
 
 func regiValid(c *gin.Context) {
@@ -127,6 +140,7 @@ func mailAuth(c *gin.Context) {
 		log.Panic(err)
 	}
 	defer tx.Rollback()
+	// todo : column 한 줄 체크 필요
 	tx.QueryRow("select exists (select * from authtokens where email=? and token=?)", json.Email, json.Token).Scan(&res)
 	if res {
 		_, err = tx.Exec("update users set auth=1 where email=?", json.Email)
@@ -145,4 +159,8 @@ func mailAuth(c *gin.Context) {
 		}
 	}
 	c.JSON(http.StatusOK, gin.H{"status": res})
+}
+
+func toMain(c *gin.Context) {
+	c.HTML(http.StatusOK, "index.html", gin.H{})
 }

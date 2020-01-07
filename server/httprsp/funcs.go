@@ -7,7 +7,7 @@ import (
 	"net/smtp"
 )
 
-func loginSuc(userID string, userPass string) bool {
+func isCorrectInfo(userID string, userPass string) bool {
 	var dbPass string
 	err := Udb.QueryRow("select password from users where id=?", userID).Scan(&dbPass)
 	if err != nil {
@@ -24,6 +24,13 @@ func userAuthValid(userID string) bool {
 		log.Println(err)
 	}
 	return res
+}
+
+func editPass(userID string, newPass string) {
+	_, err := Udb.Exec("update users set password=? where id=?", newPass, userID)
+	if err != nil {
+		log.Println(err)
+	}
 }
 
 func isNotNull(x paramInfo) bool {

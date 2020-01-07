@@ -25,6 +25,12 @@ type loginRes struct {
 	Auth   bool `json:"auth"`
 }
 
+type editInfo struct {
+	ID          string `json:"id" binding:"required"`
+	Password    string `json:"pass" binding:"required"`
+	NewPassword string `json:"newpass" binding:"required"`
+}
+
 type paramInfo struct {
 	Name  string
 	Type  int    // int: 0, string: 1

@@ -3,10 +3,12 @@ package httprsp
 import (
 	"errors"
 	"log"
+	"net/http"
 	"time"
 
 	jwt "github.com/appleboy/gin-jwt"
 	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
 )
 
 var authMiddleware *jwt.GinJWTMiddleware
@@ -49,7 +51,7 @@ func initJWT(jwtAuthorizator JwtAuthorizator) (authMiddleware *jwt.GinJWTMiddlew
 			userID := loginVals.ID
 			password := loginVals.Password
 
-			if loginSuc(userID, password) {
+			if isCorrectInfo(userID, password) {
 				if userAuthValid(userID) {
 					return &user{
 						ID: userID,
@@ -80,6 +82,18 @@ func initJWT(jwtAuthorizator JwtAuthorizator) (authMiddleware *jwt.GinJWTMiddlew
 
 func loginUserAuthorizator(data interface{}, c *gin.Context) bool {
 	if _, ok := data.(*user); ok {
+		return true
+	}
+	return false
+}
+
+func onlyMeAuthorizator(data interface{}, c *gin.Context) bool {
+	var json user
+	if err := c.ShouldBindBodyWith(&json, binding.JSON); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return false
+	}
+	if v, ok := data.(*user); ok && v.ID == json.ID {
 		return true
 	}
 	return false

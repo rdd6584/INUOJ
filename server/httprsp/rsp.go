@@ -11,7 +11,7 @@ func ResRouter(e *gin.Engine) {
 	{
 		app.POST("/regi-done", regiComplete)  // id, pass, email 정보 저장
 		app.GET("/register/valid", regiValid) // id or email의 unique 여부, status : 1
-		app.POST("/login/valid", authAll.LoginHandler)
+		app.POST("/login", authAll.LoginHandler)
 		app.POST("/mailauth", mailAuth)
 		app.POST("/sendauth", reSendMail) // id받고 status=true : 이미 등록됨, false : 메일 전송함
 		app.GET("/refresh", authAll.RefreshHandler)
@@ -21,6 +21,13 @@ func ResRouter(e *gin.Engine) {
 	{
 		app1.GET("/status", getStatus) // data_num : 전체 데이터 개수, datas : 제출기록
 		app1.GET("/logout", authAll.LogoutHandler)
+	}
+
+	var authMy = initJWT(onlyMeAuthorizator)
+	app2 := e.Group("/api")
+	app2.Use(authMy.MiddlewareFunc())
+	{
+		app2.POST("/edit", editUserInfo)
 	}
 
 	e.NoRoute(toMain)
