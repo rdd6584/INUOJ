@@ -46,7 +46,7 @@ func initJWT(jwtAuthorizator JwtAuthorizator) (authMiddleware *jwt.GinJWTMiddlew
 		Authenticator: func(c *gin.Context) (interface{}, error) {
 			var loginVals loginInfo
 			if err := c.ShouldBind(&loginVals); err != nil {
-				return "", jwt.ErrMissingLoginValues
+				return "", jwt.ErrMissingLoginValues // StatusBadRequest
 			}
 			userID := loginVals.ID
 			password := loginVals.Password

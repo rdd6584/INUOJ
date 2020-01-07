@@ -9,11 +9,11 @@ func ResRouter(e *gin.Engine) {
 
 	app := e.Group("/api")
 	{
-		app.POST("/regi-done", regiComplete)  // id, pass, email 정보 저장
-		app.GET("/register/valid", regiValid) // id or email의 unique 여부, status : 1
-		app.POST("/login", authAll.LoginHandler)
-		app.POST("/mailauth", mailAuth)
-		app.POST("/sendauth", reSendMail) // id받고 status=true : 이미 등록됨, false : 메일 전송함
+		app.POST("/regi-done", regiComplete)     // id, pass, email 정보 저장
+		app.GET("/register/valid", regiValid)    // id or email의 unique 여부
+		app.POST("/login", authAll.LoginHandler) // 로그인기능, 인증 받은 계정만
+		app.POST("/emailauth", emailAuth)        // 이메일 인증 링크 눌렀을 때의 과정
+		app.POST("/sendauth", reSendMail)        // 인증 메일 다시 보내기, 최대 5회
 		app.GET("/refresh", authAll.RefreshHandler)
 	}
 	app1 := e.Group("/api")

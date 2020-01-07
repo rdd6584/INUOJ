@@ -100,24 +100,36 @@ func sendMail(rcpt string) {
 	link := domain + "/auth?token=" + authkey + "&email=" + to[0]
 	msg := []byte(headerSubject + body + link)
 
-	// 메일 보내기
+	var cnt int
 	var err error
-	err = smtp.SendMail("smtp.gmail.com:587", auth, from, to, msg)
+	
+	tx, err := Udb.Begin()
 	if err != nil {
-		panic(err)
+		log.Panic(err)
+	}
+	defer tx.Rollback()
+
+	err = tx.QueryRow("select count from authtokens where email=?", rcpt).Scan(&cnt)
+	if err != nil {
+		log.Panic(err)
+	}
+	if cnt == 0 {
+		_, err = tx.Exec("insert into authtokens(email, token) values(?, ?)", rcpt, authkey)
+	} else {
+		_, err = tx.Exec("update authtokens set token=?, auth_time=current_timestamp, count=? where email=?", authkey, cnt, rcpt)
+	}
+	if err != nil {
+		log.Panic(err)
 	}
 
-	var res bool
-	err = Udb.QueryRow("select not exists (select * from authtokens where email=?)", rcpt).Scan(&res)
+	// 메일 보내기
+	err = smtp.SendMail("smtp.gmail.com:587", auth, from, to, msg)
 	if err != nil {
-		panic(err)
+		log.Panic(err)
 	}
-	if res {
-		_, err = Udb.Exec("insert into authtokens(email, token) values(?, ?)", rcpt, authkey)
-	} else {
-		_, err = Udb.Exec("update authtokens set token=?, auth_time=current_timestamp where email=?", authkey, rcpt)
-	}
+
+	err = tx.Commit()
 	if err != nil {
-		panic(err)
+		log.Panic(err)
 	}
 }

@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"log"
 	"net/http"
+	"regexp"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
@@ -39,11 +40,9 @@ func regiValid(c *gin.Context) {
 	} else {
 		err = Udb.QueryRow("select not exists (select * from users where email=?)", temail).Scan(&res)
 	}
-	log.Println("pass")
 	if err != nil {
 		log.Println(err)
 	}
-	log.Println("pass")
 	c.JSON(http.StatusOK, gin.H{"status": res})
 }
 
@@ -52,6 +51,10 @@ func regiComplete(c *gin.Context) {
 	var err error
 	if err = c.ShouldBind(&json); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	if match, _ := regexp.MatchString("^[a-zA-Z0-9]+@inu\\.ac\\.kr", json.Email); !match {
+		c.JSON(http.StatusBadRequest, gin.H{"status": "noINU"})
 		return
 	}
 
@@ -65,9 +68,11 @@ func regiComplete(c *gin.Context) {
 		if err != nil {
 			log.Println(err)
 		}
+		go sendMail(json.Email)
+		c.JSON(http.StatusOK, gin.H{"status": "ok"})
+	} else {
+		c.JSON(http.StatusOK, gin.H{"status": "fail"})
 	}
-	c.JSON(http.StatusOK, gin.H{"status": res})
-	go sendMail(json.Email)
 }
 
 func reSendMail(c *gin.Context) { // 횟수 제한 구현 필요
@@ -80,22 +85,42 @@ func reSendMail(c *gin.Context) { // 횟수 제한 구현 필요
 	var res bool
 	err = Udb.QueryRow("select auth from users where id=?", json.ID).Scan(&res)
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 	}
 	if !res {
 		var email string
 		err = Udb.QueryRow("select email from users where id=?", json.ID).Scan(&email)
-		go sendMail(email)
+		if err != nil {
+			log.Println(err)
+		}
+		var cnt int
+		err = Udb.QueryRow("select count from authtokens where email=?", email).Scan(&cnt)
+		if err != nil {
+			log.Println(err)
+		}
+
+		if cnt >= 5 {
+			c.JSON(http.StatusOK, gin.H{"status": "fail"})
+		} else {
+			go sendMail(email)
+			c.JSON(http.StatusOK, gin.H{"status": "ok"})
+		}
+	} else {
+		c.JSON(http.StatusOK, gin.H{"status": "done"})
 	}
-	c.JSON(http.StatusOK, gin.H{"status": res})
 }
 
 func getStatus(c *gin.Context) {
 	id := paramInfo{"id", 1, c.Query("id")}
+	log.Println(id)
 	prob := paramInfo{"prob_no", 0, c.Query("prob_no")}
+	log.Println(prob)
 	res := paramInfo{"result", 0, c.Query("result")}
+	log.Println(res)
 	lang := paramInfo{"lang", 0, c.Query("lang")}
+	log.Println(lang)
 	page := c.Query("page")
+	log.Println(page)
 
 	qry := makeWhere(id, prob, res, lang)
 	top, _ := strconv.Atoi(page)
@@ -126,7 +151,7 @@ func getStatus(c *gin.Context) {
 	c.JSON(http.StatusOK, json)
 }
 
-func mailAuth(c *gin.Context) {
+func emailAuth(c *gin.Context) {
 	var json authInfo
 	var err error
 	if err = c.ShouldBind(&json); err != nil {
@@ -146,19 +171,19 @@ func mailAuth(c *gin.Context) {
 		_, err = tx.Exec("update users set auth=1 where email=?", json.Email)
 		if err != nil {
 			log.Panic(err)
-		} else {
-			_, err = tx.Exec("delete from authtokens where email=?", json.Email)
-			if err != nil {
-				log.Panic(err)
-			} else {
-				err = tx.Commit()
-				if err != nil {
-					log.Panic(err)
-				}
-			}
 		}
+		_, err = tx.Exec("delete from authtokens where email=?", json.Email)
+		if err != nil {
+			log.Panic(err)
+		}
+		err = tx.Commit()
+		if err != nil {
+			log.Panic(err)
+		}
+		c.JSON(http.StatusOK, gin.H{"status": "ok"})
+	} else {
+		c.JSON(http.StatusOK, gin.H{"status": "fail"})
 	}
-	c.JSON(http.StatusOK, gin.H{"status": res})
 }
 
 func toMain(c *gin.Context) {

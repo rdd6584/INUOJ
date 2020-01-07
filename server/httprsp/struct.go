@@ -34,7 +34,7 @@ type editInfo struct {
 type paramInfo struct {
 	Name  string
 	Type  int    // int: 0, string: 1
-	Value string // int: -1, string: "" is null
+	Value string // int: "0", string: "" is null
 }
 
 type authInfo struct {
