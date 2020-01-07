@@ -41,14 +41,17 @@
     }),
     methods: {
       login() {
-        this.$axios.post('/api/login/valid', {id:this.id, pass:this.pass})
+        this.$axios.post('/api/login', {id:this.id, pass:this.pass})
         .then(res => {
-          if (res.data.status) {
-            localStorage.setItem('token', res.data.token)
-            localStorage.setItem('auth', res.data.auth)
-          } else alert("아이디와 비밀번호를 확인해주세요.")
+          localStorage.setItem('token', res.data.token)
         })
-        .catch(err => {alert("예기치 못한 오류가 발생했습니다.")})
+        .catch(err => {
+          if (err.response.data.status == "failLogin") alert("아이디와 비밀번호를 확인하세요")
+          else if (err.response.data.status == "failAuth") {
+            this.$router.push({path:"/auth?id=" + this.id})
+          }
+          else alert("예기치 못한 오류입니다")
+        })
       },
     },
   }

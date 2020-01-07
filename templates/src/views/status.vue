@@ -41,6 +41,7 @@
           </v-col>
           <v-col class="pt-4 pl-6" cols="1">
             <v-btn
+            @click="sendQuery()"
             color="success"
             >검색</v-btn>
           </v-col>
@@ -86,51 +87,66 @@ export default{
       { text: '코드 길이', value: 'codelen', divider: true },
       { text: '제출한 시간', value: 'subm_time', divider: true },
     ],
-    datas: [
-    {
-      'subm_no':123,
-      'id':'rdd6584',
-      'prob_no':14,
-      'result':1,
-      'lang':0,
-      'run_time':110,
-      'memory':344,
-      'codelen':957,
-      'subm_time':'2020-01-07 03:35:20',
-    },
-    {
-      'subm_no':12333,
-      'id':'rdd653384',
-      'prob_no':1224,
-      'result':2,
-      'lang':4,
-      'run_time':2110,
-      'memory':34244,
-      'codelen':57,
-      'subm_time':'2020-01-07 03:35:20',
-    },
-   ],
+    datas: [],
   }),
-  created() {
+  async created() {
     if (typeof this.$route.query.prob_no !== 'undefined') this.prob_no = this.$route.query.prob_no
     if (typeof this.$route.query.id !== 'undefined') this.id = this.$route.query.id
     if (typeof this.$route.query.lang !== 'undefined') this.lang = this.$store.state.lang[this.$route.query.lang]
     if (typeof this.$route.query.result !== 'undefined') this.result = this.$store.state.result[this.$route.query.result]
     if (typeof this.$route.query.page !== 'undefined') this.page = this.$route.query.page
 
-    this.$axios.get('/api/status', {
-      params: {
-        prob_no: this.prob_no,
+    await this.sendQuery()
+  },
+  methods: {
+    test(){
+      console.log(this.data_num)
+      console.log(this.datas)
+    },
+    modifyDatas() {
+      for (var i of this.datas) {
+        if (typeof i.result == 'number') i.result = this.$store.state.result[i.result]
+        if (typeof i.lang == 'number') i.lang = this.$store.state.lang[i.lang]
+      }
+    },
+    modifyProbNo() {
+      var ret = ""
+      for (var i of this.prob_no)
+        if (this.prob_no[i] >= '0' && this.prob_no[i] <= '9')
+          ret += this.prob_no[i]
+
+      if (ret.length == 0) ret = "0"
+      return ret
+    },
+
+    async sendQuery() {
+      await this.$f.getUserValid().then(
+        res => {
+          if (res == null)
+            this.$router.push({path : '/'})
+        })
+        .catch(err => {
+          this.$f.malert()
+          this.$router.push({path : '/'})
+        })
+      var req = await this.$f.makeHeaderObject()
+      req['params'] = {
+        prob_no: this.modifyProbNo(),
         id: this.id,
         lang: this.$store.state.langOrd[this.lang],
         result: this.$store.state.resultOrd[this.result],
         page: this.page,
-      }}).then(res => {
-        data_num = res.data.data_num,
-        datas = res.data.datas
-      }).catch(err => {
-        // alert("문제 불러오기 오류")
-      })
-  }
+      }
+     await this.$axios.get('/api/status', req)
+      .then(res => {
+          this.data_num = res.data.data_num
+          if (res.data.datas) this.datas = res.data.datas
+          else this.datas = []
+          this.modifyDatas()
+        }).catch(err => {
+          // alert("문제 불러오기 오류")
+        })
+    },
+  },
 }
 </script>

@@ -4,27 +4,14 @@ import router from './router'
 import store from './store'
 import axios from 'axios'
 import sha256 from 'js-sha256'
-import vuetify from './plugins/vuetify';
+import vuetify from './plugins/vuetify'
+import f from './func.vue'
 
 Vue.prototype.$axios = axios
 Vue.prototype.$sha256 = sha256
 Vue.config.productionTip = false
 
-const f = new Vue({
-  methods: {
-    getUserValid() {
-      return this.getAuth()
-    },
-    getToken() {
-      return localStorage.getItem('token')
-    },
-    getAuth() {
-      return localStorage.getItem('auth')
-    },
-  },
-})
-
-Vue.prototype.$f = f
+Vue.prototype.$f = f.methods
 
 new Vue({
   router,

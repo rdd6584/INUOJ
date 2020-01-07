@@ -76,9 +76,8 @@
             pass : this.$sha256(this.pass),
             email : this.email,
           }).then(res => {
-            if (res.data.status) {
-              alert("회원가입이 완료되었습니다.")
-              this.$router.push({path:'/login'})
+            if (res.data.status == 'ok') {
+              this.$router.push({path:'/auth?id=' + this.id})
             }
             else alert('회원가입 도중 오류가 발생했습니다.')
           }).catch(err => {
