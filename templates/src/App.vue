@@ -33,9 +33,6 @@
     }),
     methods: {
       test() {
-        this.$axios.post('/ttt', {
-          prob_no : 1234,
-        }).then(res => {console.log(res.data)})
       },
     }
   }

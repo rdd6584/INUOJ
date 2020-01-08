@@ -7,6 +7,7 @@
             <v-text-field
               class="pt-3 px-3"
               label="문제 제목"
+              :value="title"
               placeholder=" "
               outlined
             ></v-text-field>
@@ -35,67 +36,77 @@
           </v-row>
         </v-card>
       <textEditor
-      title="본문"
-      place="수식은 Latex를 이용합니다."
+        title="본문"
+        :value="description[0]"
+        place="수식은 Latex를 이용합니다."
       ></textEditor>
 
       <textEditor
-      title="입력"
-      place="입력 형식을 설명하세요."
+        title="입력"
+        :value="description[1]"
+        place="입력 형식을 설명하세요."
       ></textEditor>
 
       <textEditor
-      title="출력"
-      place="출력 형식을 설명하세요."
+        title="출력"
+        :value="description[2]"
+        place="출력 형식을 설명하세요."
       ></textEditor>
-      <div class="pt-3"></div>
-      <v-card min-height="100" elevation="4">
-        <v-row class="pt-5 mx-5">
-            <v-file-input
-              v-model="files"
-              color="deep-purple accent-4"
-              counter
-              label="File input"
-              multiple
-              placeholder="Select your files"
-              prepend-icon="mdi-paperclip"
-              outlined
-              :show-size="1000"
-            >
-              <template v-slot:selection="{ index, text }">
-                <v-chip
-                  v-if="index < 2"
-                  color="deep-purple accent-4"
-                  dark
-                  label
-                  small
-                >
-                  {{ text }}
-                </v-chip>
-                <span
-                  v-else-if="index === 2"
-                  class="overline grey--text text--darken-3 mx-2"
-                >
-                  +{{ files.length - 2 }} File(s)
-                </span>
-              </template>
-              </v-file-input>
-              <v-btn class="ma-5" color="success" @click="upload()">파일 업로드</v-btn>
-          </v-row>
-        </v-card>
-        <v-row>
-          <v-col cols="5">
-            <v-card>
-              안녕
+        <v-row class="pt-5">
+          <v-col cols="6">
+            <v-card elevation="4">
+              <v-textarea
+               outlined
+               label="예제 입력"
+               ></v-textarea>
             </v-card>
           </v-col>
 
-          <v-col>
-            <v-card>
-
+          <v-col cols="6">
+            <v-card elevation="4">
+              <v-textarea
+               outlined
+               label="예제 출력"
+               ></v-textarea>
             </v-card>
           </v-col>
         </v-row>
+
+        <div class="pt-3"></div>
+        <v-card min-height="100" elevation="4">
+          <v-row class="pt-5 mx-5">
+              <v-file-input
+                v-model="files"
+                color="deep-purple accent-4"
+                counter
+                label="File input"
+                multiple
+                placeholder="Select your files"
+                prepend-icon="mdi-paperclip"
+                outlined
+                :show-size="1000"
+              >
+                <template v-slot:selection="{ index, text }">
+                  <v-chip
+                    v-if="index < 2"
+                    color="deep-purple accent-4"
+                    dark
+                    label
+                    small
+                  >
+                    {{ text }}
+                  </v-chip>
+                  <span
+                    v-else-if="index === 2"
+                    class="overline grey--text text--darken-3 mx-2"
+                  >
+                    +{{ files.length - 2 }} File(s)
+                  </span>
+                </template>
+                </v-file-input>
+                <v-btn class="ma-5" color="success" @click="upload()">파일 업로드</v-btn>
+            </v-row>
+          </v-card>
       </v-container>
   </v-app>
 </template>
@@ -108,8 +119,12 @@ import textEditor from "../semiViews/textEditor.vue"
     },
     data: () => ({
        files: [],
+       title: "",
+       description: ["", "", ""],
        t_limit: 1000,
        m_limit: 512,
+       samplein: [""],
+       sampleout: [""],
      }),
      methods: {
        test() {
@@ -119,7 +134,7 @@ import textEditor from "../semiViews/textEditor.vue"
          var formData = new FormData()
          formData.append('datas', this.files)
 
-         this.$axios.post('/api/upload/data',
+         this.$axios.post('/ttt',
            formData,
            { headers:
              {'Content-Type': 'multipart/form-data'}

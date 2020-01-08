@@ -11,7 +11,7 @@ export default new Vuex.Store({
     resultOrd: { '모든 결과': 0, 'Accept': 1, 'Wrong answer': 2, 'Time limit exceeded': 3, 'Memory limit exceeded': 4, 'Runtime error': 5, 'Compile error': 6, },
   },
   getters: {
-    
+
   },
   mutations: {
   },
