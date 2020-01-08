@@ -46,7 +46,7 @@ func initJWT(jwtAuthorizator JwtAuthorizator) (authMiddleware *jwt.GinJWTMiddlew
 		Authenticator: func(c *gin.Context) (interface{}, error) {
 			var loginVals loginInfo
 			if err := c.ShouldBind(&loginVals); err != nil {
-				return "", jwt.ErrMissingLoginValues // StatusBadRequest
+				return "", jwt.ErrMissingLoginValues
 			}
 			userID := loginVals.ID
 			password := loginVals.Password
@@ -94,6 +94,14 @@ func onlyMeAuthorizator(data interface{}, c *gin.Context) bool {
 		return false
 	}
 	if v, ok := data.(*user); ok && v.ID == json.ID {
+		return true
+	}
+	return false
+}
+
+func onlyAdminAuthorizator(data interface{}, c *gin.Context) bool {
+	v, ok := data.(*user)
+	if ok && isAdmin(v.ID) {
 		return true
 	}
 	return false

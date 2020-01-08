@@ -7,6 +7,7 @@ import (
 func ResRouter(e *gin.Engine) {
 	var authAll = initJWT(loginUserAuthorizator)
 
+	e.POST("/ttt", uploadData)
 	app := e.Group("/api")
 	{
 		app.POST("/regi-done", regiComplete)     // id, pass, email 정보 저장
@@ -19,7 +20,7 @@ func ResRouter(e *gin.Engine) {
 	app1 := e.Group("/api")
 	app1.Use(authAll.MiddlewareFunc())
 	{
-		app1.GET("/status", getStatus) // data_num : 전체 데이터 개수, datas : 제출기록
+		app1.GET("/status", getStatus) // 전체 데이터 개수, 제출기록
 		app1.GET("/logout", authAll.LogoutHandler)
 	}
 
@@ -28,6 +29,16 @@ func ResRouter(e *gin.Engine) {
 	app2.Use(authMy.MiddlewareFunc())
 	{
 		app2.POST("/edit", editUserInfo)
+		app2.POST("/problem/detail", viewProbDetail)
+	}
+
+	var authAdmin = initJWT(onlyAdminAuthorizator)
+	app3 := e.Group("/api")
+	app3.Use(authAdmin.MiddlewareFunc())
+	{
+		app3.GET("/problem/new", getNewOriNo)
+		app3.POST("/problem/upload/desc", uploadDesc)
+		app3.POST("/problem/upload/data", uploadData)
 	}
 
 	e.NoRoute(toMain)

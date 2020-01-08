@@ -1,5 +1,7 @@
 package httprsp
 
+import "mime/multipart"
+
 const (
 	pageSize int    = 15
 	domain   string = "localhost"
@@ -57,4 +59,29 @@ type submitInfo struct {
 type submitPage struct {
 	DataNum int          `json:"data_num"`
 	Datas   []submitInfo `json:"datas"`
+}
+
+//************************ start probs
+type probView struct {
+	ProbNum int `json:"prob_no"`
+}
+
+type probDetail struct {
+	OriNo       int      `json:"ori_no" form:"ori_no"`
+	ProbNo      int      `json:"prob_no" form:"prob_no"` // 문제 등록시 부여
+	TimeLimit   int      `json:"t_limit" form:"t_limit"`
+	MemoryLimit int      `json:"m_limit" form:"m_limit"`
+	Attempt     int      `json:"attempt" form:"attempt"`
+	Accept      int      `json:"accept" form:"accept"`
+	Owner       string   `json:"owner" form:"owner"`
+	Title       string   `json:"title" form:"title"`
+	Stat        int      `json:"stat" form:"stat"`               // 0 미등록, 1 채점 준비, 2 등록
+	Description []string `json:"description" form:"description"` // 본문, 입력, 출력
+	SampleIn    []string `json:"samplein" form:"samplein"`
+	SampleOut   []string `json:"sampleout" form:"sampleout"`
+}
+
+type probData struct {
+	Input  []*multipart.FileHeader `form:"input"`
+	Output []*multipart.FileHeader `form:"output"`
 }
