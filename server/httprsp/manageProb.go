@@ -8,7 +8,6 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
-	"github.com/gin-gonic/gin/binding"
 )
 
 var fileName = []string{"/main.txt", "/input.txt", "/output.txt"}
@@ -34,6 +33,7 @@ func uploadDesc(c *gin.Context) {
 
 	dir := probDir + strconv.Itoa(pb.ProbNo)
 	_ = os.Mkdir(dir, os.ModePerm)
+	_ = os.Mkdir(dir+dataDir, os.ModePerm)
 	for i := 0; i < len(fileName); i++ {
 		err = ioutil.WriteFile(dir+fileName[i], []byte(pb.Description[i]), 0644)
 		printErr(err)
@@ -52,18 +52,36 @@ func uploadDesc(c *gin.Context) {
 func uploadData(c *gin.Context) {
 	var pb probData
 	var err error
-	if err = c.ShouldBindWith(&pb, binding.Form); err != nil {
+	if err = c.ShouldBind(&pb); err != nil {
 		c.String(http.StatusBadRequest, "bad request")
 		return
 	}
 	if len(pb.Input) != len(pb.Output) {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "in, out not match"})
+		c.String(http.StatusBadRequest, "in, out not match")
 		return
 	}
 
-	for i := len(pb.Input) - 1; i >= 0; i++ {
-		err = c.SaveUploadedFile(pb.Input[i], "problems/"+pb.Input[i].Filename)
+	dir := probDir + strconv.Itoa(pb.OriNo) + dataDir + "/"
+	_ = os.Mkdir(dir, os.ModePerm)
+	for i := len(pb.Input) - 1; i >= 0; i-- {
+		_ = c.SaveUploadedFile(pb.Input[i], dir+pb.Input[i].Filename)
+		_ = c.SaveUploadedFile(pb.Output[i], dir+pb.Output[i].Filename)
 	}
+	c.JSON(http.StatusOK, "")
+}
+
+func discardData(c *gin.Context) {
+	var files fileArray
+	if err := c.ShouldBind(&files); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	dir := probDir + strconv.Itoa(files.OriNo) + dataDir + "/"
+	for _, file := range files.FileList {
+		_ = os.Remove(dir + file + ".in")
+		_ = os.Remove(dir + file + ".out")
+	}
+	c.String(http.StatusOK, "")
 }
 
 func viewProbDetail(c *gin.Context) {

@@ -82,6 +82,12 @@ type probDetail struct {
 }
 
 type probData struct {
+	OriNo  int                     `form:"ori_no" binding:"required"`
 	Input  []*multipart.FileHeader `form:"input"`
 	Output []*multipart.FileHeader `form:"output"`
+}
+
+type fileArray struct {
+	OriNo    int      `json:"ori_no" binding:"required"`
+	FileList []string `json:"files"`
 }
