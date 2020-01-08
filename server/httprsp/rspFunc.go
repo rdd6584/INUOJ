@@ -34,7 +34,6 @@ func regiValid(c *gin.Context) {
 	temail := c.Query("email")
 	var err error
 	var res bool
-	log.Println("pass")
 	if tid != "" {
 		err = Udb.QueryRow("select not exists (select * from users where id=?)", tid).Scan(&res)
 	} else {
@@ -64,7 +63,7 @@ func regiComplete(c *gin.Context) {
 		log.Fatal(err)
 	}
 	if res {
-		_, err = Udb.Exec("insert into users values(?, ?, ?, 0)", json.ID, json.Password, json.Email)
+		_, err = Udb.Exec("insert into users(id, password, email) values(?, ?, ?)", json.ID, json.Password, json.Email)
 		if err != nil {
 			log.Println(err)
 		}
@@ -75,7 +74,7 @@ func regiComplete(c *gin.Context) {
 	}
 }
 
-func reSendMail(c *gin.Context) { // 횟수 제한 구현 필요
+func reSendMail(c *gin.Context) {
 	var json user
 	var err error
 	if err = c.ShouldBind(&json); err != nil {
@@ -112,15 +111,10 @@ func reSendMail(c *gin.Context) { // 횟수 제한 구현 필요
 
 func getStatus(c *gin.Context) {
 	id := paramInfo{"id", 1, c.Query("id")}
-	log.Println(id)
 	prob := paramInfo{"prob_no", 0, c.Query("prob_no")}
-	log.Println(prob)
 	res := paramInfo{"result", 0, c.Query("result")}
-	log.Println(res)
 	lang := paramInfo{"lang", 0, c.Query("lang")}
-	log.Println(lang)
 	page := c.Query("page")
-	log.Println(page)
 
 	qry := makeWhere(id, prob, res, lang)
 	top, _ := strconv.Atoi(page)
