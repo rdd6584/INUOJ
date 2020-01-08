@@ -1,7 +1,7 @@
 <template>
   <v-app>
     <v-container>
-        <v-btn @click="test">테스트</v-btn>
+        <v-btn @click="test()">테스트</v-btn>
         <v-card elevation="4">
           <v-col cols="6">
             <v-text-field
@@ -37,19 +37,19 @@
         </v-card>
       <textEditor
         title="본문"
-        :value="description[0]"
+        ref="desc1"
         place="수식은 Latex를 이용합니다."
       ></textEditor>
 
       <textEditor
         title="입력"
-        :value="description[1]"
+        ref="desc2"
         place="입력 형식을 설명하세요."
       ></textEditor>
 
       <textEditor
         title="출력"
-        :value="description[2]"
+        ref="desc3"
         place="출력 형식을 설명하세요."
       ></textEditor>
         <v-row class="pt-5">
@@ -58,6 +58,7 @@
               <v-textarea
                outlined
                label="예제 입력"
+               v-model="samplein[0]"
                ></v-textarea>
             </v-card>
           </v-col>
@@ -67,44 +68,48 @@
               <v-textarea
                outlined
                label="예제 출력"
-               ></v-textarea>
+               v-model="sampleout[0]"
+              ></v-textarea>
             </v-card>
           </v-col>
+        </v-row>
+        <v-row justify="center">
+            <v-btn @click="save()" class="mb-6" color="success">저장</v-btn>
         </v-row>
 
         <div class="pt-3"></div>
         <v-card min-height="100" elevation="4">
           <v-row class="pt-5 mx-5">
-              <v-file-input
-                v-model="files"
-                color="deep-purple accent-4"
-                counter
-                label="File input"
-                multiple
-                placeholder="Select your files"
-                prepend-icon="mdi-paperclip"
-                outlined
-                :show-size="1000"
-              >
-                <template v-slot:selection="{ index, text }">
-                  <v-chip
-                    v-if="index < 2"
-                    color="deep-purple accent-4"
-                    dark
-                    label
-                    small
-                  >
-                    {{ text }}
-                  </v-chip>
-                  <span
-                    v-else-if="index === 2"
-                    class="overline grey--text text--darken-3 mx-2"
-                  >
-                    +{{ files.length - 2 }} File(s)
-                  </span>
-                </template>
-                </v-file-input>
-                <v-btn class="ma-5" color="success" @click="upload()">파일 업로드</v-btn>
+            <v-file-input
+              v-model="files"
+              color="deep-purple accent-4"
+              counter
+              label="File input"
+              multiple
+              placeholder="Select your files"
+              prepend-icon="mdi-paperclip"
+              outlined
+              :show-size="1000"
+            >
+              <template v-slot:selection="{ index, text }">
+                <v-chip
+                  v-if="index < 2"
+                  color="deep-purple accent-4"
+                  dark
+                  label
+                  small
+                >
+                  {{ text }}
+                </v-chip>
+                <span
+                  v-else-if="index === 2"
+                  class="overline grey--text text--darken-3 mx-2"
+                >
+                  +{{ files.length - 2 }} File(s)
+                </span>
+              </template>
+              </v-file-input>
+              <v-btn class="ma-5" color="success" @click="upload()">파일 업로드</v-btn>
             </v-row>
           </v-card>
       </v-container>
@@ -113,35 +118,66 @@
 
 <script>
 import textEditor from "../semiViews/textEditor.vue"
-  export default{
+  export default {
     components: {
       textEditor,
     },
     data: () => ({
        files: [],
+       ori_no: 0,
+       stat: 0,
+       owner: "",
        title: "",
-       description: ["", "", ""],
-       t_limit: 1000,
-       m_limit: 512,
+       t_limit: "1000",
+       m_limit: "512",
        samplein: [""],
        sampleout: [""],
      }),
      methods: {
        test() {
-         console.log(this.t_limit)
+         console.log(this.samplein[0])
        },
        upload() {
          var formData = new FormData()
-         formData.append(this.files)
-
-         this.$axios.post('/ttt',
-           formData,
-           { headers:
-             {'Content-Type': 'multipart/form-data'}
-           }).then(
-            res => { console.log(res) })
-          .catch(err => { alert("파일 전송 오류")
+         for (var i in this.files) {
+          if (1) formData.append('input', this.files[i])
+          else formData.append('output', this.files[i])
+        }
+         alert("완료 메시지가 나올 때까지 창을 떠나지 마세요.")
+         this.$axios.post('/api/problem/upload/data', formData)
+          .then( res => { "문제 업로드가 완료되었습니다." })
+          .catch( err => { alert("파일 전송 오류")
         })
+       },
+       async save() {
+        await this.$f.getUserValid().then(
+          res => { if(res===null) this.$f.malert() }
+        ).catch(err => {this.$f.malert()})
+
+        if (this.$f.isOnlyNum(this.t_limit) || this.t_limit[0] === '0') {
+            alert("시간 제한을 확인하세요")
+            return
+        }
+        if (this.$f.isOnlyNum(this.m_limit) || this.m_limit[0] === '0') {
+           alert("메모리 제한을 확인하세요")
+           return
+        }
+        var formdata = new FormData()
+        formdata.append('ori_no', this.ori_no)
+        formdata.append('owner', this.owner)
+        formdata.append('stat', this.stat)
+        formdata.append('title', this.title)
+        formdata.append('t_limit', this.t_limit)
+        formdata.append('m_limit', this.m_limit)
+        formdata.append('description', this.$refs.desc1.content)
+        formdata.append('description', this.$refs.desc2.content)
+        formdata.append('description', this.$refs.desc3.content)
+        for (var i of this.samplein) formdata.append('samplein', i)
+        for (var i of this.sampleout) formdata.append('sampleout', i)
+
+        this.$axios.post('/api/problem/upload/desc', formdata)
+          .then(res => {alert('저장이 완료되었습니다.')})
+          .catch(err => {this.$f.malert()})
        },
      },
   }

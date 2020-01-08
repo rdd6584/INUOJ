@@ -5,6 +5,11 @@ import axios from 'axios'
 
     }),
     methods: {
+      isOnlyNum(st) {
+        for (i of st)
+          if (i < '0' || i > '9') return false
+        return true
+      },
       makeHeaderObject() {
         var token = {'headers' : {'Authorization' : 'INUser ' + this.getToken()}}
         return token
