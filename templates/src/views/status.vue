@@ -99,10 +99,6 @@ export default{
     await this.sendQuery()
   },
   methods: {
-    test(){
-      console.log(this.data_num)
-      console.log(this.datas)
-    },
     modifyDatas() {
       for (var i of this.datas) {
         if (typeof i.result == 'number') i.result = this.$store.state.result[i.result]

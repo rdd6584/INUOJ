@@ -54,7 +54,12 @@ const routes = [
   {
     path: '/test',
     name: 'test',
-    component: () => import('../views/status.vue')
+    component: () => import('../views/createProblem.vue')
+  },
+  {
+    path: '/test2',
+    name: 'test2',
+    component: () => import('../semiViews/textEditor.vue')
   },
   {
     path: '/wrongAccess',
