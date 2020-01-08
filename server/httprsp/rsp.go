@@ -7,7 +7,7 @@ import (
 func ResRouter(e *gin.Engine) {
 	var authAll = initJWT(loginUserAuthorizator)
 
-	e.POST("/ttt", uploadData)
+	//e.POST("/ttt", uploadData)
 	app := e.Group("/api")
 	{
 		app.POST("/regi-done", regiComplete)     // id, pass, email 정보 저장
@@ -39,6 +39,7 @@ func ResRouter(e *gin.Engine) {
 		app3.GET("/problem/new", getNewOriNo)
 		app3.POST("/problem/upload/desc", uploadDesc)
 		app3.POST("/problem/upload/data", uploadData)
+		app3.POST("/problem/discard/data", discardData)
 	}
 
 	e.NoRoute(toMain)
