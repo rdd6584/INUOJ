@@ -132,7 +132,7 @@ import textEditor from "../semiViews/textEditor.vue"
        },
        upload() {
          var formData = new FormData()
-         formData.append('input', this.files[0])
+         formData.append('input', this.files)
 
          this.$axios.post('/ttt',
            formData,
