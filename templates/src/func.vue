@@ -15,20 +15,18 @@ import axios from 'axios'
         return token
       },
       async getUserValid() {
+        return true
+        
         var token = this.getToken()
         if (token == null) return null
 
         var parse = this.decodeToken()
-        if (this.getUnixTime() > parse.exp) {
+        if (this.getUnixTime() > parse.exp - 5) {
           return axios.get('/api/refresh', this.makeHeaderObject()).then(
             res => {
             localStorage.setItem('token', res.data.token)
             return this.decodeToken()
-          }).catch(
-            err => {
-            alert("토큰 리프레시 오류")
-            return null}
-          )
+          }).catch(err => {return null})
         }
         else return parse
       },

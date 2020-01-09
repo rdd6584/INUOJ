@@ -116,32 +116,30 @@ export default{
     },
 
     async sendQuery() {
-      await this.$f.getUserValid().then(
-        res => {
-          if (res == null)
-            this.$router.push({path : '/'})
-        })
-        .catch(err => {
-          this.$f.malert()
-          this.$router.push({path : '/'})
-        })
-      var req = await this.$f.makeHeaderObject()
-      req['params'] = {
-        prob_no: this.modifyProbNo(),
-        id: this.id,
-        lang: this.$store.state.langOrd[this.lang],
-        result: this.$store.state.resultOrd[this.result],
-        page: this.page,
-      }
-     await this.$axios.get('/api/status', req)
-      .then(res => {
-          this.data_num = res.data.data_num
-          if (res.data.datas) this.datas = res.data.datas
-          else this.datas = []
-          this.modifyDatas()
-        }).catch(err => {
-          // alert("문제 불러오기 오류")
-        })
+      await this.$f.getUserValid()
+      .then(re => {
+        if (re===null) {
+          this.$router.push({path:'/login'})
+          return
+        }
+        var req = this.$f.makeHeaderObject()
+        req['params'] = {
+          prob_no: this.modifyProbNo(),
+          id: this.id,
+          lang: this.$store.state.langOrd[this.lang],
+          result: this.$store.state.resultOrd[this.result],
+          page: this.page,
+        }
+       this.$axios.get('/api/status', req)
+        .then(res => {
+            this.data_num = res.data.data_num
+            if (res.data.datas) this.datas = res.data.datas
+            else this.datas = []
+            this.modifyDatas()
+          }).catch(err => {
+            // alert("문제 불러오기 오류")
+          })
+      })
     },
   },
 }

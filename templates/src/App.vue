@@ -1,4 +1,3 @@
-
 <template>
   <v-app id="inspire">
     <v-app-bar
@@ -10,7 +9,10 @@
       <v-btn router :to="{path : '/register'}" text>회원가입</v-btn>
       <v-btn router :to="{path : '/login'}" text>로그인</v-btn>
       <v-btn router :to= "{path:'/status'}" text>채점 현황</v-btn>
-      <v-btn router :to="{path : '/test'}" text class="pa-0">테스트</v-btn>
+
+      <v-btn router :to="{path : '/sup/list'}" text>문제 관리</v-btn>
+      <v-btn router :to="{path : '/sup/detail'}" text>문제 디테일</v-btn>
+      <v-btn router :to="{path : '/test'}" text>테스트</v-btn>
       <v-btn @click="test()">테트리스</v-btn>
     </v-app-bar>
     <v-content>

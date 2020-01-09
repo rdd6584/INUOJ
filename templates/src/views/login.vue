@@ -25,8 +25,7 @@
           color="success"
           class="mr-4"
           @click="login()"
-        >
-          로그인
+        >로그인
         </v-btn>
       </v-form>
     </v-card>
