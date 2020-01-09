@@ -71,7 +71,7 @@ type probDetail struct {
 	Accept      int      `json:"accept" form:"accept"`
 	Owner       string   `json:"owner" form:"owner"`
 	Title       string   `json:"title" form:"title"`
-	Stat        int      `json:"stat" form:"stat"`               // 0 미등록, 1 채점 준비, 2 등록
+	Stat        int      `json:"stat" form:"stat"`               // 0 미등록, 1 채점 준비, 2 등록, 3 비공개
 	Description []string `json:"description" form:"description"` // 본문, 입력, 출력
 	SampleIn    []string `json:"samplein" form:"samplein"`
 	SampleOut   []string `json:"sampleout" form:"sampleout"`

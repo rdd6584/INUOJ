@@ -127,9 +127,7 @@ func getStatus(c *gin.Context) {
 	}
 
 	rows, err := Udb.Query("select * from submits "+qry+"order by subm_no desc limit ?, ?", top, pageSize)
-	if err != nil {
-		log.Println(err)
-	}
+	printErr(err)
 	defer rows.Close()
 
 	var tmp submitInfo

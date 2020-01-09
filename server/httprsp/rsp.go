@@ -7,7 +7,7 @@ import (
 func ResRouter(e *gin.Engine) {
 	var authAll = initJWT(loginUserAuthorizator)
 
-	//e.POST("/ttt", uploadData)
+	//e.GET("/ttt/:ori_no", viewProbDetail)
 	app := e.Group("/api")
 	{
 		app.POST("/regi-done", regiComplete)     // id, pass, email 정보 저장
@@ -22,6 +22,7 @@ func ResRouter(e *gin.Engine) {
 	{
 		app1.GET("/status", getStatus) // 전체 데이터 개수, 제출기록
 		app1.GET("/logout", authAll.LogoutHandler)
+		app1.GET("/detail/:prob_no", viewProbDetail)
 	}
 
 	var authMy = initJWT(onlyMeAuthorizator)
@@ -29,18 +30,18 @@ func ResRouter(e *gin.Engine) {
 	app2.Use(authMy.MiddlewareFunc())
 	{
 		app2.POST("/edit", editUserInfo)
-		app2.POST("/problem/detail", viewProbDetail)
 	}
 
 	var authBdmin = initJWT(bdminAuthorizator)
-	app3 := e.Group("/api")
+	app3 := e.Group("/api/bdmin")
 	app3.Use(authBdmin.MiddlewareFunc())
 	{
-		app3.GET("/problem/new", getNewOriNo)           // 문제 추가
-		app3.POST("/problem/upload/desc", uploadDesc)   // 문제 디스크립션
-		app3.POST("/problem/upload/data", uploadData)   // 문제 데이터 추가
-		app3.POST("/problem/discard/data", discardData) // 문제 데이터 삭제
-		app3.GET("/problem/detail/:orino", viewProbDetail)
+		app3.GET("/new", getNewOriNo)               // 문제 추가
+		app3.POST("/upload/desc", uploadDesc)       // 문제 디스크립션
+		app3.POST("/upload/data", uploadData)       // 문제 데이터 추가
+		app3.POST("/discard/data", discardData)     // 문제 데이터 삭제
+		app3.GET("/detail/:ori_no", viewProbDetail) // 문제 디테일
+		app3.GET("/list", myProbList)               // 권한이 있는 문제 목록
 	}
 
 	e.NoRoute(toMain)

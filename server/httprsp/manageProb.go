@@ -10,6 +10,19 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+func myProbList(c *gin.Context) {
+	id := c.Query("id")
+	rows, err := Udb.Query("select pr.ori_no, pr.prob_no, pr.title, pr.stat "+
+		"from probs as pr join prob_auth as pa where pr.ori_no=pa.ori_no and pa.id=?", id)
+	printErr(err)
+	defer rows.Close()
+
+	//var tmp probDetail
+	for rows.Next() {
+
+	}
+}
+
 func getNewOriNo(c *gin.Context) {
 	var ret int
 	var err error
@@ -106,18 +119,30 @@ func discardData(c *gin.Context) {
 }
 
 func viewProbDetail(c *gin.Context) {
-	var pNum int
 	var pb probDetail
 	var err error
-	pNum, err = strconv.Atoi(c.Param("ori_no"))
+	var pNum int
+	qry := "select * from probs where "
+	ori := c.Param("ori_no")
+	prob := c.Param("prob_no")
+	if ori == "" {
+		qry += "prob_no=" + prob
+		pNum, err = strconv.Atoi(prob)
+	} else {
+		qry += "ori_no=" + ori
+		pNum, err = strconv.Atoi(ori)
+	}
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	err = Udb.QueryRow("select t_limit, m_limit, owner, title from probs where ori_no=?", pNum).Scan(
-		&pb.TimeLimit, &pb.MemoryLimit, &pb.Owner, &pb.Title)
+
+	err = Udb.QueryRow(qry).Scan(&pb.OriNo, &pb.ProbNo, &pb.TimeLimit,
+		&pb.MemoryLimit, &pb.Attempt, &pb.Accept, &pb.Owner, &pb.Title, &pb.Stat)
 	if err != nil {
 		log.Println(err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
 	}
 
 	dir := privDir + strconv.Itoa(pNum)
