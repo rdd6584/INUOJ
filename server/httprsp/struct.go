@@ -62,10 +62,6 @@ type submitPage struct {
 }
 
 //************************ start probs
-type probView struct {
-	ProbNum int `json:"prob_no"`
-}
-
 type probDetail struct {
 	OriNo       int      `json:"ori_no" form:"ori_no"`
 	ProbNo      int      `json:"prob_no" form:"prob_no"` // 문제 등록시 부여

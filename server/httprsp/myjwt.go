@@ -25,7 +25,7 @@ type JwtAuthorizator func(data interface{}, c *gin.Context) bool
 func initJWT(jwtAuthorizator JwtAuthorizator) (authMiddleware *jwt.GinJWTMiddleware) {
 	var err error
 	authMiddleware, err = jwt.New(&jwt.GinJWTMiddleware{
-		Realm:       "test zone",
+		Realm:       "INUOJ ^^*",
 		Key:         []byte(ourKey),
 		MaxRefresh:  time.Hour * 6,
 		IdentityKey: identityKey,
@@ -99,9 +99,9 @@ func onlyMeAuthorizator(data interface{}, c *gin.Context) bool {
 	return false
 }
 
-func onlyAdminAuthorizator(data interface{}, c *gin.Context) bool {
+func bdminAuthorizator(data interface{}, c *gin.Context) bool {
 	v, ok := data.(*user)
-	if ok && isAdmin(v.ID) {
+	if ok && isBdmin(v.ID) {
 		return true
 	}
 	return false

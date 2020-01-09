@@ -10,12 +10,27 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-var fileName = []string{"/main.txt", "/input.txt", "/output.txt"}
-
 func getNewOriNo(c *gin.Context) {
 	var ret int
-	err := Udb.QueryRow("select max(ori_no)").Scan(&ret)
-	printErr(err)
+	var err error
+	id := c.Query("id")
+	tx, err := Udb.Begin()
+	panicErr(err)
+	defer func() {
+		tx.Rollback()
+		c.String(http.StatusInternalServerError, "")
+	}()
+
+	_, err = tx.Exec("insert into probs(owner) values(?)", id)
+	panicErr(err)
+	err = tx.QueryRow("select last_insert_id()").Scan(&ret)
+	panicErr(err)
+	_, err = tx.Exec("insert into prob_auth values(?,?)", id, ret)
+	panicErr(err)
+	tx.Commit()
+
+	_ = os.MkdirAll(privDir+strconv.Itoa(ret)+dataDir, os.ModePerm)
+
 	c.JSON(http.StatusOK, gin.H{"ori_no": ret})
 }
 
@@ -31,11 +46,14 @@ func uploadDesc(c *gin.Context) {
 		return
 	}
 
-	dir := probDir + strconv.Itoa(pb.ProbNo)
-	_ = os.Mkdir(dir, os.ModePerm)
-	_ = os.Mkdir(dir+dataDir, os.ModePerm)
-	for i := 0; i < len(fileName); i++ {
-		err = ioutil.WriteFile(dir+fileName[i], []byte(pb.Description[i]), 0644)
+	var dir string
+	if pb.ProbNo == 0 { // 동작 확인
+		dir = privDir + strconv.Itoa(pb.OriNo)
+	} else {
+		dir = pubDir + strconv.Itoa(pb.OriNo)
+	}
+	for i := 0; i < len(descName); i++ {
+		err = ioutil.WriteFile(dir+descName[i], []byte(pb.Description[i]), 0644)
 		printErr(err)
 	}
 
@@ -56,13 +74,16 @@ func uploadData(c *gin.Context) {
 		c.String(http.StatusBadRequest, "bad request")
 		return
 	}
+	if !isPrivate(pb.OriNo) {
+		c.String(http.StatusForbidden, "")
+		return
+	}
 	if len(pb.Input) != len(pb.Output) {
 		c.String(http.StatusBadRequest, "in, out not match")
 		return
 	}
 
-	dir := probDir + strconv.Itoa(pb.OriNo) + dataDir + "/"
-	_ = os.Mkdir(dir, os.ModePerm)
+	dir := privDir + strconv.Itoa(pb.OriNo) + dataDir + "/"
 	for i := len(pb.Input) - 1; i >= 0; i-- {
 		_ = c.SaveUploadedFile(pb.Input[i], dir+pb.Input[i].Filename)
 		_ = c.SaveUploadedFile(pb.Output[i], dir+pb.Output[i].Filename)
@@ -76,7 +97,7 @@ func discardData(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	dir := probDir + strconv.Itoa(files.OriNo) + dataDir + "/"
+	dir := privDir + strconv.Itoa(files.OriNo) + dataDir + "/"
 	for _, file := range files.FileList {
 		_ = os.Remove(dir + file + ".in")
 		_ = os.Remove(dir + file + ".out")
@@ -85,24 +106,24 @@ func discardData(c *gin.Context) {
 }
 
 func viewProbDetail(c *gin.Context) {
-	var pNum probView
+	var pNum int
 	var pb probDetail
 	var err error
-	if err = c.ShouldBind(&pNum); err != nil {
+	pNum, err = strconv.Atoi(c.Param("ori_no"))
+	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	log.Println(pNum.ProbNum)
-	err = Udb.QueryRow("select * from probs where prob_no=?", pNum.ProbNum).Scan(&pb.OriNo, &pb.ProbNo,
-		&pb.TimeLimit, &pb.MemoryLimit, &pb.Attempt, &pb.Accept, &pb.Owner, &pb.Title, &pb.Stat)
+	err = Udb.QueryRow("select t_limit, m_limit, owner, title from probs where ori_no=?", pNum).Scan(
+		&pb.TimeLimit, &pb.MemoryLimit, &pb.Owner, &pb.Title)
 	if err != nil {
 		log.Println(err)
 	}
 
-	dir := probDir + strconv.Itoa(pb.ProbNo)
+	dir := privDir + strconv.Itoa(pNum)
 	var file []byte
-	for i := 0; i < len(fileName); i++ {
-		file, err = ioutil.ReadFile(dir + fileName[i])
+	for i := 0; i < len(descName); i++ {
+		file, err = ioutil.ReadFile(dir + descName[i])
 		pb.Description = append(pb.Description, string(file))
 	}
 
@@ -121,9 +142,10 @@ func viewProbDetail(c *gin.Context) {
 		}
 		pb.SampleOut = append(pb.SampleOut, string(file))
 	}
-	c.SecureJSON(http.StatusOK, pb)
+	c.JSON(http.StatusOK, pb)
 }
 
+// *******************************funcs
 func initSample(dir string) {
 	var err error
 	for i := 1; ; i++ {
@@ -133,4 +155,10 @@ func initSample(dir string) {
 		}
 		_ = os.Remove(dir + strconv.Itoa(i) + ".out")
 	}
+}
+
+func isPrivate(probNo int) bool {
+	var stat int
+	Udb.QueryRow("select stat from probs where prob_no=?", probNo).Scan(&stat)
+	return (stat == 0)
 }

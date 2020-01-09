@@ -32,14 +32,15 @@ func ResRouter(e *gin.Engine) {
 		app2.POST("/problem/detail", viewProbDetail)
 	}
 
-	var authAdmin = initJWT(onlyAdminAuthorizator)
+	var authBdmin = initJWT(bdminAuthorizator)
 	app3 := e.Group("/api")
-	app3.Use(authAdmin.MiddlewareFunc())
+	app3.Use(authBdmin.MiddlewareFunc())
 	{
-		app3.GET("/problem/new", getNewOriNo)
-		app3.POST("/problem/upload/desc", uploadDesc)
-		app3.POST("/problem/upload/data", uploadData)
-		app3.POST("/problem/discard/data", discardData)
+		app3.GET("/problem/new", getNewOriNo)           // 문제 추가
+		app3.POST("/problem/upload/desc", uploadDesc)   // 문제 디스크립션
+		app3.POST("/problem/upload/data", uploadData)   // 문제 데이터 추가
+		app3.POST("/problem/discard/data", discardData) // 문제 데이터 삭제
+		app3.GET("/problem/detail/:orino", viewProbDetail)
 	}
 
 	e.NoRoute(toMain)

@@ -7,19 +7,13 @@ import (
 	"net/smtp"
 )
 
-func printErr(e error) {
-	if e != nil {
-		log.Println(e)
-	}
-}
-
-func isAdmin(userID string) bool {
-	var res bool
+func isBdmin(userID string) bool {
+	var res int
 	err := Udb.QueryRow("select admin from users where id=?", userID).Scan(&res)
 	if err != nil {
 		log.Println(err)
 	}
-	return res
+	return (res >= 1)
 }
 
 func isCorrectInfo(userID string, userPass string) bool {
@@ -146,5 +140,16 @@ func sendMail(rcpt string) {
 	err = tx.Commit()
 	if err != nil {
 		log.Panic(err)
+	}
+}
+
+func printErr(e error) {
+	if e != nil {
+		log.Println(e)
+	}
+}
+func panicErr(e error) {
+	if e != nil {
+		log.Panic(e)
 	}
 }
