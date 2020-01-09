@@ -52,13 +52,13 @@ const routes = [
     component: () => import('../views/sup/list.vue'),
   },
   {
-    path: '/sup/detail',
+    path: '/sup/detail/:num',
     beforeEnter: (to, from, next) => { forUsers(next) },
     component: () => import('../views/sup/detail.vue'),
   },
   {
     path: '/test',
-    component: () => import('../views/sup/table.vue')
+    // component: () => import('../views/sup/table.vue')
   },
   {
     path: '/test2',
@@ -68,11 +68,10 @@ const routes = [
     path: '/wrongAccess',
     component: () => import('../views/404page.vue'),
   },
-
-  /*{
+  {
     path: '/*',
-    redirect: '/wrongAccess',
-  },*/
+    component: () => import('../views/404page.vue'),
+  },
 ]
 
 const router = new VueRouter({

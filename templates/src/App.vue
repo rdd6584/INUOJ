@@ -11,8 +11,7 @@
       <v-btn router :to= "{path:'/status'}" text>채점 현황</v-btn>
 
       <v-btn router :to="{path : '/sup/list'}" text>문제 관리</v-btn>
-      <v-btn router :to="{path : '/sup/detail'}" text>문제 디테일</v-btn>
-      <v-btn router :to="{path : '/test'}" text>테스트</v-btn>
+      <v-btn router :to="{path : '/sup/detail/1'}" text>테스트</v-btn>
       <v-btn @click="test()">테트리스</v-btn>
     </v-app-bar>
     <v-content>

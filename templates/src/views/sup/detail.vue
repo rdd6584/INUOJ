@@ -189,7 +189,7 @@ import textEditor from "../../semiViews/textEditor.vue"
 
             var token = this.$f.makeHeaderObject()
              alert("완료 메시지가 나올 때까지 창을 떠나지 마세요.")
-             this.$axios.post('/api/problem/upload/data', formData, token)
+             this.$axios.post('/api/bdmin/upload/data', formData, token)
               .then( res => { "문제 업로드가 완료되었습니다." })
               .catch( err => { alert("파일 전송 오류")
             })
@@ -226,7 +226,7 @@ import textEditor from "../../semiViews/textEditor.vue"
              for (var i of this.sampleout) formdata.append('sampleout', i)
 
              var token = this.$f.makeHeaderObject()
-             this.$axios.post('/api/problem/upload/desc', formdata, token)
+             this.$axios.post('/api/bdmin/upload/desc', formdata, token)
                .then(res => {alert('저장이 완료되었습니다.')})
                .catch(err => {this.$f.malert()})
            })
