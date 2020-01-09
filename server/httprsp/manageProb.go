@@ -13,14 +13,17 @@ import (
 func myProbList(c *gin.Context) {
 	id := c.Query("id")
 	rows, err := Udb.Query("select pr.ori_no, pr.prob_no, pr.title, pr.stat "+
-		"from probs as pr join prob_auth as pa where pr.ori_no=pa.ori_no and pa.id=?", id)
+		"from probs as pr join prob_auth as pa where pr.ori_no=pa.ori_no and pa.id=? order by pr.ori_no desc", id)
 	printErr(err)
 	defer rows.Close()
 
-	//var tmp probDetail
+	var ret []probForList
+	var tmp probForList
 	for rows.Next() {
-
+		_ = rows.Scan(&tmp.OriNo, &tmp.ProbNo, &tmp.Title, &tmp.Stat)
+		ret = append(ret, tmp)
 	}
+	c.JSON(http.StatusOK, ret)
 }
 
 func getNewOriNo(c *gin.Context) {

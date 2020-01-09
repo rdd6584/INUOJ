@@ -77,6 +77,15 @@ type probDetail struct {
 	SampleOut   []string `json:"sampleout" form:"sampleout"`
 }
 
+type probForList struct {
+	OriNo   int    `json:"ori_no"`
+	ProbNo  int    `json:"prob_no"`
+	Title   string `json:"title"`
+	Attempt int    `json:"attempt"`
+	Accept  int    `json:"accept"`
+	Stat    int    `json:"stat"`
+}
+
 type probData struct {
 	OriNo  int                     `form:"ori_no" binding:"required"`
 	Input  []*multipart.FileHeader `form:"input"`
