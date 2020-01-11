@@ -3,7 +3,6 @@
     <v-data-table
       :headers="headers"
       :items="desserts"
-      hide-default-footer
       class="elevation-1"
     >
       <template v-slot:top>
@@ -15,6 +14,28 @@
             vertical
           ></v-divider>
           <v-spacer></v-spacer>
+
+          <v-dialog v-model="edial" max-width="500px">
+            <v-card>
+              <v-container>
+                <v-radio-group v-model="sel">
+                  <v-radio
+                    v-for="(it, i) in $store.state.stat"
+                    :disabled="i === $store.state.statNedg[tsel]"
+                    light
+                    :label="it"
+                    :value="i"
+                  ></v-radio>
+                </v-radio-group>
+              </v-container>
+
+              <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-btn color="blue darken-1" text @click="save()">변경</v-btn>
+                <v-btn color="blue darken-1" text @click="edial=false">취소</v-btn>
+              </v-card-actions>
+            </v-card>
+          </v-dialog>
 
           <v-dialog v-model="dialog" max-width="500px">
             <template v-slot:activator="{ on }">
@@ -38,28 +59,6 @@
       </template>
 
       <template v-slot:item.action="{ item }">
-        <v-dialog v-model="edial" max-width="500px">
-          <v-card>
-            <v-container>
-              <v-radio-group v-model="sel">
-                <v-radio
-                  v-for="(it, i) in $store.state.stat"
-                  :disabled="i === $store.state.statNedg[tsel]"
-                  light
-                  :label="it"
-                  :value="i"
-                ></v-radio>
-              </v-radio-group>
-            </v-container>
-
-            <v-card-actions>
-              <v-spacer></v-spacer>
-              <v-btn color="blue darken-1" text @click="save()">변경</v-btn>
-              <v-btn color="blue darken-1" text @click="edial=false">취소</v-btn>
-            </v-card-actions>
-          </v-card>
-        </v-dialog>
-
         <v-icon
           small
           class="mr-2"
@@ -68,8 +67,14 @@
         </v-icon>
         <v-icon
           small
+          class="mr-2"
           @click="editItem(item)"
         >status
+        </v-icon>
+        <v-icon
+          small
+          @click="del(item)"
+        >delete
         </v-icon>
       </template>
       <template v-slot:no-data>등록된 문제가 없습니다</template>
@@ -100,10 +105,27 @@
       sel: 0,
       tsel: 0,
     }),
-    created () {
-
+    async created () {
+      this.$f.getUserValid().then(
+        res => {
+          if (res === null) {
+            this.$router.push({path : '/login'})
+            return
+          }
+          this.$axios.get("/api/bdmin/list?id=" + res.id, this.$f.makeHeaderObject())
+          .then(re => {
+            if (re.data.problems === null) return
+            this.desserts = re.data.problems
+          })
+          .catch(err => {
+            this.$f.malert()
+          })
+        })
     },
     methods: {
+      del(item) {
+
+      },
       toDetail(item) { this.$router.push("/sup/detail/" + item) },
       editItem (item) {
         this.editedIndex = this.desserts.indexOf(item)
@@ -132,13 +154,13 @@
             return
           }
           this.$axios.post("/api/bdmin/update/stat",
-            this.$f.makeHeaderObject,
             { ori_no : this.desserts[this.editedIndex].ori_no,
-              fromstat : this.tsel,
-              tostat : this.sel }
-          ).catch(err => {this.$f.malert()})
+            fromstat : this.tsel,
+            tostat : this.sel }
+          , this.$f.makeHeaderObject())
+          .then(res => console.log(res.data))
+          .catch(err => {console.log(err.response); this.$f.malert()})
         })
-
         this.edial = false
       },
       async create () {
@@ -148,10 +170,11 @@
               this.$router.push({path:"/login"})
               return
             }
-          this.$axios.get("/api/bdmin/new?id=" + res.id, this.$f.makeHeaderObject)
+
+          this.$axios.get("/api/bdmin/new?id=" + res.id, this.$f.makeHeaderObject())
             .then(re => {
               this.defaultItem.ori_no = re.data.ori_no
-              this.desserts.push(this.defaultItem)
+              this.desserts.unshift(Object.assign({}, this.defaultItem))
             })
             .catch(err => {this.$f.malert()})
           })

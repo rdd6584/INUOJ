@@ -43,6 +43,7 @@
         this.$axios.post('/api/login', {id:this.id, pass:this.pass})
         .then(res => {
           localStorage.setItem('token', res.data.token)
+          this.$router.push({path:'/'})
         })
         .catch(err => {
           if (err.response.data.status == "failLogin") alert("아이디와 비밀번호를 확인하세요")

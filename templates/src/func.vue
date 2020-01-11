@@ -15,8 +15,6 @@ import axios from 'axios'
         return token
       },
       async getUserValid() {
-        return true
-        
         var token = this.getToken()
         if (token == null) return null
 
