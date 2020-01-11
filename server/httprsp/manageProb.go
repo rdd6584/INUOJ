@@ -30,6 +30,7 @@ func changeStat(c *gin.Context) {
 
 func myProbList(c *gin.Context) {
 	id := c.Query("id")
+	log.Println("wrrwrwrwwr")
 	rows, err := Udb.Query("select pr.ori_no, pr.prob_no, pr.title, pr.stat "+
 		"from probs as pr join prob_auth as pa where pr.ori_no=pa.ori_no and pa.id=? order by pr.ori_no desc", id)
 	printErr(err)
@@ -52,7 +53,6 @@ func getNewOriNo(c *gin.Context) {
 	panicErr(err)
 	defer func() {
 		tx.Rollback()
-		c.String(http.StatusInternalServerError, "")
 	}()
 
 	_, err = tx.Exec("insert into probs(owner) values(?)", id)

@@ -7,7 +7,7 @@ import (
 func ResRouter(e *gin.Engine) {
 	var authAll = initJWT(loginUserAuthorizator)
 
-	//e.GET("/ttt", moveFile)
+	e.GET("/ttt", myProbList)
 	// *************** for all ***************
 	app := e.Group("/api")
 	{

@@ -12,9 +12,9 @@ type user struct {
 }
 
 type regiInfo struct {
-	ID       string `form:"id" json:"id" binding:"required"`
-	Password string `form:"pass" json:"pass" binding:"required"`
-	Email    string `form:"email" json:"email" binding:"required"`
+	ID       string `form:"id" json:"id"`
+	Password string `form:"pass" json:"pass"`
+	Email    string `form:"email" json:"email"`
 }
 
 type loginInfo struct {
@@ -98,7 +98,7 @@ type fileArray struct {
 }
 
 type modStat struct {
-	OriNo    int `json:"ori_no" binding:"required"`
-	FromStat int `json:"fromstat" binding:"required"`
-	ToStat   int `json:"tostat" binding:"required"`
+	OriNo    int `json:"ori_no" binding:"max=3, min=0"`
+	FromStat int `json:"fromstat" binding:"max=3, min=0"`
+	ToStat   int `json:"tostat" binding:"max=3, min=0"`
 }
