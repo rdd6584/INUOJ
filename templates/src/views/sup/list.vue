@@ -158,8 +158,7 @@
             fromstat : this.tsel,
             tostat : this.sel }
           , this.$f.makeHeaderObject())
-          .then(res => console.log(res.data))
-          .catch(err => {console.log(err.response); this.$f.malert()})
+          .catch(err => {this.$f.malert()})
         })
         this.edial = false
       },

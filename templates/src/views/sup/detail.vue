@@ -182,6 +182,7 @@ import textEditor from "../../semiViews/textEditor.vue"
              }
 
              var formData = new FormData()
+             formData.append('ori_no', this.$route.params.ori_no)
              for (var i = 0; i < this.files.length; i += 2) {
                formData.append('input', this.files[ord[i]])
                formData.append('output', this.files[ord[i + 1]])

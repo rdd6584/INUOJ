@@ -52,7 +52,7 @@ const routes = [
     component: () => import('../views/sup/list.vue'),
   },
   {
-    path: '/sup/detail/:num',
+    path: '/sup/detail/:ori_no',
     beforeEnter: (to, from, next) => { forUsers(next) },
     component: () => import('../views/sup/detail.vue'),
   },
