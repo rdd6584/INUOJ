@@ -98,7 +98,7 @@ type fileArray struct {
 }
 
 type modStat struct {
-	OriNo    int `json:"ori_no" binding:"max=3, min=0"`
-	FromStat int `json:"fromstat" binding:"max=3, min=0"`
-	ToStat   int `json:"tostat" binding:"max=3, min=0"`
+	OriNo    int `json:"ori_no"`
+	FromStat int `json:"fromstat"`
+	ToStat   int `json:"tostat"`
 }
