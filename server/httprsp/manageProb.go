@@ -10,6 +10,24 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+func changeStat(c *gin.Context) {
+	var json modStat
+	var err error
+	if err = c.ShouldBind(&json); err != nil {
+		c.String(http.StatusBadRequest, "")
+		return
+	}
+	_, err = Udb.Exec("update probs set stat=? where ori_no=?", json.ToStat, json.OriNo)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	if json.FromStat == 0 {
+		moveFile(strconv.Itoa(json.OriNo))
+	}
+	c.String(http.StatusOK, "")
+}
+
 func myProbList(c *gin.Context) {
 	id := c.Query("id")
 	rows, err := Udb.Query("select pr.ori_no, pr.prob_no, pr.title, pr.stat "+
@@ -23,7 +41,7 @@ func myProbList(c *gin.Context) {
 		_ = rows.Scan(&tmp.OriNo, &tmp.ProbNo, &tmp.Title, &tmp.Stat)
 		ret = append(ret, tmp)
 	}
-	c.JSON(http.StatusOK, ret)
+	c.JSON(http.StatusOK, gin.H{"problems": ret})
 }
 
 func getNewOriNo(c *gin.Context) {
@@ -189,4 +207,9 @@ func isPrivate(probNo int) bool {
 	var stat int
 	Udb.QueryRow("select stat from probs where prob_no=?", probNo).Scan(&stat)
 	return (stat == 0)
+}
+
+func moveFile(oriNo string) {
+	err := os.Rename(privDir+oriNo, pubDir+oriNo)
+	printErr(err)
 }

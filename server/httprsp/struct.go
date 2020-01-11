@@ -96,3 +96,9 @@ type fileArray struct {
 	OriNo    int      `json:"ori_no" binding:"required"`
 	FileList []string `json:"files"`
 }
+
+type modStat struct {
+	OriNo    int `json:"ori_no" binding:"required"`
+	FromStat int `json:"fromstat" binding:"required"`
+	ToStat   int `json:"tostat" binding:"required"`
+}
