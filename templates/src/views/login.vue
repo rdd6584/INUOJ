@@ -43,6 +43,7 @@
         this.$axios.post('/api/login', {id:this.id, pass:this.pass})
         .then(res => {
           localStorage.setItem('token', res.data.token)
+          this.$f.userId = this.id
           this.$router.push({path:'/'})
         })
         .catch(err => {

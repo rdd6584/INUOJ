@@ -1,13 +1,13 @@
 <template>
   <v-app>
     <v-container>
-        <v-btn @click="test()">테스트</v-btn>
         <v-card elevation="4">
           <v-col cols="6">
             <v-text-field
               class="pt-3 px-3"
               label="문제 제목"
               :value="title"
+              hide-details
               placeholder=" "
               outlined
             ></v-text-field>
@@ -52,13 +52,15 @@
         ref="desc3"
         place="출력 형식을 설명하세요."
       ></textEditor>
-        <v-row class="pt-5">
-          <v-col cols="6">
+
+        <v-row v-for="(val, i) in samplein" class="pt-5">
+          <v-col cols="6" >
             <v-card elevation="4">
               <v-textarea
                outlined
-               label="예제 입력"
-               v-model="samplein[0]"
+               hide-details
+               :label="'예제' + (i + 1) + ' 입력'"
+               v-model="samplein[i]"
                ></v-textarea>
             </v-card>
           </v-col>
@@ -67,18 +69,22 @@
             <v-card elevation="4">
               <v-textarea
                outlined
-               label="예제 출력"
-               v-model="sampleout[0]"
+               hide-details
+               :label="'예제' + (i + 1) + ' 출력'"
+               v-model="sampleout[i]"
               ></v-textarea>
             </v-card>
           </v-col>
         </v-row>
+
         <v-row justify="center">
-            <v-btn @click="save()" class="mb-6" color="success">저장</v-btn>
+          <v-btn @click="samplein.push(''); sampleout.push('')" class="mx-4 mb-6" color="success">예제 추가</v-btn>
+          <v-btn @click="save()" class="mb-6" color="success">저장</v-btn>
         </v-row>
 
         <div class="pt-3"></div>
         <v-card min-height="100" elevation="4">
+          <v-card-title>채점 데이터</v-card-title>
           <v-row class="pt-5 mx-5">
             <v-file-input
               v-model="files"
@@ -112,6 +118,23 @@
               <v-btn class="ma-5" color="success" @click="upload()">파일 업로드</v-btn>
             </v-row>
           </v-card>
+
+          <v-card v-if="datas.length != 0" class="mt-1">
+            <v-row>
+              <v-col cols="2" v-for="i in datas">
+                <v-checkbox v-model="selected" :label="i" :value="i"></v-checkbox>
+              </v-col>
+            </v-row>
+            <v-row justify="center">
+              <v-btn color="success" @click="del()">삭제</v-btn>
+            </v-row>
+          </v-card>
+
+          <v-card v-else class="mt-1">
+            <v-row justify="center">
+              <v-card-subtitle>Data set is empty</v-card-subtitle>
+            </v-row>
+          </v-card>
       </v-container>
   </v-app>
 </template>
@@ -132,13 +155,47 @@ import textEditor from "../../semiViews/textEditor.vue"
        m_limit: "512",
        samplein: [""],
        sampleout: [""],
+       datas: [],
+       selected: [],
      }),
      async created() {
+       this.ori_no = this.$route.params.ori_no
+       this.$axios.get("/api/bdmin/detail/" + this.ori_no, this.$f.makeHeaderObject())
+       .then(res => {
+         this.t_limit = res.data.t_limit + ""
+         this.m_limit = res.data.m_limit + ""
+         this.title = res.data.title
+         this.owner = res.data.owner
+         this.stat = res.data.stat
 
+         this.$refs.desc1.content = res.data.description[0]
+         this.$refs.desc2.content = res.data.description[1]
+         this.$refs.desc3.content = res.data.description[2]
+
+         if (res.data.samplein) this.samplein = res.data.samplein
+         if (res.data.sampleout) this.sampleout = res.data.sampleout
+         if (res.data.datas) this.datas = res.data.datas
+       })
+       .catch(err => {this.$f.malert()})
      },
      methods: {
-       test() {
-         console.log(this.samplein[0])
+       del() {
+          this.$f.getUserValid()
+          .then(re => {
+            if (re === null) {
+              this.$router.push("/login")
+              return
+            }
+            this.$axios.post("/api/bdmin/discard/data", {
+              ori_no : this.ori_no,
+              files : this.selected,
+            }, this.$f.makeHeaderObject())
+            .then(res => {
+              for (var i of this.selected)
+                this.datas.splice(this.datas.indexOf(this.selected[i]), 1)
+            })
+            .catch(err => this.$f.malert())
+          })
        },
        async upload() {
          await this.$f.getUserValid()
@@ -182,7 +239,7 @@ import textEditor from "../../semiViews/textEditor.vue"
              }
 
              var formData = new FormData()
-             formData.append('ori_no', this.$route.params.ori_no)
+             formData.append('ori_no', this.ori_no)
              for (var i = 0; i < this.files.length; i += 2) {
                formData.append('input', this.files[ord[i]])
                formData.append('output', this.files[ord[i + 1]])
@@ -191,9 +248,15 @@ import textEditor from "../../semiViews/textEditor.vue"
             var token = this.$f.makeHeaderObject()
              alert("완료 메시지가 나올 때까지 창을 떠나지 마세요.")
              this.$axios.post('/api/bdmin/upload/data', formData, token)
-              .then( res => { "문제 업로드가 완료되었습니다." })
-              .catch( err => { alert("파일 전송 오류")
-            })
+              .then(
+                res => { alert("데이터가 업로드 되었습니다.")
+                for (var i = 0; i < this.files.length; i += 2) {
+                  var len = this.files[ord[i]].name.length
+                  this.datas.push(this.files[ord[i]].name.substr(0, len - 3))
+                }
+                this.files = []
+              })
+              .catch( err => { console.log(err); this.$f.malert() })
            })
        },
        async save() {
@@ -205,11 +268,11 @@ import textEditor from "../../semiViews/textEditor.vue"
                return
              }
 
-             if (this.$f.isOnlyNum(this.t_limit) || this.t_limit[0] === '0') {
+             if (this.$f.isOnlyNum(this.t_limit) === false || this.t_limit[0] === '0') {
                  alert("시간 제한을 확인하세요")
                  return
              }
-             if (this.$f.isOnlyNum(this.m_limit) || this.m_limit[0] === '0') {
+             if (this.$f.isOnlyNum(this.m_limit) === false || this.m_limit[0] === '0') {
                 alert("메모리 제한을 확인하세요")
                 return
              }
@@ -223,8 +286,13 @@ import textEditor from "../../semiViews/textEditor.vue"
              formdata.append('description', this.$refs.desc1.content)
              formdata.append('description', this.$refs.desc2.content)
              formdata.append('description', this.$refs.desc3.content)
-             for (var i of this.samplein) formdata.append('samplein', i)
-             for (var i of this.sampleout) formdata.append('sampleout', i)
+
+             for (var i in this.samplein) {
+               if (this.samplein[i] != "" && this.sampleout[i] != "") {
+                 formdata.append('samplein', this.samplein[i])
+                 formdata.append('sampleout', this.sampleout[i])
+               }
+             }
 
              var token = this.$f.makeHeaderObject()
              this.$axios.post('/api/bdmin/upload/desc', formdata, token)

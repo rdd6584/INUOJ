@@ -47,6 +47,11 @@ const routes = [
     component: () => import('../views/status.vue')
   },
   {
+    path: '/submit/:num',
+    // beforeEnter: (to, from, next) => { forUsers(next) },
+    component: () => import('../views/submit.vue')
+  },
+  {
     path: '/sup/list',
     beforeEnter: (to, from, next) => { forUsers(next) },
     component: () => import('../views/sup/list.vue'),
@@ -58,7 +63,7 @@ const routes = [
   },
   {
     path: '/test',
-    // component: () => import('../views/sup/table.vue')
+    component: () => import('../semiViews/codeEditor.vue')
   },
   {
     path: '/test2',

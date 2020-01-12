@@ -1,12 +1,13 @@
 <script>
 import axios from 'axios'
+
   export default{
     data: () => ({
-
+      userId: ""
     }),
     methods: {
       isOnlyNum(st) {
-        for (i of st)
+        for (var i of st)
           if (i < '0' || i > '9') return false
         return true
       },
@@ -15,18 +16,33 @@ import axios from 'axios'
         return token
       },
       async getUserValid() {
+        return this.decodeToken()
+
         var token = this.getToken()
-        if (token == null) return null
+        if (token == null) {
+          this.userId = ""
+          return null
+        }
 
         var parse = this.decodeToken()
         if (this.getUnixTime() > parse.exp - 5) {
           return axios.get('/api/refresh', this.makeHeaderObject()).then(
             res => {
             localStorage.setItem('token', res.data.token)
-            return this.decodeToken()
-          }).catch(err => {return null})
+
+            var parse = this.decodeToken()
+            this.userId = parse.id
+
+            return parse
+          }).catch(err => {
+            this.userId = ""
+            return null}
+          )
         }
-        else return parse
+        else {
+          this.userId = parse.id
+          return parse
+        }
       },
       getToken() {
         return localStorage.getItem('token')

@@ -3,6 +3,7 @@
     <v-data-table
       :headers="headers"
       :items="desserts"
+      :items-per-page="15"
       class="elevation-1"
     >
       <template v-slot:top>
@@ -89,38 +90,29 @@
       dialog: false,
       edial: false,
       headers: [
-        { text: '관리번호', value: 'ori_no', sortable: false, divider: true },
-        { text: '등록번호', value: 'prob_no', sortable:false, divider: true },
-        { text: '제목', value: 'title', sortable: false, divider: true },
-        { text: '편집', value: 'action', sortable: false, divider: true },
+        { text: '관리번호', value: 'ori_no', sortable: false, divider: true, width: "10%" },
+        { text: '등록번호', value: 'prob_no', sortable:false, divider: true, width: "10%" },
+        { text: '제목', value: 'title', sortable: false, divider: true, width: "50%" },
+        { text: '편집', value: 'action', sortable: false, divider: true, width: "30%" },
       ],
       desserts: [],
       editedIndex: -1,
       defaultItem: {
         ori_no: 0,
-        prob_no: "",
+        prob_no: 0,
         title: "",
         stat: 0,
       },
       sel: 0,
       tsel: 0,
     }),
-    async created () {
-      this.$f.getUserValid().then(
-        res => {
-          if (res === null) {
-            this.$router.push({path : '/login'})
-            return
-          }
-          this.$axios.get("/api/bdmin/list?id=" + res.id, this.$f.makeHeaderObject())
-          .then(re => {
-            if (re.data.problems === null) return
-            this.desserts = re.data.problems
-          })
-          .catch(err => {
-            this.$f.malert()
-          })
-        })
+    created () {
+      this.$axios.get("/api/bdmin/list?id=" + this.$f.decodeToken().id, this.$f.makeHeaderObject())
+      .then(re => {
+        if (re.data.problems === null) return
+        this.desserts = re.data.problems
+      })
+      .catch(err => { this.$f.malert() })
     },
     methods: {
       del(item) {
