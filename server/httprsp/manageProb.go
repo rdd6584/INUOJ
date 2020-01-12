@@ -76,7 +76,7 @@ func uploadDesc(c *gin.Context) {
 		return
 	}
 	if len(pb.SampleIn) != len(pb.SampleOut) {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "in, out not match"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "in, out dif"})
 		return
 	}
 
