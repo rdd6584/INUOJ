@@ -23,7 +23,7 @@ export default{
           return
         }
         this.$axios.post('/api/problem/submit', {
-          code: this.$refs.edior.code,
+          code: this.$refs.editor.code,
           lang: this.$store.state.lang.indexOf(this.$refs.editor.choice),
           id: this.$f.userId,
           prob_no: this.$f.params.num
