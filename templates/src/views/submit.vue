@@ -26,7 +26,7 @@ export default{
           code: this.$refs.editor.code,
           lang: this.$store.state.lang.indexOf(this.$refs.editor.choice),
           id: this.$f.userId,
-          prob_no: this.$f.params.num
+          prob_no: this.$route.params.num
         }, this.$f.makeHeaderObject())
         .then(res => {
           this.$router.push({path:'/status?prob_no=' + this.$f.params.num})
