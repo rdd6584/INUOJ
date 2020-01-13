@@ -40,7 +40,7 @@
         </v-col>
         <v-col class="pt-4 pl-6" cols="1">
           <v-btn
-          @click="sendQuery()"
+          @click="search()"
           color="success"
           >검색</v-btn>
         </v-col>
@@ -104,26 +104,49 @@ export default{
       if (ret.length == 0) ret = "0"
       return ret
     },
-
-    async sendQuery() {
-      var req = this.$f.makeHeaderObject()
-      req['params'] = {
-        prob_no: this.modifyProbNo(),
-        id: this.id,
-        lang: this.$store.state.langOrd[this.lang],
-        result: this.$store.state.resultOrd[this.result],
-        page: this.page,
-      }
-     this.$axios.get('/api/status', req)
-      .then(res => {
-          this.data_num = res.data.data_num
-          if (res.data.datas) this.datas = res.data.datas
-          else this.datas = []
-          this.modifyDatas()
-        }).catch(err => {
-          // alert("문제 불러오기 오류")
-        })
+    async makeQuery() {
+      return await this.$f.getUserValid().
+      then(res => {
+        if (res === null) {
+          this.$router.push('/login')
+          return null
+        }
+        var req = {
+          prob_no: this.modifyProbNo(),
+          id: this.id,
+          lang: this.$store.state.langOrd[this.lang],
+          result: this.$store.state.resultOrd[this.result],
+          page: this.page,
+        }
+        return req
+      })
     },
-  },
-}
+    async search() {
+      await this.makeQuery()
+      .then(re => {
+        if (re === null) return
+        this.$router.push({path:'/status', query:re})
+      })
+    },
+    async sendQuery() {
+      await this.makeQuery()
+      .then(re => {
+        if (re === null) return
+
+        var req = this.$f.makeHeaderObject()
+        req['params'] = re
+
+        this.$axios.get('/api/status', req)
+         .then(res => {
+             this.data_num = res.data.data_num
+             if (res.data.datas) this.datas = res.data.datas
+             else this.datas = []
+             this.modifyDatas()
+           }).catch(err => {
+             // alert("문제 불러오기 오류")
+           })
+       })
+     }
+   }
+ }
 </script>

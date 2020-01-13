@@ -4,37 +4,35 @@
       :headers="headers"
       :items="desserts"
       :items-per-page="15"
+      hide-default-footer
       class="elevation-1"
     >
       <template v-slot:top>
-        <v-toolbar flat dark color="gray">
+        <v-toolbar flat dark color="blue">
           <v-spacer></v-spacer>
-          <v-col cols="2">
-            <v-text-field class="pt-6 mt-1" outlined dense placeholder="검색"></v-text-field>
+          <v-col class="pr-0 pl-5" cols="2">
+            <v-text-field
+              v-model="title"
+              background-color="rgb(250, 252, 255)"
+              light
+              class="pt-6 mt-1"
+              outlined
+              dense
+              placeholder="검색">    
+            </v-text-field>
           </v-col>
-          <v-btn color="blue">icon</v-btn>
+          <v-btn icon>
+            <i class="fas fa-search"></i>
+          </v-btn>
         </v-toolbar>
       </template>
 
-      <template v-slot:item.action="{ item }">
-        <v-icon
-          small
-          class="mr-2"
-          @click="toDetail(item.ori_no)"
-        >detail
-        </v-icon>
-        <v-icon
-          small
-          class="mr-2"
-          @click="editItem(item)"
-        >status
-        </v-icon>
-        <v-icon
-          small
-          @click="del(item)"
-        >delete
-        </v-icon>
+      <template v-slot:item.title="{ item }">
+        <font v-if="item.result==0" color="black">{{item.title}}</font>
+        <font v-else-if="item.result==1" color="success">{{item.title}}</font>
+        <font v-else color="red">{{item.title}}</font>
       </template>
+
       <template v-slot:no-data>등록된 문제가 없습니다</template>
     </v-data-table>
   </v-container>
@@ -44,89 +42,60 @@
 <script>
   export default {
     data: () => ({
-      dialog: false,
-      edial: false,
+      title: "",
+      page: 1,
       headers: [
-        { text: '관리번호', value: 'ori_no', sortable: false, divider: true, width: "10%" },
-        { text: '등록번호', value: 'prob_no', sortable:false, divider: true, width: "10%" },
-        { text: '제목', value: 'title', sortable: false, divider: true, width: "50%" },
-        { text: '편집', value: 'action', sortable: false, divider: true, width: "30%" },
+        { text: '문제 번호', value: 'prob_no', divider: true, width: "10%" },
+        { text: '제목', value: 'title', divider: true, width: "70%" },
+        { text: '맞은 사람', value: 'accept', divider: true, width: "10%" },
+        { text: '시도한 사람', value: 'attempt', divider: true, width: "10%" },
       ],
       desserts: [],
-      editedIndex: -1,
-      defaultItem: {
-        ori_no: 0,
-        prob_no: 0,
-        title: "",
-        stat: 0,
-      },
-      sel: 0,
-      tsel: 0,
     }),
     created () {
-      this.$axios.get("/api/bdmin/list?id=" + this.$f.decodeToken().id, this.$f.makeHeaderObject())
-      .then(re => {
-        if (re.data.problems === null) return
-        this.desserts = re.data.problems
-      })
-      .catch(err => { this.$f.malert() })
+      this.desserts.push({prob_no:1001, title:"다영이 바보", accept:20, attempt:50, stat:0, result:0})
+      if (typeof this.$route.query.title !== 'undefined') this.title = this.$route.query.title
+      if (typeof this.$route.query.page !== 'undefined') this.page = this.$route.query.page
+      // this.sendQuery()
     },
     methods: {
-      del(item) {
-
-      },
-      toDetail(item) { this.$router.push("/sup/detail/" + item) },
-      editItem (item) {
-        this.editedIndex = this.desserts.indexOf(item)
-        this.sel = item.stat
-        this.tsel = item.stat
-        this.edial = true
-      },
-      async save () {
-        var flag = false
-        if (this.tsel === 0 || this.sel == 2) {flag = confirm("문제를 공개하기 전에 다시 한번 생각해보세요. "
-        + "지문은 오해의 소지가 없나요? 데이터는 정확한가요? "
-        + "공식 풀이는 증명했나요? 최소 2인에게 검수를 받으셨나요?")
-          if (flag == true) flag = confirm("문제를 공개하면 데이터를 변경할 수 없습니다. "
-          + " 문제가 잘못된 경우 사이트와 이용자에게 심각하게"
-          + " 부정적인 영향을 끼칠 수 있다는 것에 유의하셨습니까?")
-        }
-        else { flag = confirm("정말로 문제 공개상태를 변경하시겠습니까?") }
-        if (flag == false) return
-
-        this.desserts[this.editedIndex].stat = this.sel
-
-        await this.$f.getUserValid()
-        .then(res => {
-          if (res == null) {
-            this.$router.push("/login")
-            return
+      async makeQuery() {
+        return await this.$f.getUserValid()
+        .then(re => {
+          if (re === null) {
+            this.$router.push('/login')
+            return null
           }
-          this.$axios.post("/api/bdmin/update/stat",
-            { ori_no : this.desserts[this.editedIndex].ori_no,
-            fromstat : this.tsel,
-            tostat : this.sel }
-          , this.$f.makeHeaderObject())
-          .catch(err => {this.$f.malert()})
-        })
-        this.edial = false
-      },
-      async create () {
-        await this.$f.getUserValid().then(
-          res => {
-            if (res === null) {
-              this.$router.push({path:"/login"})
-              return
-            }
 
-          this.$axios.get("/api/bdmin/new?id=" + res.id, this.$f.makeHeaderObject())
-            .then(re => {
-              this.defaultItem.ori_no = re.data.ori_no
-              this.desserts.unshift(Object.assign({}, this.defaultItem))
-            })
-            .catch(err => {this.$f.malert()})
+          var req = {
+            title: this.title,
+            page: this.page,
+            id: this.$f.userId
+          }
+          return req
+        })
+
+      },
+      async search() {
+        await this.makeQuery()
+        .then(re => {
+          if (re === null) return
+          this.$router.push({path:"/list", query: re})
+        })
+      },
+      async sendQuery() {
+        await this.makeQuery()
+        .then(re => {
+          if (re === null) return
+
+          var req = this.$f.makeHeaderObject()
+          req['params'] = re
+          this.$axios.get('/api/list', req)
+          .then(res => {
+            if (res.data.problems) this.desserts = res.data.problems
+            else this.desserts = []
           })
-        this.dialog = false
+        })
       },
     },
   }

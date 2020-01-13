@@ -72,8 +72,9 @@ const routes = [
     component: () => import('../views/sup/detail.vue'),
   },
   {
-    path: '/test',
-    component: () => import('../semiViews/codeEditor.vue')
+    path: '/submit/1',
+    name: 'test',
+    component: () => import('../views/submit.vue')
   },
   {
     path: '/test2',
