@@ -26,6 +26,7 @@ func ResRouter(e *gin.Engine) {
 		app1.GET("/status", getStatus)                       // 전체 데이터 개수, 제출기록
 		app1.GET("/logout", authAll.LogoutHandler)           //***한번 보기
 		app1.GET("/problem/detail/:prob_no", viewProbDetail) // 문제 디테일
+		app1.POST("/problem/submit", probSubmit)
 	}
 
 	// *************** auth 1 && only me ***************

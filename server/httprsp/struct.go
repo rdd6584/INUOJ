@@ -56,7 +56,14 @@ type submitInfo struct {
 	SubmTime string `json:"subm_time"`
 }
 
-type submitPage struct {
+type newSubmit struct {
+	ID       string `json:"id" binding:"required"`
+	ProbNo   int    `json:"prob_no" binding:"required"`
+	Lang     int    `json:"lang" binding:"required"`
+	UserCode string `json:"usercode" binding:"required"`
+}
+
+type submitPage struct { // status page
 	DataNum int          `json:"data_num"`
 	Datas   []submitInfo `json:"datas"`
 }

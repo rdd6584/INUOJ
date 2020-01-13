@@ -7,6 +7,16 @@ import (
 	"net/smtp"
 )
 
+func fileType(lang int) string {
+	switch lang {
+	case Cpp:
+		return ".cpp"
+	case C:
+		return ".c"
+	}
+	return ""
+}
+
 func isBdmin(userID string) bool {
 	var res int
 	err := Udb.QueryRow("select admin from users where id=?", userID).Scan(&res)

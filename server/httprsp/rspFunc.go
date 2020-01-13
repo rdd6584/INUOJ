@@ -2,6 +2,7 @@ package httprsp
 
 import (
 	"database/sql"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"regexp"
@@ -13,6 +14,41 @@ import (
 
 var Udb *sql.DB
 
+func probSubmit(c *gin.Context) {
+	var json newSubmit
+	var err error
+	if err = c.ShouldBind(&json); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	tx, err := Udb.Begin()
+	panicErr(err)
+	defer tx.Rollback()
+
+	code := []byte(json.UserCode)
+	_, err = tx.Exec("insert into submits(id, prob_no, lang, codelen) values(?,?,?,?)",
+		json.ID, json.ProbNo, json.Lang, len(code))
+	panicErr(err)
+
+	var res, oriNo int
+	err = tx.QueryRow("select last_insert_id()").Scan(&res)
+	panicErr(err)
+
+	err = tx.QueryRow("select ori_no from probs where prob_no=?", json.ProbNo).Scan(&oriNo)
+	panicErr(err)
+
+	_, err = tx.Exec("insert into judge_q values(?,?)", res, oriNo)
+	panicErr(err)
+
+	err = ioutil.WriteFile(codeDir+strconv.Itoa(res)+fileType(json.Lang), code, 0644)
+	printErr(err)
+
+	err = tx.Commit()
+	panicErr(err)
+
+	c.String(http.StatusOK, "")
+}
+
 func editUserInfo(c *gin.Context) {
 	var json editInfo
 	var err error
@@ -20,7 +56,6 @@ func editUserInfo(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	log.Println(json)
 	if !isCorrectInfo(json.ID, json.Password) {
 		c.JSON(http.StatusBadRequest, gin.H{"status": "fail"})
 		return
