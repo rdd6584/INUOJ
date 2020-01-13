@@ -2,11 +2,11 @@
 /server/bin/
 /server/src/
 /server/pkg/
-/server/httprsp/publy.go
 /templates/.DS_Store
 /templates/node_modules
 /templates/dist
 /public
+publy.go
 
 # local env files
 .env.local

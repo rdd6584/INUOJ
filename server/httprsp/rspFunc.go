@@ -37,7 +37,7 @@ func probSubmit(c *gin.Context) {
 	err = tx.QueryRow("select ori_no from probs where prob_no=?", json.ProbNo).Scan(&oriNo)
 	panicErr(err)
 
-	_, err = tx.Exec("insert into judge_q values(?,?)", res, oriNo)
+	_, err = tx.Exec("insert into judge_q values(?,?,?)", res, oriNo, json.Lang)
 	panicErr(err)
 
 	err = ioutil.WriteFile(codeDir+strconv.Itoa(res)+fileType(json.Lang), code, 0644)
