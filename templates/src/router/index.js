@@ -72,9 +72,9 @@ const routes = [
     component: () => import('../views/sup/detail.vue'),
   },
   {
-    path: '/submit/1',
+    path: '/status',
     name: 'test',
-    component: () => import('../views/submit.vue')
+    component: () => import('../views/status.vue')
   },
   {
     path: '/test2',

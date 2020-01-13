@@ -52,8 +52,25 @@
     :items="datas"
     :items-per-page="15"
     hide-default-footer
-    class="elevation-2"
-  ></v-data-table>
+    class="elevation-2">
+
+    <template v-slot:item.result="{ item }">
+      <font v-if="$store.state.resultOrd[item.result]==0" color="black">{{item.result}}</font>
+      <font v-else-if="$store.state.resultOrd[item.result]==1" color="success">{{item.result}}</font>
+      <font v-else color="red">{{item.result}}</font>
+    </template>
+
+    <template v-slot:item.memory="{ item }">
+      <font v-if="item.result=='채점중'"></font>
+      <font v-else>{{item.memory}}</font>
+    </template>
+
+    <template v-slot:item.run_time="{ item }">
+      <font v-if="item.result=='채점중'"></font>
+      <font v-else>{{item.run_time}}</font>
+    </template>
+
+    </v-data-table>
   </v-container>
 </template>
 
@@ -91,7 +108,10 @@ export default{
   methods: {
     modifyDatas() {
       for (var i of this.datas) {
-        if (typeof i.result == 'number') i.result = this.$store.state.result[i.result]
+        if (typeof i.result == 'number') {
+          if (i.result === 0) i.result = "채점중"
+          else i.result = this.$store.state.result[i.result]
+        }
         if (typeof i.lang == 'number') i.lang = this.$store.state.lang[i.lang]
       }
     },

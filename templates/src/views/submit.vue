@@ -8,7 +8,6 @@
 </template>
 
 <script>
-// POST /api/problem/submit, body : { prob_no, code, id, lang }
 import codeEditor from '../semiViews/codeEditor.vue'
 export default{
   components: {
