@@ -41,7 +41,7 @@ func probSubmit(c *gin.Context) {
 	panicErr(err)
 
 	err = ioutil.WriteFile(codeDir+strconv.Itoa(res)+fileType(json.Lang), code, 0644)
-	printErr(err)
+	panicErr(err)
 
 	err = tx.Commit()
 	panicErr(err)
