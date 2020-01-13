@@ -29,7 +29,7 @@ func changeStat(c *gin.Context) {
 		err = Udb.QueryRow("select max(prob_no) from probs where ori_no=?", json.OriNo).Scan(&probNo)
 		printErr(err)
 
-		_, err = Udb.Exec("update probs set prob_no=? where ori_no=?", probNo, json.OriNo)
+		_, err = Udb.Exec("update probs set prob_no=? where ori_no=?", probNo+1, json.OriNo)
 		printErr(err)
 	}
 	c.String(http.StatusOK, "")

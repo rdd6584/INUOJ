@@ -60,7 +60,7 @@ type newSubmit struct {
 	ID       string `json:"id" binding:"required"`
 	ProbNo   int    `json:"prob_no" binding:"required"`
 	Lang     int    `json:"lang" binding:"required"`
-	UserCode string `json:"usercode" binding:"required"`
+	UserCode string `json:"code" binding:"required"`
 }
 
 type submitPage struct { // status page
