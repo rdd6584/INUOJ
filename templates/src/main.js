@@ -7,7 +7,6 @@ import sha256 from 'js-sha256'
 import vuetify from './plugins/vuetify'
 import f from './func.vue'
 
-
 Vue.prototype.$axios = axios
 Vue.prototype.$sha256 = sha256
 Vue.config.productionTip = false

@@ -17,6 +17,8 @@
         <v-btn v-if="$f.userId === ''" router :to="{path : '/register'}" text>회원가입</v-btn>
         <v-btn v-if="$f.userId === ''" router :to="{path : '/login'}" text>로그인</v-btn>
         <v-btn v-if="$f.userId !== ''" @click="logout()" text>로그아웃</v-btn>
+
+        <v-btn router :to="{path : '/list'}" text>문제 목록</v-btn>
         <v-btn v-if="$f.userId !== ''" router :to="{path:'/status'}" text>채점 현황</v-btn>
         <v-btn v-if="$f.userId !== ''" router :to="{path : '/sup/list'}" text>문제 관리</v-btn>
         <v-btn router :to="{path: '/submit/1'}" text>테스트</v-btn>

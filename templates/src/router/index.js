@@ -48,8 +48,18 @@ const routes = [
   },
   {
     path: '/submit/:num',
-    // beforeEnter: (to, from, next) => { forUsers(next) },
+    beforeEnter: (to, from, next) => { forUsers(next) },
     component: () => import('../views/submit.vue')
+  },
+  {
+    path: '/list',
+    // beforeEnter: (to, from, next) => { forUsers(next) },
+    component: () => import('../views/list.vue')
+  },
+  {
+    path: '/problem/:num',
+    // beforeEnter: (to, from, next) => { forUsers(next) },
+    component: () => import('../views/problem.vue')
   },
   {
     path: '/sup/list',

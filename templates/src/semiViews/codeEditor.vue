@@ -1,5 +1,5 @@
 <template>
-  <div class="ma-0 pa-0">
+  <div class="ma-0 pb-12">
     <v-row class="ma-0 pa-0">
       <v-btn large class="mt-4 ml-4" color="success" v-if="submit">제출</v-btn>
       <v-spacer></v-spacer>
@@ -9,13 +9,14 @@
             outlined
             v-model="choice"
             hide-details
-            :items="$store.state.lang"
+            :items="$store.state.slang"
         ></v-select>
       </v-card>
       </v-col>
     </v-row>
     <v-card elevation="2">
       <codemirror
+        ref="mirror"
         v-model="code"
         :options="myOption"
       ></codemirror>
@@ -57,5 +58,11 @@ export default{
      },
      choice: "C++",
    }),
+   watch: {
+     choice(val) {
+       this.myOption.mode = this.$store.state.langCodeMirror[this.$store.state.slang.indexOf(val)];
+       this.$refs.mirror.editor.setOption('mode', this.myOption.mode)
+     },
+   },
 }
 </script>
