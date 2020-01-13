@@ -26,7 +26,7 @@ func changeStat(c *gin.Context) {
 		moveFile(strconv.Itoa(json.OriNo))
 		// 트랜젝션 ?
 		var probNo int
-		err = Udb.QueryRow("select max(prob_no) from probs where ori_no=?", json.OriNo).Scan(&probNo)
+		err = Udb.QueryRow("select max(prob_no) from probs").Scan(&probNo)
 		printErr(err)
 
 		_, err = Udb.Exec("update probs set prob_no=? where ori_no=?", probNo+1, json.OriNo)
