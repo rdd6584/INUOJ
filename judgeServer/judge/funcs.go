@@ -74,7 +74,11 @@ func run(oriNo int, lang int, submNo int) {
 
 		if data.Result != 0 {
 			if data.Result == 4 {
-				setStatus(submNo, RE) // 런타임에러
+				if data.Signal == 25 {
+					setStatus(submNo, WA) // 출력 초과
+				} else {
+					setStatus(submNo, RE) // 런타임에러
+				}
 			} else if data.Result == 1 || data.Result == 2 {
 				setStatus(submNo, TLE) // 시간초과
 			} else if data.Result == 3 {

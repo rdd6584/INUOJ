@@ -36,13 +36,14 @@ func isCorrectInfo(userID string, userPass string) bool {
 	return (dbPass == userPass)
 }
 
-func userAuthValid(userID string) bool {
-	var res bool
-	err := Udb.QueryRow("select auth from users where id=?", userID).Scan(&res)
+func userAuthValid(userID string) (bool, int) {
+	var auth bool
+	var admin int
+	err := Udb.QueryRow("select auth, admin from users where id=?", userID).Scan(&auth, &admin)
 	if err != nil {
 		log.Println(err)
 	}
-	return res
+	return auth, admin
 }
 
 func editPass(userID string, newPass string) {
