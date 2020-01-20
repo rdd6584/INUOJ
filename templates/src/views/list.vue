@@ -53,7 +53,6 @@
       desserts: [],
     }),
     created () {
-      this.desserts.push({prob_no:1001, title:"다영이 바보", accept:20, attempt:50, stat:0, result:0})
       if (typeof this.$route.query.title !== 'undefined') this.title = this.$route.query.title
       if (typeof this.$route.query.page !== 'undefined') this.page = this.$route.query.page
       // this.sendQuery()

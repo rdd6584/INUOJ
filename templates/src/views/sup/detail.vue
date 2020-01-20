@@ -6,7 +6,7 @@
             <v-text-field
               class="pt-3 px-3"
               label="문제 제목"
-              :value="title"
+              v-model="title"
               hide-details
               placeholder=" "
               outlined
@@ -17,7 +17,7 @@
               <v-text-field
                 class="px-3 ml-3"
                 label="시간 제한"
-                :value="t_limit"
+                v-model="t_limit"
                 suffix="ms"
                 dense
                 outlined
@@ -27,7 +27,7 @@
               <v-text-field
                 class="mr-3"
                 label="메모리 제한"
-                :value="m_limit"
+                v-model="m_limit"
                 suffix="mb"
                 dense
                 outlined
@@ -159,7 +159,7 @@ import textEditor from "../../semiViews/textEditor.vue"
        selected: [],
      }),
      async created() {
-       this.ori_no = this.$route.params.ori_no
+       this.ori_no = Number(this.$route.params.ori_no)
        this.$axios.get("/api/bdmin/detail/" + this.ori_no, this.$f.makeHeaderObject())
        .then(res => {
          this.t_limit = res.data.t_limit + ""

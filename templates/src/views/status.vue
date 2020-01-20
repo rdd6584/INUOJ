@@ -61,12 +61,12 @@
     </template>
 
     <template v-slot:item.memory="{ item }">
-      <font v-if="item.result=='채점중'"></font>
-      <font v-else>{{item.memory}}</font>
+      <font v-if="$store.state.resultOrd[item.result]==1">{{item.memory}}</font>
+      <font v-else></font>
     </template>
 
     <template v-slot:item.run_time="{ item }">
-      <font v-if="item.result=='채점중'"></font>
+      <font v-if="$store.state.resultOrd[item.result]==1"></font>
       <font v-else>{{item.run_time}}</font>
     </template>
 
