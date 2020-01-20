@@ -11,7 +11,6 @@ import (
 )
 
 var Udb *sql.DB
-var Ch chan struct{}
 
 func ReadQueue() {
 	result, err := Udb.Query("select * from judge_q")
@@ -29,7 +28,6 @@ func ReadQueue() {
 		run(oriNo, lang, submNo)
 		_, _ = Udb.Exec("delete from judge_q where subm_no=?", submNo)
 	}
-	close(Ch)
 }
 
 func setStatus(submNo int, args ...int) {
@@ -48,7 +46,7 @@ func run(oriNo int, lang int, submNo int) {
 	printErr(err)
 
 	// stat에 따라 경로 설정해야함
-	inputDir := dockerDir + pubDir + strconv.Itoa(oriNo)
+	inputDir := dockerDir + pubDir + strconv.Itoa(oriNo) + inDir
 	dataDir := "../Judger" + pubDir + strconv.Itoa(oriNo) + outDir
 
 	files, err := ioutil.ReadDir("../Judger/problems/public/" + strconv.Itoa(oriNo) + inDir)
@@ -69,17 +67,19 @@ func run(oriNo int, lang int, submNo int) {
 		stdout, err := c.CombinedOutput()
 		printErr(err)
 
-		var data map[string]interface{}
+		var data judgeResult
 		json.Unmarshal(stdout, &data)
 
-		if data["result"] != 0 {
-			if data["result"] == 4 {
+		//log.Println(data)
+
+		if data.Result != 0 {
+			if data.Result == 4 {
 				setStatus(submNo, RE) // 런타임에러
-			} else if data["result"] == 1 || data["result"] == 2 {
+			} else if data.Result == 1 || data.Result == 2 {
 				setStatus(submNo, TLE) // 시간초과
-			} else if data["result"] == 3 {
+			} else if data.Result == 3 {
 				setStatus(submNo, MLE) // 메모리초과
-			} else if data["result"] == 5 {
+			} else if data.Result == 5 {
 				setStatus(submNo, SERVER_ERR) // 서버 에러
 			}
 			return
@@ -89,9 +89,10 @@ func run(oriNo int, lang int, submNo int) {
 		userOutput, _ := ioutil.ReadFile("../Judger/output.txt")
 		solOutput, _ := ioutil.ReadFile(dataDir + outfile)
 
-		userOutputArr := strings.Split(strings.TrimRight(string(userOutput), " "), "\n")
-		solOutputArr := strings.Split(strings.TrimRight(string(solOutput), " "), "\n")
+		userOutputArr := strings.Split(strings.TrimRight(string(userOutput), " \n"), "\n")
+		solOutputArr := strings.Split(strings.TrimRight(string(solOutput), " \n"), "\n")
 
+		//log.Println(file.Name(), userOutputArr[0], solOutputArr[0])
 		if len(userOutputArr) != len(solOutputArr) {
 			setStatus(submNo, WA)
 			return
@@ -102,9 +103,9 @@ func run(oriNo int, lang int, submNo int) {
 				return
 			}
 		}
-		maxTime = getMax(data["real_time"].(int), maxTime)
-		maxTime = getMax(data["cpu_time"].(int), maxTime)
-		maxMem = getMax(data["memory"].(int), maxMem)
+		maxTime = getMax(data.RealTime, maxTime)
+		maxTime = getMax(data.CPUTime, maxTime)
+		maxMem = getMax(data.Memory, maxMem)
 	}
 	setStatus(submNo, AC, maxTime, maxMem)
 }
@@ -130,8 +131,7 @@ func compile(lang int, submNo string) bool {
 }
 
 func toOut(name string) string {
-	len := len(name)
-	return name[0:len-2] + "out"
+	return name[0:len(name)-2] + "out"
 }
 
 func fileType(lang int) string {
@@ -147,9 +147,8 @@ func fileType(lang int) string {
 func getMax(a int, b int) int {
 	if a < b {
 		return b
-	} else {
-		return a
 	}
+	return a
 }
 
 func printErr(e error) {
