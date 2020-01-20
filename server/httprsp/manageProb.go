@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 	"strconv"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 )
@@ -87,8 +88,12 @@ func uploadDesc(c *gin.Context) {
 		return
 	}
 
+	_, err = Udb.Exec("update probs set t_limit=?, m_limit=?, title=? where ori_no=?",
+		pb.TimeLimit, pb.MemoryLimit, pb.Title, pb.OriNo)
+	printErr(err)
+
 	var dir string
-	if pb.ProbNo == 0 { // 동작 확인
+	if pb.Stat == 0 {
 		dir = privDir + strconv.Itoa(pb.OriNo)
 	} else {
 		dir = pubDir + strconv.Itoa(pb.OriNo)
@@ -98,12 +103,11 @@ func uploadDesc(c *gin.Context) {
 		printErr(err)
 	}
 
-	dir += sampleDir
 	initSample(dir)
 	for i := len(pb.SampleIn) - 1; i >= 0; i-- {
-		err = ioutil.WriteFile(dir+strconv.Itoa(i+1)+".in", []byte(pb.SampleIn[i]), 0644)
+		err = ioutil.WriteFile(dir+inDir+"sample"+strconv.Itoa(i+1)+".in", []byte(pb.SampleIn[i]), 0644)
 		printErr(err)
-		err = ioutil.WriteFile(dir+strconv.Itoa(i+1)+".out", []byte(pb.SampleOut[i]), 0644)
+		err = ioutil.WriteFile(dir+outDir+"sample"+strconv.Itoa(i+1)+".out", []byte(pb.SampleOut[i]), 0644)
 		printErr(err)
 	}
 }
@@ -138,10 +142,18 @@ func discardData(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	dir := privDir + strconv.Itoa(files.OriNo) + dataDir + "/"
+	var stat int
+	err := Udb.QueryRow("select stat from probs where ori_no=?", files.OriNo).Scan(&stat)
+	printErr(err)
+	if stat != 0 {
+		c.String(http.StatusForbidden, "cannot discard data")
+		return
+	}
+
+	dir := privDir + strconv.Itoa(files.OriNo)
 	for _, file := range files.FileList {
-		_ = os.Remove(dir + file + ".in")
-		_ = os.Remove(dir + file + ".out")
+		_ = os.Remove(dir + inDir + file + ".in")
+		_ = os.Remove(dir + outDir + file + ".out")
 	}
 	c.String(http.StatusOK, "")
 }
@@ -159,6 +171,18 @@ func viewProbDetail(c *gin.Context) {
 	} else {
 		qry += "ori_no=" + ori
 		pNum, err = strconv.Atoi(ori)
+
+		// stat에 따라
+		files, err := ioutil.ReadDir(pubDir + ori + inDir)
+		printErr(err)
+
+		for _, file := range files {
+			fileName := file.Name()
+			if strings.HasPrefix(fileName, "sample") {
+				continue
+			}
+			pb.Datas = append(pb.Datas, fileName[0:len(fileName)-3])
+		}
 	}
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -173,22 +197,21 @@ func viewProbDetail(c *gin.Context) {
 		return
 	}
 
-	dir := privDir + strconv.Itoa(pNum)
+	dir := pubDir + strconv.Itoa(pNum)
 	var file []byte
 	for i := 0; i < len(descName); i++ {
 		file, err = ioutil.ReadFile(dir + descName[i])
 		pb.Description = append(pb.Description, string(file))
 	}
 
-	dir += sampleDir
 	for i := 1; ; i++ {
-		file, err = ioutil.ReadFile(dir + strconv.Itoa(i) + ".in")
+		file, err = ioutil.ReadFile(dir + inDir + "sample" + strconv.Itoa(i) + ".in")
 		if err != nil {
 			break
 		}
 		pb.SampleIn = append(pb.SampleIn, string(file))
 
-		file, err = ioutil.ReadFile(dir + strconv.Itoa(i) + ".out")
+		file, err = ioutil.ReadFile(dir + outDir + "sample" + strconv.Itoa(i) + ".out")
 		if err != nil {
 			log.Println(err)
 			break
@@ -202,11 +225,11 @@ func viewProbDetail(c *gin.Context) {
 func initSample(dir string) {
 	var err error
 	for i := 1; ; i++ {
-		err = os.Remove(dir + strconv.Itoa(i) + ".in")
+		err = os.Remove(dir + inDir + "sample" + strconv.Itoa(i) + ".in")
 		if err != nil {
 			break
 		}
-		_ = os.Remove(dir + strconv.Itoa(i) + ".out")
+		_ = os.Remove(dir + outDir + "sample" + strconv.Itoa(i) + ".out")
 	}
 }
 

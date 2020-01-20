@@ -83,6 +83,7 @@ type probDetail struct {
 	Description []string `json:"description" form:"description"` // 본문, 입력, 출력
 	SampleIn    []string `json:"samplein" form:"samplein"`
 	SampleOut   []string `json:"sampleout" form:"sampleout"`
+	Datas       []string `json:"datas"`
 }
 
 type probForList struct {

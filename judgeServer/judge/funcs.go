@@ -21,12 +21,12 @@ func ReadQueue() {
 			log.Println("queue : ", err)
 			break
 		}
+		_, _ = Udb.Exec("delete from judge_q where subm_no=?", submNo)
 		if !compile(lang, strconv.Itoa(submNo)) {
 			setStatus(submNo, CE) // 컴파일 에러
 			continue
 		}
 		run(oriNo, lang, submNo)
-		_, _ = Udb.Exec("delete from judge_q where subm_no=?", submNo)
 	}
 }
 
