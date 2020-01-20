@@ -8,7 +8,8 @@ const (
 )
 
 type user struct {
-	ID string `json:"id"`
+	ID    string `json:"id"`
+	Admin int    `json:"admin"`
 }
 
 type regiInfo struct {

@@ -33,6 +33,7 @@ func initJWT(jwtAuthorizator JwtAuthorizator) (authMiddleware *jwt.GinJWTMiddlew
 			if v, ok := data.(*user); ok {
 				return jwt.MapClaims{
 					identityKey: v.ID,
+					"admin":     v.Admin,
 				}
 			}
 			return jwt.MapClaims{}
@@ -52,9 +53,11 @@ func initJWT(jwtAuthorizator JwtAuthorizator) (authMiddleware *jwt.GinJWTMiddlew
 			password := loginVals.Password
 
 			if isCorrectInfo(userID, password) {
-				if userAuthValid(userID) {
+				auth, admin := userAuthValid(userID)
+				if auth {
 					return &user{
-						ID: userID,
+						ID:    userID,
+						Admin: admin,
 					}, nil
 				}
 				return nil, errEmailAuth

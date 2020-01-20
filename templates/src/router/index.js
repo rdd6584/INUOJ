@@ -43,12 +43,12 @@ const routes = [
   },
   {
     path: '/status',
-    beforeEnter: (to, from, next) => { forUsers(next) },
+    // beforeEnter: (to, from, next) => { forUsers(next) },
     component: () => import('../views/status.vue')
   },
   {
     path: '/submit/:num',
-    beforeEnter: (to, from, next) => { forUsers(next) },
+    // beforeEnter: (to, from, next) => { forUsers(next) },
     component: () => import('../views/submit.vue')
   },
   {
@@ -63,18 +63,18 @@ const routes = [
   },
   {
     path: '/sup/list',
-    beforeEnter: (to, from, next) => { forUsers(next) },
+    // beforeEnter: (to, from, next) => { forUsers(next) },
     component: () => import('../views/sup/list.vue'),
   },
   {
     path: '/sup/detail/:ori_no',
-    beforeEnter: (to, from, next) => { forUsers(next) },
+    // beforeEnter: (to, from, next) => { forUsers(next) },
     component: () => import('../views/sup/detail.vue'),
   },
   {
-    path: '/status',
+    path: '/problem/1',
     name: 'test',
-    component: () => import('../views/status.vue')
+    component: () => import('../views/problem.vue')
   },
   {
     path: '/test2',

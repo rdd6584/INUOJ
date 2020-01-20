@@ -16,8 +16,7 @@ import axios from 'axios'
         return token
       },
       async getUserValid() {
-        // return this.decodeToken()
-
+        return true
         var token = this.getToken()
         if (token == null) {
           this.userId = ""

@@ -119,10 +119,10 @@
             </v-row>
           </v-card>
 
-          <v-card v-if="datas.length != 0" class="mt-1">
+          <v-card v-if="datas.length != 0" class="mt-1 px-3">
             <v-row>
-              <v-col cols="2" v-for="i in datas">
-                <v-checkbox v-model="selected" :label="i" :value="i"></v-checkbox>
+              <v-col class="py-0" cols="2" v-for="i in datas">
+                <v-checkbox hide-details class="px-1 py-0" v-model="selected" :label="i" :value="i"></v-checkbox>
               </v-col>
             </v-row>
             <v-row justify="center">

@@ -21,6 +21,7 @@
         <v-btn router :to="{path : '/list'}" text>문제 목록</v-btn>
         <v-btn v-if="$f.userId !== ''" router :to="{path:'/status'}" text>채점 현황</v-btn>
         <v-btn v-if="$f.userId !== ''" router :to="{path : '/sup/list'}" text>문제 관리</v-btn>
+        <v-btn router :to="{path:'/problem/1'}" text>문제 테스트</v-btn>
         <v-btn router :to="{name:'test'}" text>테스트</v-btn>
       </v-row>
     </v-app-bar>

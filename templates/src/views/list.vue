@@ -18,7 +18,7 @@
               class="pt-6 mt-1"
               outlined
               dense
-              placeholder="검색">    
+              placeholder="검색">
             </v-text-field>
           </v-col>
           <v-btn icon>

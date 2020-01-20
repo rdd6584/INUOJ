@@ -3,7 +3,6 @@ package main
 import (
 	jg "INUOJ/judgeServer/judge"
 	"database/sql"
-	"fmt"
 	"log"
 	"time"
 
@@ -18,13 +17,9 @@ func main() {
 	}
 	defer jg.Udb.Close()
 
-	c := time.Tick(50 * time.Millisecond)
-	jg.Ch = make(chan struct{}, 0)
+	ticker := time.NewTicker(5 * time.Second)
 
-	for now := range c {
-		fmt.Println(now)
-		go jg.ReadQueue()
-		<-jg.Ch
+	for range ticker.C {
+		jg.ReadQueue()
 	}
-
 }
