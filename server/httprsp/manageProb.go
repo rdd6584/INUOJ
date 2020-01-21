@@ -99,12 +99,7 @@ func uploadDesc(c *gin.Context) {
 		pb.TimeLimit, pb.MemoryLimit, pb.Title, pb.OriNo)
 	printErr(err)
 
-	var dir string
-	if pb.Stat == 0 {
-		dir = privDir + strconv.Itoa(pb.OriNo)
-	} else {
-		dir = pubDir + strconv.Itoa(pb.OriNo)
-	}
+	dir := makeDir(pb.OriNo)
 	for i := 0; i < len(descName); i++ {
 		err = ioutil.WriteFile(dir+descName[i], []byte(pb.Description[i]), 0644)
 		printErr(err)
@@ -135,7 +130,7 @@ func uploadData(c *gin.Context) {
 		return
 	}
 
-	dir := privDir + strconv.Itoa(pb.OriNo)
+	dir := makeDir(pb.OriNo)
 	for i := len(pb.Input) - 1; i >= 0; i-- {
 		_ = c.SaveUploadedFile(pb.Input[i], dir+inDir+pb.Input[i].Filename)
 		_ = c.SaveUploadedFile(pb.Output[i], dir+outDir+pb.Output[i].Filename)
@@ -154,7 +149,7 @@ func discardData(c *gin.Context) {
 		return
 	}
 
-	dir := privDir + strconv.Itoa(files.OriNo)
+	dir := makeDir(files.OriNo)
 	for _, file := range files.FileList {
 		_ = os.Remove(dir + inDir + file + ".in")
 		_ = os.Remove(dir + outDir + file + ".out")
@@ -166,18 +161,29 @@ func viewProbDetail(c *gin.Context) {
 	var pb probDetail
 	var err error
 	var pNum int
-	qry := "select * from probs where "
+	qry := "select * from probs where ori_no=?"
 	ori := c.Param("ori_no")
 	prob := c.Param("prob_no")
-	if ori == "" {
-		qry += "prob_no=" + prob
-		pNum, err = strconv.Atoi(prob)
-	} else {
-		qry += "ori_no=" + ori
-		pNum, err = strconv.Atoi(ori)
 
-		// stat에 따라
-		files, err := ioutil.ReadDir(pubDir + ori + inDir)
+	var dir string
+	if ori == "" {
+		pNum, err = strconv.Atoi(prob)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+
+		Udb.QueryRow("select ori_no from probs where prob_no=?", prob).Scan(&pNum)
+		dir = makeDir(pNum)
+	} else {
+		pNum, err = strconv.Atoi(ori)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+
+		dir = makeDir(pNum)
+		files, err := ioutil.ReadDir(dir + inDir)
 		printErr(err)
 
 		for _, file := range files {
@@ -187,12 +193,8 @@ func viewProbDetail(c *gin.Context) {
 			}
 		}
 	}
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
 
-	err = Udb.QueryRow(qry).Scan(&pb.OriNo, &pb.ProbNo, &pb.TimeLimit,
+	err = Udb.QueryRow(qry, pNum).Scan(&pb.OriNo, &pb.ProbNo, &pb.TimeLimit,
 		&pb.MemoryLimit, &pb.Attempt, &pb.Accept, &pb.Owner, &pb.Title, &pb.Stat)
 	if err != nil {
 		log.Println(err)
@@ -200,7 +202,6 @@ func viewProbDetail(c *gin.Context) {
 		return
 	}
 
-	dir := pubDir + strconv.Itoa(pNum)
 	var file []byte
 	for i := 0; i < len(descName); i++ {
 		file, err = ioutil.ReadFile(dir + descName[i])
@@ -225,6 +226,13 @@ func viewProbDetail(c *gin.Context) {
 }
 
 // *******************************funcs
+func makeDir(oriNo int) string {
+	if isPrivate(oriNo) {
+		return privDir + strconv.Itoa(oriNo)
+	}
+	return pubDir + strconv.Itoa(oriNo)
+}
+
 func initSample(dir string) {
 	var err error
 	for i := 1; ; i++ {
