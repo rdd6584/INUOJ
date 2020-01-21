@@ -93,8 +93,8 @@ func run(oriNo int, lang int, submNo int) {
 		userOutput, _ := ioutil.ReadFile("../Judger/output.txt")
 		solOutput, _ := ioutil.ReadFile(dataDir + outfile)
 
-		userOutputArr := strings.Split(strings.TrimRight(string(userOutput), " \n"), "\n")
-		solOutputArr := strings.Split(strings.TrimRight(string(solOutput), " \n"), "\n")
+		userOutputArr := strings.Split(string(userOutput), "\n")
+		solOutputArr := strings.Split(string(solOutput), "\n")
 
 		//log.Println(file.Name(), userOutputArr[0], solOutputArr[0])
 		if len(userOutputArr) != len(solOutputArr) {
@@ -102,7 +102,7 @@ func run(oriNo int, lang int, submNo int) {
 			return
 		}
 		for i := len(userOutputArr) - 1; i >= 0; i-- {
-			if userOutputArr[i] != solOutputArr[i] {
+			if strings.TrimRight(userOutputArr[i], " ") != strings.TrimRight(solOutputArr[i], " ") {
 				setStatus(submNo, WA)
 				return
 			}

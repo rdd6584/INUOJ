@@ -18,6 +18,13 @@ func changeStat(c *gin.Context) {
 		c.String(http.StatusBadRequest, "")
 		return
 	}
+	var stat int
+	Udb.QueryRow("select stat from probs where ori_no=?", json.OriNo).Scan(&stat)
+	if stat != json.FromStat {
+		c.String(http.StatusInternalServerError, "fromstat is dif")
+		return
+	}
+
 	_, err = Udb.Exec("update probs set stat=? where ori_no=?", json.ToStat, json.OriNo)
 	if err != nil {
 		log.Println(err)
@@ -38,7 +45,6 @@ func changeStat(c *gin.Context) {
 
 func myProbList(c *gin.Context) {
 	id := c.Query("id")
-	log.Println("wrrwrwrwwr")
 	rows, err := Udb.Query("select pr.ori_no, pr.prob_no, pr.title, pr.stat "+
 		"from probs as pr join prob_auth as pa where pr.ori_no=pa.ori_no and pa.id=? order by pr.ori_no desc", id)
 	printErr(err)
@@ -128,10 +134,10 @@ func uploadData(c *gin.Context) {
 		return
 	}
 
-	dir := privDir + strconv.Itoa(pb.OriNo) + dataDir + "/"
+	dir := privDir + strconv.Itoa(pb.OriNo)
 	for i := len(pb.Input) - 1; i >= 0; i-- {
-		_ = c.SaveUploadedFile(pb.Input[i], dir+pb.Input[i].Filename)
-		_ = c.SaveUploadedFile(pb.Output[i], dir+pb.Output[i].Filename)
+		_ = c.SaveUploadedFile(pb.Input[i], dir+inDir+pb.Input[i].Filename)
+		_ = c.SaveUploadedFile(pb.Output[i], dir+outDir+pb.Output[i].Filename)
 	}
 	c.JSON(http.StatusOK, "")
 }
@@ -142,11 +148,8 @@ func discardData(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	var stat int
-	err := Udb.QueryRow("select stat from probs where ori_no=?", files.OriNo).Scan(&stat)
-	printErr(err)
-	if stat != 0 {
-		c.String(http.StatusForbidden, "cannot discard data")
+	if !isPrivate(files.OriNo) {
+		c.String(http.StatusForbidden, "")
 		return
 	}
 
@@ -178,10 +181,9 @@ func viewProbDetail(c *gin.Context) {
 
 		for _, file := range files {
 			fileName := file.Name()
-			if strings.HasPrefix(fileName, "sample") {
-				continue
+			if !strings.HasPrefix(fileName, "sample") {
+				pb.Datas = append(pb.Datas, fileName[0:len(fileName)-3])
 			}
-			pb.Datas = append(pb.Datas, fileName[0:len(fileName)-3])
 		}
 	}
 	if err != nil {
@@ -233,9 +235,10 @@ func initSample(dir string) {
 	}
 }
 
-func isPrivate(probNo int) bool {
+func isPrivate(oriNo int) bool {
 	var stat int
-	Udb.QueryRow("select stat from probs where prob_no=?", probNo).Scan(&stat)
+	err := Udb.QueryRow("select stat from probs where ori_no=?", oriNo).Scan(&stat)
+	printErr(err)
 	return (stat == 0)
 }
 
