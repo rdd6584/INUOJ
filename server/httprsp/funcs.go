@@ -7,6 +7,15 @@ import (
 	"net/smtp"
 )
 
+func isAuthUser(userID string) bool {
+	var auth bool
+	err := Udb.QueryRow("select auth from users where id=?", userID).Scan(&auth)
+	if err != nil || !auth {
+		return false
+	}
+	return true
+}
+
 func fileType(lang int) string {
 	switch lang {
 	case Cpp:

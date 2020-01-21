@@ -59,6 +59,16 @@ func myProbList(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"problems": ret})
 }
 
+func getProbList(c *gin.Context) {
+	// 문제 목록 : 문제번호, 제목, 제출, 시도, 나의 성공 여부
+	userID := c.Param("id")
+	page := c.Param("page")
+	title := c.Param("title")
+
+	Udb.Query("select pr.title, pr.prob_no, pr.attempt, pr.accept, pr.stat, ifnull(rl.result,0) as result " +
+		"from probs as pr left join result_list as rl on pr.prob_no=rl.prob_no and rl.id=?")
+}
+
 func getNewOriNo(c *gin.Context) {
 	var ret int
 	var err error

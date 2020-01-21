@@ -9,7 +9,6 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
-	"github.com/gin-gonic/gin/binding"
 )
 
 var Udb *sql.DB
@@ -47,21 +46,6 @@ func probSubmit(c *gin.Context) {
 	panicErr(err)
 
 	c.String(http.StatusOK, "")
-}
-
-func editUserInfo(c *gin.Context) {
-	var json editInfo
-	var err error
-	if err = c.ShouldBindBodyWith(&json, binding.JSON); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-	if !isCorrectInfo(json.ID, json.Password) {
-		c.JSON(http.StatusBadRequest, gin.H{"status": "fail"})
-		return
-	}
-	editPass(json.ID, json.NewPassword)
-	c.JSON(http.StatusOK, gin.H{"status": "ok"})
 }
 
 func regiValid(c *gin.Context) {
@@ -195,18 +179,17 @@ func emailAuth(c *gin.Context) {
 	// todo : column 한 줄 체크 필요
 	tx.QueryRow("select exists (select * from authtokens where email=? and token=?)", json.Email, json.Token).Scan(&res)
 	if res {
-		_, err = tx.Exec("update users set auth=1 where email=?", json.Email)
-		if err != nil {
-			log.Panic(err)
-		}
+		var userID string
+		err = tx.QueryRow("select id from users where email=?", json.Email).Scan(&userID)
+		panicErr(err)
+		_, err = tx.Exec("update users set auth=1 where id=?", userID)
+		panicErr(err)
 		_, err = tx.Exec("delete from authtokens where email=?", json.Email)
-		if err != nil {
-			log.Panic(err)
-		}
+		panicErr(err)
+		_, err = tx.Exec("insert into user_info(id) values(?)", userID)
+		panicErr(err)
 		err = tx.Commit()
-		if err != nil {
-			log.Panic(err)
-		}
+		panicErr(err)
 		c.JSON(http.StatusOK, gin.H{"status": "ok"})
 	} else {
 		c.JSON(http.StatusOK, gin.H{"status": "fail"})

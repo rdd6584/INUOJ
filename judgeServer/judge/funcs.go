@@ -12,15 +12,48 @@ import (
 
 var Udb *sql.DB
 
+func updateResultList(submNo int, ac bool) {
+	var probNo int
+	var userID string
+
+	// 트랜젝션 해야할까 ?
+	err := Udb.QueryRow("select prob_no, id from submits where subm_no=?", submNo).Scan(&probNo, &userID)
+	printErr(err)
+	var ex bool
+	err = Udb.QueryRow("select result from result_list where id=? and prob_no=?", userID, probNo).Scan(&ex)
+
+	if !ac {
+		_, err = Udb.Exec("update user_info set all_count=all_count+1 where id=?", userID)
+		printErr(err)
+	}
+
+	if err != nil {
+		_, err = Udb.Exec("insert into result_list values(?,?,?)", userID, probNo, WA)
+		printErr(err)
+		_, err = Udb.Exec("update user_info set wa_count=wa_count+1 where id=?", userID)
+		printErr(err)
+	} else if ac && !ex {
+		_, err = Udb.Exec("update result_list set result=? where id=? and prob_no=?", AC, userID, probNo)
+		printErr(err)
+		_, err = Udb.Exec("update user_info set wa_count=wa_count-1, ac_count=ac_count+1 where id=?", userID)
+		printErr(err)
+	}
+}
+
 func ReadQueue() {
-	result, err := Udb.Query("select * from judge_q")
+	result, _ := Udb.Query("select * from judge_q")
+	defer result.Close()
 	var submNo, oriNo, lang int
+	var err error
+
 	for result.Next() {
 		err = result.Scan(&submNo, &oriNo, &lang)
 		if err != nil {
 			log.Println("queue : ", err)
-			break
+			continue
 		}
+		updateResultList(submNo, false)
+
 		_, _ = Udb.Exec("delete from judge_q where subm_no=?", submNo)
 		if !compile(lang, strconv.Itoa(submNo)) {
 			setStatus(submNo, CE) // 컴파일 에러
@@ -70,8 +103,6 @@ func run(oriNo int, lang int, submNo int) {
 		var data judgeResult
 		json.Unmarshal(stdout, &data)
 
-		//log.Println(data)
-
 		if data.Result != 0 {
 			if data.Result == 4 {
 				if data.Signal == 25 {
@@ -93,10 +124,9 @@ func run(oriNo int, lang int, submNo int) {
 		userOutput, _ := ioutil.ReadFile("../Judger/output.txt")
 		solOutput, _ := ioutil.ReadFile(dataDir + outfile)
 
-		userOutputArr := strings.Split(string(userOutput), "\n")
-		solOutputArr := strings.Split(string(solOutput), "\n")
+		userOutputArr := strings.Split(strings.TrimRight(string(userOutput), " \n"), "\n")
+		solOutputArr := strings.Split(strings.TrimRight(string(solOutput), " \n"), "\n")
 
-		//log.Println(file.Name(), userOutputArr[0], solOutputArr[0])
 		if len(userOutputArr) != len(solOutputArr) {
 			setStatus(submNo, WA)
 			return
@@ -111,7 +141,8 @@ func run(oriNo int, lang int, submNo int) {
 		maxTime = getMax(data.CPUTime, maxTime)
 		maxMem = getMax(data.Memory, maxMem)
 	}
-	setStatus(submNo, AC, maxTime, maxMem)
+	setStatus(submNo, AC, maxTime, maxMem/1024)
+	updateResultList(submNo, true)
 }
 
 func compile(lang int, submNo string) bool {

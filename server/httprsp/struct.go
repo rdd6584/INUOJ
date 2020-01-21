@@ -69,6 +69,15 @@ type submitPage struct { // status page
 	Datas   []submitInfo `json:"datas"`
 }
 
+type userPage struct {
+	ID        string `json:"id"`
+	PR        string `json:"pr"`
+	AC_Count  int    `json:"ac_count"`
+	WA_Count  int    `json:"wa_count"`
+	ALL_Count int    `json:"all_count"`
+	Rank      int    `json:"rank"`
+}
+
 //************************ start probs
 type probDetail struct {
 	OriNo       int      `json:"ori_no" form:"ori_no"`
