@@ -13,6 +13,22 @@ import (
 
 var Udb *sql.DB
 
+func getUserCode(c *gin.Context) {
+	submNo := c.Param("subm_no")
+	var subm submitInfo
+	err := Udb.QueryRow("select * from submits where subm_no=?", submNo).Scan(&subm.SubmNo,
+		&subm.ID, &subm.ProbNo, &subm.Result, &subm.Lang, &subm.RunTime, &subm.Memory, &subm.Codelen, &subm.SubmTime)
+	printErr(err)
+
+	dir := codeDir + submNo
+	code, err := ioutil.ReadFile(dir + fileType(subm.Lang))
+	printErr(err)
+	msg, err := ioutil.ReadFile(dir + ".txt")
+	printErr(err)
+
+	c.JSON(http.StatusOK, gin.H{"code": string(code), "compile_msg": msg, "submit": subm})
+}
+
 func probSubmit(c *gin.Context) {
 	var json newSubmit
 	var err error

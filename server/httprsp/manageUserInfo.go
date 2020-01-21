@@ -16,7 +16,7 @@ func getUserInfo(c *gin.Context) {
 	var json userPage
 	err := Udb.QueryRow("select * from (select *, rank() over (order by ac_count desc) "+
 		"as ranking from user_info) as rr where rr.id=?", userID).Scan(&json.ID,
-		&json.PR, &json.AC_Count, &json.WA_Count, &json.ALL_Count, &json.Rank)
+		&json.PR, &json.ACcount, &json.WAcount, &json.ALLcount, &json.Rank)
 	printErr(err)
 
 	c.JSON(http.StatusOK, json)

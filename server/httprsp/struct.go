@@ -69,13 +69,18 @@ type submitPage struct { // status page
 	Datas   []submitInfo `json:"datas"`
 }
 
+type probListPage struct { // prob list page
+	DataNum  int           `json:"data_num"`
+	Problems []probListAll `json:"problems"`
+}
+
 type userPage struct {
-	ID        string `json:"id"`
-	PR        string `json:"pr"`
-	AC_Count  int    `json:"ac_count"`
-	WA_Count  int    `json:"wa_count"`
-	ALL_Count int    `json:"all_count"`
-	Rank      int    `json:"rank"`
+	ID       string `json:"id"`
+	PR       string `json:"pr"`
+	ACcount  int    `json:"ac_count"`
+	WAcount  int    `json:"wa_count"`
+	ALLcount int    `json:"all_count"`
+	Rank     int    `json:"rank"`
 }
 
 //************************ start probs
@@ -95,13 +100,20 @@ type probDetail struct {
 	Datas       []string `json:"datas"`
 }
 
-type probForList struct {
-	OriNo   int    `json:"ori_no"`
+type probListMy struct {
+	OriNo  int    `json:"ori_no"`
+	ProbNo int    `json:"prob_no"`
+	Title  string `json:"title"`
+	Stat   int    `json:"stat"`
+}
+
+type probListAll struct {
 	ProbNo  int    `json:"prob_no"`
 	Title   string `json:"title"`
 	Attempt int    `json:"attempt"`
 	Accept  int    `json:"accept"`
 	Stat    int    `json:"stat"`
+	Result  int    `json:"result"`
 }
 
 type probData struct {

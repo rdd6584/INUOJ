@@ -50,8 +50,8 @@ func myProbList(c *gin.Context) {
 	printErr(err)
 	defer rows.Close()
 
-	var ret []probForList
-	var tmp probForList
+	var ret []probListMy
+	var tmp probListMy
 	for rows.Next() {
 		_ = rows.Scan(&tmp.OriNo, &tmp.ProbNo, &tmp.Title, &tmp.Stat)
 		ret = append(ret, tmp)
@@ -60,13 +60,38 @@ func myProbList(c *gin.Context) {
 }
 
 func getProbList(c *gin.Context) {
-	// 문제 목록 : 문제번호, 제목, 제출, 시도, 나의 성공 여부
-	//userID := c.Param("id")
-	//page := c.Param("page")
-	//title := c.Param("title")
+	userID := c.Query("id")
+	page := c.Query("page")
+	title := c.Query("title")
 
-	Udb.Query("select pr.title, pr.prob_no, pr.attempt, pr.accept, pr.stat, ifnull(rl.result,0) as result " +
-		"from probs as pr left join result_list as rl on pr.prob_no=rl.prob_no and rl.id=?")
+	if userID == "" || page == "" {
+		c.String(http.StatusBadRequest, "")
+		return
+	}
+	top, _ := strconv.Atoi(page)
+	top = (top - 1) * pageSize
+
+	qry := "from probs as pr left join result_list as rl on pr.prob_no=rl.prob_no and rl.id=? "
+	if title != "" {
+		qry += "where rl.title like '%" + title + "%' "
+	}
+
+	var json probListPage
+	var tmp probListAll
+	var err error
+	err = Udb.QueryRow("select count(*) "+qry, userID).Scan(&json.DataNum)
+	printErr(err)
+
+	qry += "order by prob_no desc limit ?, ?"
+	rows, err := Udb.Query("select pr.title, pr.prob_no, pr.attempt, pr.accept, pr.stat, ifnull(rl.result,0) as result "+
+		qry, userID, top, pageSize)
+	printErr(err)
+	for rows.Next() {
+		err = rows.Scan(&tmp.Title, &tmp.ProbNo, &tmp.Attempt, &tmp.Accept, &tmp.Stat, &tmp.Result)
+		printErr(err)
+		json.Problems = append(json.Problems, tmp)
+	}
+	c.JSON(http.StatusOK, json)
 }
 
 func getNewOriNo(c *gin.Context) {

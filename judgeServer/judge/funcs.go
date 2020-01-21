@@ -159,7 +159,6 @@ func compile(lang int, submNo string) bool {
 	stdout, err := c.CombinedOutput()
 	ioutil.WriteFile("../Judger/usercodes/"+submNo+".txt", stdout, 0644)
 	if err != nil {
-		log.Println("compile err : ", err)
 		return false
 	}
 	return true

@@ -29,6 +29,8 @@ func ResRouter(e *gin.Engine) {
 		app1.POST("/problem/submit", probSubmit)             // 답안 제출
 		app1.GET("/profile/:userid", getUserInfo)            // ac, wa, all 카운트
 		app1.GET("/user/problem", getUserProbList)           // user의 성공, 실패 문제 리스트
+		app1.GET("/list", getProbList)                       // 문제 목록
+		app1.GET("/source/:subm_no", getUserCode)            // 소스코드 보기
 	}
 
 	// *************** auth 1 && only me ***************
