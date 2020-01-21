@@ -92,7 +92,7 @@ export default{
     page: 1,
     data_num: -1,
     headers: [
-      { text: '채점 번호', value: 'subm_no', divider: true},
+      { text: '제출 번호', value: 'subm_no', divider: true},
       { text: '아이디', value: 'id', divider: true},
       { text: '문제 번호', value: 'prob_no', divider: true },
       { text: '결과', value: 'result', divider: true },

@@ -10,67 +10,77 @@
 
     </v-card>
       <v-hover v-slot:default="{ hover }">
-        <v-card :elevation="hover ? 16 : 1" @click="acOn=true">
+        <v-card :elevation="hover ? 16 : 1" @click="getList(1)">
           <v-card-title>맞은 문제 {{ac_count}}개</v-card-title>
-          <v-card-subtitle>여기를 눌러 이 유저가 맞춘 문제를 확인하세요!</v-card-subtitle>
+          <v-card-subtitle>이 유저가 맞춘 문제를 확인하세요!</v-card-subtitle>
         </v-card>
       </v-hover>
 
-      <v-dialog max-width="1000px" scrollable v-model="acOn">
-        <v-btn
-          class="mt-1"
-          text
-          color="error"
-          @click="acOn=false"
-        >close</v-btn>
-        <v-card elevation="0">
-          <v-card-text style="height: 100px;">
-            aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
-            aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
-            aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
-            aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
-            aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
-            aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
-            aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
-            aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
-            aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
-            aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
-            aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
-            aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
-            aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
-            aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
-            aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
-            aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
-            aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
-            aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
-            aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
-            aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
-            aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
-            aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
-            aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
-            aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
-            aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
-            aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
-            aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
-          </v-card-text>
-        </v-card>
+      <v-dialog v-model="acOn" inset>
+        <v-sheet min-height="400px" class="text-center">
+          <v-btn
+            class="mt-0 mb-0"
+            text
+            color="error"
+            @click="acOn=false"
+          >close</v-btn>
+          <v-card elevation="0">
+            <v-card-text v-if="ac_count != 0" class="py-0 px-3">
+              <a class="line px-3" v-for="(val, i) in numbers" @click="$router.push({path:'/problem/' + val})">
+                <font color="black">{{val}}:</font><font color="#00C853">{{titles[i]}}</font>
+              </a>
+            </v-card-text>
+
+            <v-card-text v-else class="py-0 px-3">
+              문제가 존재하지 않습니다.
+            </v-card-text>
+          </v-card>
+        </v-sheet>
       </v-dialog>
 
       <v-hover v-slot:default="{ hover }">
-        <v-card class="mt-3" :elevation="hover ? 16 : 1" @click="">
+        <v-card class="mt-3" :elevation="hover ? 16 : 1" @click="getList(2)">
           <v-card-title>틀린 문제 {{wa_count}}개</v-card-title>
-          <v-card-subtitle>여기를 눌러 이 유저가 시도했으나 맞추지 못한 문제를 확인하세요!</v-card-subtitle>
+          <v-card-subtitle>이 유저가 시도했으나 맞추지 못한 문제를 확인하세요!</v-card-subtitle>
         </v-card>
       </v-hover>
 
+      <v-dialog v-model="waOn" inset>
+        <v-sheet min-height="400px" class="text-center">
+          <v-btn
+            class="mt-0 mb-0"
+            text
+            color="error"
+            @click="waOn=false"
+          >close</v-btn>
+          <v-card elevation="0">
+            <v-card-text v-if="wa_count != 0" class="py-0 px-3">
+              <a class="line px-3" v-for="(val, i) in numbers" @click="$router.push({path:'/problem/' + val})">
+                <font color="black">{{val}}:</font><font color="red">{{titles[i]}}</font>
+              </a>
+            </v-card-text>
+
+            <v-card-text v-else class="py-0 px-3">
+              문제가 존재하지 않습니다.
+            </v-card-text>
+          </v-card>
+        </v-sheet>
+      </v-dialog>
+
       <v-hover v-slot:default="{ hover }">
-        <v-card class="mt-3" :elevation="hover ? 16 : 1" @click="">
+        <v-card router :to="{path:'/status?id=' + userId}" class="mt-3" :elevation="hover ? 16 : 1" @click="">
           <v-card-title>제출 횟수 {{all_count}}회</v-card-title>
-          <v-card-subtitle>여기를 눌러 이 유저가 제출한 답안을 확인하세요!</v-card-subtitle>
+          <v-card-subtitle>이 유저가 제출한 답안을 확인하세요!</v-card-subtitle>
         </v-card>
       </v-hover>
+
   </v-container>
 </template>
+
+<style scoped>
+  a.line {text-decoration:none;}
+  a.line:hover {text-decoration:underline;}
+</style>
 
 <script>
 export default{
@@ -83,6 +93,8 @@ export default{
     all_count: 0,
     acOn: false,
     waOn: false,
+    numbers: [],
+    titles: [],
   }),
   created() {
     this.userId = this.$route.params.id
@@ -96,8 +108,22 @@ export default{
     }).catch(err => {this.$f.malert()})
   },
   methods: {
-    test() {
-      console.log("다영이는 바보")
+    getList(result) {
+      this.$f.getUserValid().then(
+        re => {
+          if (re == null) {
+            this.$router.push({path: '/login'})
+            return
+          }
+          this.$axios.get(`/api/user/problem?result=${result}&id=${this.userId}`, this.$f.makeHeaderObject())
+          .then(res => {
+            this.numbers = res.data.numbers
+            this.titles = res.data.titles
+          }).catch(err => {this.$f.malert()})
+
+          if (result == 1) this.acOn = true
+          else if (result == 2) this.waOn = true
+      })
     },
   },
 }

@@ -22,7 +22,7 @@
           </thead>
           <tbody>
             <tr>
-              <td>{{ t_limit }} 초</td>
+              <td>{{ t_limit }} ms</td>
               <td>{{ m_limit }} MB</td>
               <td>{{ accept }} 명</td>
               <td>{{ attempt }} 명</td>

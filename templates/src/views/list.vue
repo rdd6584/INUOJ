@@ -28,9 +28,9 @@
       </template>
 
       <template v-slot:item.title="{ item }">
-        <a v-if="item.result==0" style="color:black;" :href="'/problem/' + item.prob_no">{{item.title}}</a>
-        <a v-else-if="item.result==1" style="color:#00C853;" :href="'/problem/' + item.prob_no">{{item.title}}</a>
-        <a v-else style="color:red;" :href="'/problem/' + item.prob_no">{{item.title}}</a>
+        <a v-if="item.result==0" style="color:black;" @click="$router.push({path:'/problem/' + item.prob_no})">{{item.title}}</a>
+        <a v-else-if="item.result==1" style="color:#00C853;" @click="$router.push({path:'/problem/' + item.prob_no})">{{item.title}}</a>
+        <a v-else style="color:red;" @click="$router.push({path:'/problem/' + item.prob_no})">{{item.title}}</a>
       </template>
 
       <template v-slot:no-data>등록된 문제가 없습니다</template>
@@ -38,7 +38,7 @@
   </v-container>
 </template>
 
-<style>
+<style scoped>
   a {text-decoration:none;}
   a:hover {text-decoration:underline;}
 </style>
