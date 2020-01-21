@@ -67,6 +67,11 @@ const routes = [
     component: () => import('../views/problem.vue')
   },
   {
+    path: '/source/:subm_no',
+    // beforeEnter: (to, from, next) => { forUsers(next) },
+    component: () => import('../views/source.vue')
+  },
+  {
     path: '/sup/list',
     // beforeEnter: (to, from, next) => { forUsers(next) },
     component: () => import('../views/sup/list.vue'),

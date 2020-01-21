@@ -1,7 +1,7 @@
 <template>
   <div class="ma-0 pb-12">
-    <v-row class="ma-0 pa-0">
-      <v-btn @click="$emit('send')" large class="mt-4 ml-4" color="success" v-if="submit">제출</v-btn>
+    <v-row v-if="readOnly!=2" class="ma-0 pa-0">
+      <v-btn @click="$emit('send')" large class="mt-4 ml-4" color="success" v-if="readOnly!=1">제출</v-btn>
       <v-spacer></v-spacer>
       <v-col class="pa-2" cols="2">
         <v-card elevation="5">
@@ -43,7 +43,13 @@ require('codemirror/mode/python/python')
 require('codemirror/mode/clike/clike')
 
 export default{
-  props: ['submit'],
+  props: {
+    readOnly: { default:1 },
+    language: { default:1 },
+  },
+  created() {
+    this.choice = this.$store.state.lang[this.language]
+  },
   components: {
      codemirror
    },

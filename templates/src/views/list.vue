@@ -21,7 +21,7 @@
               placeholder="검색">
             </v-text-field>
           </v-col>
-          <v-btn icon>
+          <v-btn @click="search()" icon>
             <i class="fas fa-search"></i>
           </v-btn>
         </v-toolbar>
@@ -35,6 +35,13 @@
 
       <template v-slot:no-data>등록된 문제가 없습니다</template>
     </v-data-table>
+    <v-pagination
+      v-model="page"
+      :length="pageLength"
+      :page="page"
+      total-visible="10"
+      class="pt-1"
+    ></v-pagination>
   </v-container>
 </template>
 
@@ -55,17 +62,26 @@
         { text: '시도한 사람', value: 'attempt', divider: true, width: "10%" },
       ],
       desserts: [],
+      data_num: -1,
     }),
     created () {
-      this.desserts.push({prob_no:1234, title:"다영야는 바보다", accept:20, attempt:100, result:1})
       if (typeof this.$route.query.title !== 'undefined') this.title = this.$route.query.title
       if (typeof this.$route.query.page !== 'undefined') this.page = this.$route.query.page
       this.sendQuery()
     },
-    methods: {
-      goDetail() {
-        console.log("detail");
+    computed: {
+      pageLength() {
+        var ret = parseInt(this.data_num / 15)
+        if (ret === 0 || this.data_num % 15 != 0) ret++
+        return ret
       },
+    },
+    watch: {
+      page:function(val) {
+        if (this.data_num != -1) this.search()
+      },
+    },
+    methods: {
       async makeQuery() {
         return await this.$f.getUserValid()
         .then(re => {

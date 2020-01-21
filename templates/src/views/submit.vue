@@ -2,7 +2,7 @@
   <v-container>
     <codeEditor
       @send="send()"
-      submit='true'
+      readOnly="0"
       ref="editor"></codeEditor>
   </v-container>
 </template>
