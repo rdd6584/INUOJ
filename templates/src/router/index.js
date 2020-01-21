@@ -42,6 +42,11 @@ const routes = [
     component: () => import('../views/auth.vue')
   },
   {
+    path: '/profile/:id',
+    // beforeEnter: (to, from, next) => { forUsers(next) },
+    component: () => import('../views/profile.vue')
+  },
+  {
     path: '/status',
     // beforeEnter: (to, from, next) => { forUsers(next) },
     component: () => import('../views/status.vue')

@@ -13,7 +13,7 @@
         ></v-img>
       </v-btn>
       <v-row class="pr-5" justify="end">
-        <v-btn v-if="$f.userId !== ''" text>{{$f.userId}}</v-btn text>
+        <v-btn v-if="$f.userId !== ''" text router :to="{path : '/profile/' + $f.userId}">{{$f.userId}}</v-btn text>
         <v-btn v-if="$f.userId === ''" router :to="{path : '/register'}" text>회원가입</v-btn>
         <v-btn v-if="$f.userId === ''" router :to="{path : '/login'}" text>로그인</v-btn>
         <v-btn v-if="$f.userId !== ''" @click="logout()" text>로그아웃</v-btn>

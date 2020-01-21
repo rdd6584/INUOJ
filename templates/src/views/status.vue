@@ -71,6 +71,14 @@
     </template>
 
     </v-data-table>
+
+    <v-pagination
+      v-model="page"
+      :length="pageLength"
+      :page="page"
+      total-visible="10"
+      class="pt-1"
+    ></v-pagination>
   </v-container>
 </template>
 
@@ -82,7 +90,7 @@ export default{
     lang: "모든 언어",
     result: "모든 결과",
     page: 1,
-    data_num: 0,
+    data_num: -1,
     headers: [
       { text: '채점 번호', value: 'subm_no', divider: true},
       { text: '아이디', value: 'id', divider: true},
@@ -96,14 +104,26 @@ export default{
     ],
     datas: [],
   }),
-  async created() {
+  created() {
     if (typeof this.$route.query.prob_no !== 'undefined') this.prob_no = this.$route.query.prob_no
     if (typeof this.$route.query.id !== 'undefined') this.id = this.$route.query.id
     if (typeof this.$route.query.lang !== 'undefined') this.lang = this.$store.state.lang[this.$route.query.lang]
     if (typeof this.$route.query.result !== 'undefined') this.result = this.$store.state.result[this.$route.query.result]
     if (typeof this.$route.query.page !== 'undefined') this.page = this.$route.query.page
 
-    await this.sendQuery()
+    this.sendQuery()
+  },
+  computed: {
+    pageLength() {
+      var ret = parseInt(this.data_num / 15)
+      if (ret === 0 || this.data_num % 15 != 0) ret++
+      return ret
+    },
+  },
+  watch: {
+    page:function(val) {
+      if (this.data_num != -1) this.search()
+    },
   },
   methods: {
     modifyDatas() {

@@ -41,6 +41,7 @@
     methods: {
       login() {
         this.$axios.post('/api/login', {id:this.id, pass:this.pass})
+        // this.$sha256(this.pass) => 해시해서 추가.
         .then(res => {
           localStorage.setItem('token', res.data.token)
           this.$f.userId = this.id
