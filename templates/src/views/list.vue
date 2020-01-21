@@ -28,9 +28,9 @@
       </template>
 
       <template v-slot:item.title="{ item }">
-        <font v-if="item.result==0" color="black">{{item.title}}</font>
-        <font v-else-if="item.result==1" color="success">{{item.title}}</font>
-        <font v-else color="red">{{item.title}}</font>
+        <a v-if="item.result==0" style="color:black;" :href="'/problem/' + item.prob_no">{{item.title}}</a>
+        <a v-else-if="item.result==1" style="color:#00C853;" :href="'/problem/' + item.prob_no">{{item.title}}</a>
+        <a v-else style="color:red;" :href="'/problem/' + item.prob_no">{{item.title}}</a>
       </template>
 
       <template v-slot:no-data>등록된 문제가 없습니다</template>
@@ -38,6 +38,10 @@
   </v-container>
 </template>
 
+<style>
+  a {text-decoration:none;}
+  a:hover {text-decoration:underline;}
+</style>
 
 <script>
   export default {
@@ -53,11 +57,15 @@
       desserts: [],
     }),
     created () {
+      this.desserts.push({prob_no:1234, title:"다영야는 바보다", accept:20, attempt:100, result:1})
       if (typeof this.$route.query.title !== 'undefined') this.title = this.$route.query.title
       if (typeof this.$route.query.page !== 'undefined') this.page = this.$route.query.page
-      // this.sendQuery()
+      this.sendQuery()
     },
     methods: {
+      goDetail() {
+        console.log("detail");
+      },
       async makeQuery() {
         return await this.$f.getUserValid()
         .then(re => {
@@ -73,7 +81,6 @@
           }
           return req
         })
-
       },
       async search() {
         await this.makeQuery()

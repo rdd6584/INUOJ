@@ -56,7 +56,7 @@
 
     <template v-slot:item.result="{ item }">
       <font v-if="$store.state.resultOrd[item.result]==0" color="black">{{item.result}}</font>
-      <font v-else-if="$store.state.resultOrd[item.result]==1" color="success">{{item.result}}</font>
+      <font v-else-if="$store.state.resultOrd[item.result]==1" color="#00C853">{{item.result}}</font>
       <font v-else color="red">{{item.result}}</font>
     </template>
 
@@ -66,8 +66,8 @@
     </template>
 
     <template v-slot:item.run_time="{ item }">
-      <font v-if="$store.state.resultOrd[item.result]==1"></font>
-      <font v-else>{{item.run_time}}</font>
+      <font v-if="$store.state.resultOrd[item.result]==1">{{item.run_time}}</font>
+      <font v-else></font>
     </template>
 
     </v-data-table>
@@ -89,9 +89,9 @@ export default{
       { text: '문제 번호', value: 'prob_no', divider: true },
       { text: '결과', value: 'result', divider: true },
       { text: '언어', value: 'lang', divider: true },
-      { text: '메모리', value: 'memory', divider: true },
-      { text: '시간', value: 'run_time', divider: true },
-      { text: '코드 길이', value: 'codelen', divider: true },
+      { text: '메모리 (kb)', value: 'memory', divider: true },
+      { text: '시간 (ms)', value: 'run_time', divider: true },
+      { text: '코드 길이 (byte)', value: 'codelen', divider: true },
       { text: '제출한 시간', value: 'subm_time', divider: true },
     ],
     datas: [],
@@ -115,11 +115,12 @@ export default{
         if (typeof i.lang == 'number') i.lang = this.$store.state.lang[i.lang]
       }
     },
-    modifyProbNo() {
+    modifyString(val) {
+      val = val + ""
       var ret = ""
-      for (var i of this.prob_no)
-        if (this.prob_no[i] >= '0' && this.prob_no[i] <= '9')
-          ret += this.prob_no[i]
+      for (var i of val)
+        if (i >= '0' && i <= '9')
+          ret += i
 
       if (ret.length == 0) ret = "0"
       return ret
@@ -132,11 +133,11 @@ export default{
           return null
         }
         var req = {
-          prob_no: this.modifyProbNo(),
+          prob_no: Number(this.modifyString(this.prob_no)),
           id: this.id,
           lang: this.$store.state.langOrd[this.lang],
           result: this.$store.state.resultOrd[this.result],
-          page: this.page,
+          page: Number(this.modifyString(this.page)),
         }
         return req
       })

@@ -126,7 +126,8 @@
               </v-col>
             </v-row>
             <v-row justify="center">
-              <v-btn color="success" @click="del()">삭제</v-btn>
+              <v-btn class="mx-3" color="success" @click="selectAll()">전체선택</v-btn>
+              <v-btn class="mx-3" color="success" @click="del()">삭제</v-btn>
             </v-row>
           </v-card>
 
@@ -179,6 +180,11 @@ import textEditor from "../../semiViews/textEditor.vue"
        .catch(err => {this.$f.malert()})
      },
      methods: {
+       selectAll() {
+         if (this.selected.length == this.datas.length)
+           this.selected.splice(0, this.selected.length)
+         else this.selected = this.datas.slice()
+       },
        del() {
           this.$f.getUserValid()
           .then(re => {
@@ -192,7 +198,8 @@ import textEditor from "../../semiViews/textEditor.vue"
             }, this.$f.makeHeaderObject())
             .then(res => {
               for (var i of this.selected)
-                this.datas.splice(this.datas.indexOf(this.selected[i]), 1)
+                this.datas.splice(this.datas.indexOf(i), 1)
+              this.selected.splice(0, this.selected.length)
             })
             .catch(err => this.$f.malert())
           })
@@ -220,6 +227,8 @@ import textEditor from "../../semiViews/textEditor.vue"
                visit[mavi] = 1
                ord[i] = mavi
              }
+
+             var count = {}
              for (var i = 0; i < ord.length; i += 2) {
                a = "", b = "", c = "", d = "", fl = 0, ff = 0
 
@@ -236,7 +245,12 @@ import textEditor from "../../semiViews/textEditor.vue"
 
                if (fl == 1 && ff == 1 && a == c && b == "in" && d == "out");
                else { alert("입출력 파일 쌍이 맞지 않습니다"); return }
+               if (typeof count[a] !== 'undefined') { alert("중복된 파일명이 존재합니다."); return }
+               else count[a] = 1
              }
+
+             for (var i of this.datas)
+              if (typeof count[i] !== 'undefined') { alert("중복된 파일명이 이미 존재합니다."); return }
 
              var formData = new FormData()
              formData.append('ori_no', this.ori_no)
@@ -279,7 +293,6 @@ import textEditor from "../../semiViews/textEditor.vue"
              var formdata = new FormData()
              formdata.append('ori_no', this.ori_no)
              formdata.append('owner', this.owner)
-             formdata.append('stat', this.stat)
              formdata.append('title', this.title)
              formdata.append('t_limit', this.t_limit)
              formdata.append('m_limit', this.m_limit)
