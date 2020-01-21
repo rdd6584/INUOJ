@@ -37,12 +37,12 @@ func getUserProbList(c *gin.Context) {
 	var nums []int
 	var titles []string
 	var num int
-  var title string
+	var title string
 	for rows.Next() {
 		err = rows.Scan(&title, &num)
 		printErr(err)
 		nums = append(nums, num)
-		titles = append(titles, num)
+		titles = append(titles, title)
 	}
 	c.JSON(http.StatusOK, gin.H{"numbers": nums, "titles": titles})
 }
