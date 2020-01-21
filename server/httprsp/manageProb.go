@@ -77,7 +77,8 @@ func getNewOriNo(c *gin.Context) {
 	panicErr(err)
 	tx.Commit()
 
-	_ = os.MkdirAll(privDir+strconv.Itoa(ret)+dataDir, os.ModePerm)
+	_ = os.MkdirAll(privDir+strconv.Itoa(ret)+inDir, os.ModePerm)
+	_ = os.MkdirAll(privDir+strconv.Itoa(ret)+outDir, os.ModePerm)
 
 	c.JSON(http.StatusOK, gin.H{"ori_no": ret})
 }
