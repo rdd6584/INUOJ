@@ -5,7 +5,6 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
-	"regexp"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
@@ -87,10 +86,10 @@ func regiComplete(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	if match, _ := regexp.MatchString("^[a-zA-Z0-9\\_]+@inu\\.ac\\.kr", json.Email); !match {
+	/*if match, _ := regexp.MatchString("^[a-zA-Z0-9\\_]+@inu\\.ac\\.kr", json.Email); !match {
 		c.JSON(http.StatusBadRequest, gin.H{"status": "noINU"})
 		return
-	}
+	}*/
 
 	var res bool
 	err = Udb.QueryRow("select not exists (select * from users where id=? or email=?)", json.ID, json.Email).Scan(&res)
