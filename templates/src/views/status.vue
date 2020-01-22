@@ -58,6 +58,14 @@
       <a @click="$router.push({path:'/source/' + item.subm_no})">{{item.subm_no}}</a>
     </template>
 
+    <template v-slot:item.prob_no="{ item }">
+      <a @click="$router.push({path:'/problem/' + item.prob_no})">{{item.prob_no}}</a>
+    </template>
+
+    <template v-slot:item.id="{ item }">
+      <a @click="$router.push({path:'/profile/' + item.id})">{{item.id}}</a>
+    </template>
+
     <template v-slot:item.result="{ item }">
       <font v-if="$store.state.resultOrd[item.result]==0" color="black">{{item.result}}</font>
       <font v-else-if="$store.state.resultOrd[item.result]==1" color="#00C853">{{item.result}}</font>

@@ -104,7 +104,7 @@
       },
       emailRules() {
         const rules=[v => !!v || '이메일을 입력하세요',]
-        rules.push(v => /^[a-zA-Z0-9]+@inu\.ac\.kr/.test(v) || '이메일은 @inu.ac.kr로 끝나야 합니다.')
+        rules.push(v => /^[a-zA-Z0-9\_]+@inu\.ac\.kr/.test(v) || '이메일은 @inu.ac.kr로 끝나야 합니다.')
         rules.push(this.emailCheck || '중복되는 이메일이 있습니다.')
         return rules
       },
