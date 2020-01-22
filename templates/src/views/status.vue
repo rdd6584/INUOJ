@@ -52,7 +52,11 @@
     :items="datas"
     :items-per-page="15"
     hide-default-footer
-    class="elevation-2">
+    class="mt-0 pt-0 elevation-2">
+
+    <template v-slot:item.subm_no="{ item }">
+      <a @click="$router.push({path:'/source/' + item.subm_no})">{{item.subm_no}}</a>
+    </template>
 
     <template v-slot:item.result="{ item }">
       <font v-if="$store.state.resultOrd[item.result]==0" color="black">{{item.result}}</font>
@@ -81,6 +85,11 @@
     ></v-pagination>
   </v-container>
 </template>
+
+<style scoped>
+  a {text-decoration:none;}
+  a:hover {text-decoration:underline;}
+</style>
 
 <script>
 export default{

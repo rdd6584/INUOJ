@@ -4,6 +4,7 @@
       @send="send()"
       readOnly="0"
       ref="editor"></codeEditor>
+      <div class="pb-12"></div>
   </v-container>
 </template>
 

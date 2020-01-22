@@ -1,5 +1,5 @@
 <template>
-  <div class="ma-0 pb-12">
+  <div class="ma-0">
     <v-row v-if="readOnly!=2" class="ma-0 pa-0">
       <v-btn @click="$emit('send')" large class="mt-4 ml-4" color="success" v-if="readOnly!=1">제출</v-btn>
       <v-spacer></v-spacer>
@@ -45,10 +45,9 @@ require('codemirror/mode/clike/clike')
 export default{
   props: {
     readOnly: { default:1 },
-    language: { default:1 },
   },
   created() {
-    this.choice = this.$store.state.lang[this.language]
+    if (this.readOnly == 2) this.myOption.readOnly = true
   },
   components: {
      codemirror
@@ -56,6 +55,7 @@ export default{
    data: () => ({
      code: "",
      myOption: {
+       readOnly: false,
        mode: "text/x-c++src",
        lineNumbers: true,
        indentUnit: 4,
