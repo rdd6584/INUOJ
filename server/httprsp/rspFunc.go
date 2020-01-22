@@ -26,7 +26,7 @@ func getUserCode(c *gin.Context) {
 	msg, err := ioutil.ReadFile(dir + ".txt")
 	printErr(err)
 
-	c.JSON(http.StatusOK, gin.H{"code": string(code), "compile_msg": msg, "submit": subm})
+	c.JSON(http.StatusOK, gin.H{"code": string(code), "compile_msg": string(msg), "submit": subm})
 }
 
 func probSubmit(c *gin.Context) {
