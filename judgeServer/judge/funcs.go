@@ -21,12 +21,6 @@ func updateResultList(submNo int, ac bool) {
 	printErr(err)
 	var ex int
 	err = Udb.QueryRow("select result from result_list where id=? and prob_no=?", userID, probNo).Scan(&ex)
-
-	if !ac {
-		_, err = Udb.Exec("update user_info set all_count=all_count+1 where id=?", userID)
-		printErr(err)
-	}
-
 	if err != nil {
 		_, err = Udb.Exec("insert into result_list values(?,?,?)", userID, probNo, WA)
 		printErr(err)
@@ -40,6 +34,11 @@ func updateResultList(submNo int, ac bool) {
 		_, err = Udb.Exec("update user_info set wa_count=wa_count-1, ac_count=ac_count+1 where id=?", userID)
 		printErr(err)
 		_, err = Udb.Exec("update probs set accept=accept+1 where prob_no=?", probNo)
+		printErr(err)
+	}
+
+	if !ac {
+		_, err = Udb.Exec("update user_info set all_count=all_count+1 where id=?", userID)
 		printErr(err)
 	}
 }
