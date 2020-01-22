@@ -5,7 +5,24 @@ import ff from '../func.vue'
 var f = ff.methods
 Vue.use(VueRouter)
 
-var forNotUsers = function(next) {
+const forBdmin = (to, from, next) => {
+  f.getUserValid().then(
+    res => {
+    if (res === null) next('/login')
+    else if (f.admin == '' || parseInt(f.admin) < 1) next('/wrongAccess')
+    else next()
+  })
+}
+
+const forUsers = (to, from, next) => {
+  f.getUserValid().then(
+    res => {
+    if (res === null) next('/login')
+    else next()
+  })
+}
+
+const forNotUsers = (to, from, next) => {
   f.getUserValid().then(
     res => {
     if(res === null) next()
@@ -13,96 +30,26 @@ var forNotUsers = function(next) {
   })
 }
 
-var forUsers = function(next) {
-  f.getUserValid().then(
-    res => {
-    if(res === null) next('/login')
-    else next()
-  })
-}
-
 const routes = [
-  {
-    path: '/',
-    component: () => import('../views/home.vue')
-  },
-  {
-    path: '/register',
-    beforeEnter: (to, from, next) => { forNotUsers(next) },
-    component: () => import('../views/register.vue')
-  },
-  {
-    path: '/login',
-    beforeEnter: (to, from, next) => { forNotUsers(next) },
-    component: () => import('../views/login.vue')
-  },
-  { // auth인증 methods만 구현
-    path: '/auth',
-    beforeEnter: (to, from, next) => { forNotUsers(next) },
-    component: () => import('../views/auth.vue')
-  },
-  {
-    path: '/profile/:id',
-    // beforeEnter: (to, from, next) => { forUsers(next) },
-    component: () => import('../views/profile.vue')
-  },
-  {
-    path: '/modify/:id',
-    // beforeEnter: (to, from, next) => { forUsers(next) },
-    component: () => import('../views/modifyPass.vue')
-  },
-  {
-    path: '/status',
-    // beforeEnter: (to, from, next) => { forUsers(next) },
-    component: () => import('../views/status.vue')
-  },
-  {
-    path: '/submit/:num',
-    // beforeEnter: (to, from, next) => { forUsers(next) },
-    component: () => import('../views/submit.vue')
-  },
-  {
-    path: '/list',
-    // beforeEnter: (to, from, next) => { forUsers(next) },
-    component: () => import('../views/list.vue')
-  },
-  {
-    path: '/problem/:num',
-    // beforeEnter: (to, from, next) => { forUsers(next) },
-    component: () => import('../views/problem.vue')
-  },
-  {
-    path: '/source/:subm_no',
-    // beforeEnter: (to, from, next) => { forUsers(next) },
-    component: () => import('../views/source.vue')
-  },
-  {
-    path: '/sup/list',
-    // beforeEnter: (to, from, next) => { forUsers(next) },
-    component: () => import('../views/sup/list.vue'),
-  },
-  {
-    path: '/sup/detail/:ori_no',
-    // beforeEnter: (to, from, next) => { forUsers(next) },
-    component: () => import('../views/sup/detail.vue'),
-  },
-  {
-    path: '/problem/1',
-    name: 'test',
-    component: () => import('../views/problem.vue')
-  },
-  {
-    path: '/test2',
-    component: () => import('../semiViews/textEditor.vue')
-  },
-  {
-    path: '/wrongAccess',
-    component: () => import('../views/404page.vue'),
-  },
-  {
-    path: '/*',
-    component: () => import('../views/404page.vue'),
-  },
+  { path: '/', component: () => import('../views/home.vue') },
+
+  { path: '/register', beforeEnter: forNotUsers, component: () => import('../views/register.vue') },
+  { path: '/login', beforeEnter: forNotUsers, component: () => import('../views/login.vue') },
+  { path: '/auth', beforeEnter: forNotUsers, component: () => import('../views/auth.vue') },
+
+  { path: '/profile/:id', beforeEnter: forUsers, component: () => import('../views/profile.vue') },
+  { path: '/modify/:id', beforeEnter: forUsers, component: () => import('../views/modifyPass.vue') },
+  { path: '/status', beforeEnter: forUsers, component: () => import('../views/status.vue') },
+  { path: '/submit/:num', beforeEnter: forUsers, component: () => import('../views/submit.vue') },
+  { path: '/list', beforeEnter: forUsers, component: () => import('../views/list.vue') },
+  { path: '/problem/:num', beforeEnter: forUsers, component: () => import('../views/problem.vue') },
+  { path: '/source/:subm_no', beforeEnter: forUsers, component: () => import('../views/source.vue') },
+
+  { path: '/sup/list', beforeEnter: forBdmin, component: () => import('../views/sup/list.vue') },
+  { path: '/sup/detail/:ori_no', beforeEnter: forBdmin, component: () => import('../views/sup/detail.vue') },
+
+  { path: '/wrongAccess', component: () => import('../views/404page.vue') },
+  { path: '/*', component: () => import('../views/404page.vue') },
 ]
 
 const router = new VueRouter({

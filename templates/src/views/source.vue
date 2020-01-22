@@ -22,6 +22,18 @@
       hide-default-footer
       class="elevation-2">
 
+      <template v-slot:item.subm_no="{ item }">
+        <a @click="$router.push({path:'/source/' + item.subm_no})">{{item.subm_no}}</a>
+      </template>
+
+      <template v-slot:item.prob_no="{ item }">
+        <a @click="$router.push({path:'/problem/' + item.prob_no})">{{item.prob_no}}</a>
+      </template>
+
+      <template v-slot:item.id="{ item }">
+        <a @click="$router.push({path:'/profile/' + item.id})">{{item.id}}</a>
+      </template>
+
       <template v-slot:item.result="{ item }">
         <font v-if="item.result==0" color="black">{{$store.state.result[item.result]}}</font>
         <font v-else-if="item.result==1" color="#00C853">{{$store.state.result[item.result]}}</font>
@@ -45,6 +57,11 @@
     </v-data-table>
   </v-container>
 </template>
+
+<style scoped>
+  a {color:black; text-decoration:none;}
+  a:hover {color:black; text-decoration:underline;}
+</style>
 
 <script>
 import codeEditor from '../semiViews/codeEditor.vue'

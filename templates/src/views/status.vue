@@ -95,8 +95,8 @@
 </template>
 
 <style scoped>
-  a {text-decoration:none;}
-  a:hover {text-decoration:underline;}
+  a {color:black; text-decoration:none;}
+  a:hover {color:black; text-decoration:underline;}
 </style>
 
 <script>

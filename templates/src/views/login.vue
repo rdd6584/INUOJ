@@ -44,7 +44,7 @@
         this.$axios.post('/api/login', {id:this.id, pass:this.$sha256(this.pass)})
         .then(res => {
           localStorage.setItem('token', res.data.token)
-          this.$f.userId = this.id
+          this.$f.getUserValid() // $f.userId, admin 정보 갱신
           this.$router.push({path:'/'})
         })
         .catch(err => {

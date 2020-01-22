@@ -3,7 +3,8 @@ import axios from 'axios'
 
   export default{
     data: () => ({
-      userId: ""
+      userId: "",
+      admin: "",
     }),
     methods: {
       isOnlyNum(st) {
@@ -19,6 +20,7 @@ import axios from 'axios'
         var token = this.getToken()
         if (token == null) {
           this.userId = ""
+          this.admin = ""
           return null
         }
 
@@ -30,15 +32,18 @@ import axios from 'axios'
 
             var parse = this.decodeToken()
             this.userId = parse.id
+            this.admin = parse.admin
 
             return parse
           }).catch(err => {
             this.userId = ""
+            this.admin = ""
             return null}
           )
         }
         else {
           this.userId = parse.id
+          this.admin = parse.admin
           return parse
         }
       },
