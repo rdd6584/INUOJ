@@ -1,57 +1,59 @@
 <template>
-  <v-row justify="center" align="center">
-      <v-form
-        ref="form"
-        v-model="valid"
-        style="min-width:500px"
-      >
-        <v-text-field
-          v-model="id"
-          :rules="idRules"
-          :counter="20"
-          label="아이디"
-          maxlength="20"
-          @keyup="valCheck(1)"
-          required
-        ></v-text-field>
-
-        <v-text-field
-          v-model="pass"
-          :rules="passRules"
-          type="password"
-          label="비밀번호"
-          maxlength="20"
-          required
-        ></v-text-field>
-
-        <v-text-field
-          v-model="passConf"
-          :rules="passConfRules"
-          type="password"
-          label="비밀번호 확인"
-          maxlength="20"
-          required
-        ></v-text-field>
-
-        <v-text-field
-          v-model="email"
-          :rules="emailRules"
-          label="E-mail"
-          maxlength="50"
-          @keyup="valCheck(2)"
-          required
-        ></v-text-field>
-        <v-btn
-          :disabled="!valid"
-          color="success"
-          class="mr-4"
-          @click="register()"
+  <v-container>
+    <v-row justify="center" align="center">
+        <v-form
+          ref="form"
+          v-model="valid"
+          style="min-width:43%"
         >
-          회원가입
-        </v-btn>
-      </v-form>
-    </v-card>
-  </v-row>
+          <v-text-field
+            v-model="id"
+            :rules="idRules"
+            :counter="20"
+            label="아이디"
+            maxlength="20"
+            @keyup="valCheck(1)"
+            required
+          ></v-text-field>
+
+          <v-text-field
+            v-model="pass"
+            :rules="passRules"
+            type="password"
+            label="비밀번호"
+            maxlength="20"
+            required
+          ></v-text-field>
+
+          <v-text-field
+            v-model="passConf"
+            :rules="passConfRules"
+            type="password"
+            label="비밀번호 확인"
+            maxlength="20"
+            required
+          ></v-text-field>
+
+          <v-text-field
+            v-model="email"
+            :rules="emailRules"
+            label="E-mail"
+            maxlength="50"
+            @keyup="valCheck(2)"
+            required
+          ></v-text-field>
+          <v-btn
+            :disabled="!valid"
+            color="success"
+            class="mr-4"
+            @click="register()"
+          >
+            회원가입
+          </v-btn>
+        </v-form>
+      </v-card>
+    </v-row>
+  </v-container>
 </template>
 
 <script>

@@ -1,10 +1,10 @@
 <template>
-  <div>
+  <v-container>
     <h1>이메일 인증을 완료하세요!</h1>
     <h1>버튼을 누르면 가입하신 이메일로 인증 메일이 재전송됩니다.</h1>
     <h1>메일이 수신되지 않는 경우, 메일차단내역을 확인하세요.</h1>
     <v-btn @click="sendAuth()">이메일 전송</v-btn>
-  </div>
+  </v-container>
 </template>
 
 <script>

@@ -1,12 +1,35 @@
 <template>
   <v-container>
     <v-card elevation="1">
-      <v-row class="my-2 px-6">
+      <v-row class="mb-0 my-2 px-6">
         <h1>{{userId}}</h1>
         <v-btn v-if="$f.userId==userId" class="mx-1 mt-2" icon><i class="fas fa-cog" style="color:grey; font-size:22px;"></i></v-btn>
         <h4 class="px-6 pt-4">Rank : {{rank}}</h4>
       </v-row>
-      <h4 class="mb-2 pb-6 px-3">{{pr}}<br/></h4>
+      <v-row v-if="changePr==true" class="mb-3">
+        <v-text-field
+          ref="onPr"
+          class="pl-3 mt-0"
+          maxlength="50"
+          style="max-width: 850px"
+          full-width
+          flat
+          dense
+          counter="50"
+          v-model="pr">
+        </v-text-field>
+        <v-btn class="ml-0 mt-2" @click="savePr()" icon>저장</v-btn>
+      </v-row>
+      <v-row v-else class="pt-1 mb-3">
+        <div class="pt-1 pl-6">{{pr}}</div>
+        <v-btn
+          v-if="$f.userId==userId"
+          class="mt-0 ml-0"
+          @click="changePr=true;"
+          icon>
+            <i class="fas fa-pencil-alt"></i>
+          </v-btn>
+      </v-row>
 
     </v-card>
       <v-hover v-slot:default="{ hover }">
@@ -86,7 +109,7 @@
 export default{
   data: () => ({
     userId: "",
-    pr: "자기소개 입니다",
+    pr: "",
     rank: 0,
     ac_count: 0,
     wa_count: 0,
@@ -95,6 +118,7 @@ export default{
     waOn: false,
     numbers: [],
     titles: [],
+    changePr: false,
   }),
   created() {
     this.userId = this.$route.params.id
@@ -108,6 +132,21 @@ export default{
     }).catch(err => {this.$f.malert()})
   },
   methods: {
+    savePr() {
+      this.$f.getUserValid()
+      .then(re => {
+        if (re == null) {
+          this.$router.push("/login")
+          return
+        }
+        this.$axios.post('/api/edit/pr', {
+          id:this.userId,
+          pr:this.pr,
+        }, this.$f.makeHeaderObject())
+        .then(res => { this.changePr=false })
+        .catch(err => { this.$f.malert() })
+      })
+    },
     getList(result) {
       this.$f.getUserValid().then(
         re => {

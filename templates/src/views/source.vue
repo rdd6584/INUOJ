@@ -8,6 +8,7 @@
       auto-grow
       hide-details
       solo
+      flat
       style="border-radius:0;"
       v-model="compile_msg"
     ></v-textarea>
