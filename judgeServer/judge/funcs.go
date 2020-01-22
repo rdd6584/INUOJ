@@ -19,7 +19,7 @@ func updateResultList(submNo int, ac bool) {
 	// 트랜젝션 해야할까 ?
 	err := Udb.QueryRow("select prob_no, id from submits where subm_no=?", submNo).Scan(&probNo, &userID)
 	printErr(err)
-	var ex bool
+	var ex int
 	err = Udb.QueryRow("select result from result_list where id=? and prob_no=?", userID, probNo).Scan(&ex)
 
 	if !ac {
@@ -32,10 +32,14 @@ func updateResultList(submNo int, ac bool) {
 		printErr(err)
 		_, err = Udb.Exec("update user_info set wa_count=wa_count+1 where id=?", userID)
 		printErr(err)
-	} else if ac && !ex {
+		_, err = Udb.Exec("update probs set attempt=attempt+1 where prob_no=?", probNo)
+		printErr(err)
+	} else if ac && ex == WA {
 		_, err = Udb.Exec("update result_list set result=? where id=? and prob_no=?", AC, userID, probNo)
 		printErr(err)
 		_, err = Udb.Exec("update user_info set wa_count=wa_count-1, ac_count=ac_count+1 where id=?", userID)
+		printErr(err)
+		_, err = Udb.Exec("update probs set accept=accept+1 where prob_no=?", probNo)
 		printErr(err)
 	}
 }

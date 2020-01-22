@@ -28,10 +28,15 @@ type loginRes struct {
 	Auth   bool `json:"auth"`
 }
 
-type editInfo struct {
+type editPassword struct {
 	ID          string `json:"id" binding:"required"`
 	Password    string `json:"pass" binding:"required"`
 	NewPassword string `json:"newpass" binding:"required"`
+}
+
+type editPR struct {
+	ID string `json:"id" binding:"required"`
+	PR string `json:"pr"`
 }
 
 type paramInfo struct {

@@ -4,7 +4,6 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/gin-gonic/gin/binding"
 )
 
 func getUserInfo(c *gin.Context) {
@@ -47,17 +46,30 @@ func getUserProbList(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"numbers": nums, "titles": titles})
 }
 
-func editUserInfo(c *gin.Context) {
-	var json editInfo
+func editUserPR(c *gin.Context) {
+	var json editPR
 	var err error
-	if err = c.ShouldBindBodyWith(&json, binding.JSON); err != nil {
+	if err = c.ShouldBind(&json); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	_, err = Udb.Exec("update user_info set pr=? where id=?", json.PR, json.ID)
+	printErr(err)
+
+	c.String(http.StatusOK, "")
+}
+
+func editUserPass(c *gin.Context) {
+	var json editPassword
+	if err := c.ShouldBind(&json); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 	if !isCorrectInfo(json.ID, json.Password) {
-		c.JSON(http.StatusBadRequest, gin.H{"status": "fail"})
+		c.JSON(http.StatusOK, gin.H{"status": "fail"})
 		return
 	}
+
 	editPass(json.ID, json.NewPassword)
 	c.JSON(http.StatusOK, gin.H{"status": "ok"})
 }

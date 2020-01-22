@@ -35,10 +35,11 @@ func ResRouter(e *gin.Engine) {
 
 	// *************** auth 1 && only me ***************
 	var authMy = initJWT(onlyMeAuthorizator)
-	app2 := e.Group("/api")
+	app2 := e.Group("/api/edit")
 	app2.Use(authMy.MiddlewareFunc())
 	{
-		app2.POST("/edit", editUserInfo)
+		app2.POST("/password", editUserPass) // user 비밀번호 변경
+		app2.POST("/pr", editUserPR)         // user 한마디 변경
 	}
 
 	// *************** admin 1 ***************
