@@ -1,35 +1,34 @@
 <template>
   <v-container>
     <v-row justify="center" align="center">
-        <v-form
-          ref="form"
-          style="min-width:43%"
-        >
-          <v-text-field
-            v-model="id"
-            :counter="20"
-            label="아이디"
-            maxlength="20"
-            required
-          ></v-text-field>
+      <v-form
+        ref="form"
+        style="min-width:43%"
+      >
+        <v-text-field
+          v-model="id"
+          :counter="20"
+          label="아이디"
+          maxlength="20"
+          required
+        ></v-text-field>
 
-          <v-text-field
-            v-model="pass"
-            :counter="20"
-            type="password"
-            label="비밀번호"
-            maxlength="20"
-            required
-          ></v-text-field>
+        <v-text-field
+          v-model="pass"
+          :counter="20"
+          type="password"
+          label="비밀번호"
+          maxlength="20"
+          required
+        ></v-text-field>
 
-          <v-btn
-            color="success"
-            class="mr-4"
-            @click="login()"
-          >로그인
-          </v-btn>
-        </v-form>
-      </v-card>
+        <v-btn
+          color="success"
+          class="mr-4"
+          @click="login()"
+        >로그인
+        </v-btn>
+      </v-form>
     </v-row>
   </v-container>
 </template>

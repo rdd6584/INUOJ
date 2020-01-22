@@ -3,7 +3,13 @@
     <v-card elevation="1">
       <v-row class="mb-0 my-2 px-6">
         <h1>{{userId}}</h1>
-        <v-btn v-if="$f.userId==userId" class="mx-1 mt-2" icon><i class="fas fa-cog" style="color:grey; font-size:22px;"></i></v-btn>
+        <v-btn
+          v-if="$f.userId==userId"
+          class="mx-1 mt-2"
+          router :to="{path:'/modify/' + $f.userId}"
+          icon>
+          <i class="fas fa-cog" style="color:grey; font-size:22px;"></i>
+        </v-btn>
         <h4 class="px-6 pt-4">Rank : {{rank}}</h4>
       </v-row>
       <v-row v-if="changePr==true" class="mb-3">

@@ -47,6 +47,11 @@ const routes = [
     component: () => import('../views/profile.vue')
   },
   {
+    path: '/modify/:id',
+    // beforeEnter: (to, from, next) => { forUsers(next) },
+    component: () => import('../views/modifyPass.vue')
+  },
+  {
     path: '/status',
     // beforeEnter: (to, from, next) => { forUsers(next) },
     component: () => import('../views/status.vue')
