@@ -1,9 +1,11 @@
 package httprsp
 
 import (
+	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
 )
 
 func getUserInfo(c *gin.Context) {
@@ -49,7 +51,8 @@ func getUserProbList(c *gin.Context) {
 func editUserPR(c *gin.Context) {
 	var json editPR
 	var err error
-	if err = c.ShouldBind(&json); err != nil {
+	if err = c.ShouldBindBodyWith(&json, binding.JSON); err != nil {
+		log.Println("pass")
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
@@ -61,7 +64,7 @@ func editUserPR(c *gin.Context) {
 
 func editUserPass(c *gin.Context) {
 	var json editPassword
-	if err := c.ShouldBind(&json); err != nil {
+	if err := c.ShouldBindBodyWith(&json, binding.JSON); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}

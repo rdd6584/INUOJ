@@ -38,7 +38,10 @@ func probSubmit(c *gin.Context) {
 	}
 	tx, err := Udb.Begin()
 	panicErr(err)
-	defer tx.Rollback()
+	defer func() {
+		recover()
+		tx.Rollback()
+	}()
 
 	code := []byte(json.UserCode)
 	_, err = tx.Exec("insert into submits(id, prob_no, lang, codelen) values(?,?,?,?)",
@@ -55,11 +58,11 @@ func probSubmit(c *gin.Context) {
 	_, err = tx.Exec("insert into judge_q values(?,?,?)", res, oriNo, json.Lang)
 	panicErr(err)
 
-	err = ioutil.WriteFile(codeDir+strconv.Itoa(res)+fileType(json.Lang), code, 0644)
-	panicErr(err)
-
 	err = tx.Commit()
 	panicErr(err)
+
+	err = ioutil.WriteFile(codeDir+strconv.Itoa(res)+fileType(json.Lang), code, 0644)
+	printErr(err)
 
 	c.String(http.StatusOK, "")
 }
@@ -157,9 +160,7 @@ func getStatus(c *gin.Context) {
 
 	var json submitPage
 	err := Udb.QueryRow("select count(*) from submits " + qry).Scan(&json.DataNum)
-	if err != nil {
-		log.Println(err)
-	}
+	printErr(err)
 
 	rows, err := Udb.Query("select * from submits "+qry+"order by subm_no desc limit ?, ?", top, pageSize)
 	printErr(err)
