@@ -87,7 +87,7 @@ func regiComplete(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	if match, _ := regexp.MatchString("^[a-zA-Z0-9]+@inu\\.ac\\.kr", json.Email); !match {
+	if match, _ := regexp.MatchString("^[a-zA-Z0-9\\_]+@inu\\.ac\\.kr", json.Email); !match {
 		c.JSON(http.StatusBadRequest, gin.H{"status": "noINU"})
 		return
 	}
@@ -188,9 +188,7 @@ func emailAuth(c *gin.Context) {
 
 	var res bool
 	tx, err := Udb.Begin()
-	if err != nil {
-		log.Panic(err)
-	}
+	panicErr(err)
 	defer tx.Rollback()
 	// todo : column 한 줄 체크 필요
 	tx.QueryRow("select exists (select * from authtokens where email=? and token=?)", json.Email, json.Token).Scan(&res)
