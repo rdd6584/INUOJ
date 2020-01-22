@@ -8,7 +8,7 @@
 
 <script>
 export default {
-  beforeRouteUpdate() {
+  created() {
     if (typeof this.$route.query.email !== 'undefined'
       && typeof this.$route.query.token !== 'undefined') {
         this.$axios.post('/api/emailauth', {
