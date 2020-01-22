@@ -124,7 +124,7 @@ func sendMail(rcpt string) {
 	authkey := makeAuthKey()
 
 	// 메시지 작성
-	headerSubject := "Subject: INUOJ 이메일 주소 인증\r\n\r\n"
+	headerSubject := "To: " + rcpt + "\r\nSubject: INUOJ 이메일 주소 인증\r\n\r\n"
 	body := "아래 링크를 누르시면 이메일 인증이 완료됩니다.\r\n"
 	link := domain + "/auth?token=" + authkey + "&email=" + to[0]
 	msg := []byte(headerSubject + body + link)
@@ -138,10 +138,7 @@ func sendMail(rcpt string) {
 	}
 	defer tx.Rollback()
 
-	err = tx.QueryRow("select count from authtokens where email=?", rcpt).Scan(&cnt)
-	if err != nil {
-		log.Panic(err)
-	}
+	_ = tx.QueryRow("select count from authtokens where email=?", rcpt).Scan(&cnt)
 	if cnt == 0 {
 		_, err = tx.Exec("insert into authtokens(email, token) values(?, ?)", rcpt, authkey)
 	} else {
