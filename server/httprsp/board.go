@@ -4,7 +4,9 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
+	"regexp"
 	"strconv"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 )
@@ -69,8 +71,10 @@ func getPostList(c *gin.Context) {
 
 func addNewPost(c *gin.Context) {
 	var po postInfo
-	if err := c.ShouldBind(&po); err != nil {
+	var err error
+	if err = c.ShouldBind(&po); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err})
+		return
 	}
 	var postNo string
 	tx, err := Udb.Begin()
@@ -94,9 +98,60 @@ func addNewPost(c *gin.Context) {
 }
 
 func addNewComment(c *gin.Context) {
+	var cmt cmtInfo
+	var err error
+	if err = c.ShouldBind(&cmt); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err})
+		return
+	}
+	var cmtNo string
+	_, err = Udb.Exec("update posts set cmt_no=cmt_no+1 where post_no=?", cmt.PostNo)
+	printErr(err)
+	err = Udb.QueryRow("select cmt_no from posts where post_no=?", cmt.PostNo).Scan(&cmtNo)
+	printErr(err)
 
+	err = ioutil.WriteFile(postDir+strconv.Itoa(cmt.PostNo)+"/"+cmtNo+"_"+cmt.ID+".txt", []byte(cmt.Comment), 0644)
+	printErr(err)
 }
 
 func viewPost(c *gin.Context) {
+	postNo := c.Param("post_no")
+	var po postInfo
+	var no bool
+	var err error
+	err = Udb.QueryRow("select * from posts where post_no=?", postNo).Scan(&po.PostNo, &po.Title,
+		&po.ID, &po.Category, &no, &po.ProbNo, &po.CmtNo, &po.PostTime)
+	printErr(err)
+	if po.ProbNo != 0 {
+		err = Udb.QueryRow("select title from probs where prob_no=?", po.ProbNo).Scan(&po.ProbTitle)
+		printErr(err)
+	}
+	content, err := ioutil.ReadFile(postDir + postNo + "/content.txt")
+	printErr(err)
+	po.Content = string(content)
 
+	code, err := ioutil.ReadFile(postDir + postNo + "/code.txt")
+	printErr(err)
+	po.Code = string(code)
+
+	files, err := ioutil.ReadDir(postDir + postNo)
+	printErr(err)
+
+	var cmt cmtInfo
+	for _, file := range files {
+		fileName := file.Name()
+		if match, _ := regexp.MatchString("^[1-9]", fileName); match {
+			strArr := strings.Split(fileName, "_")
+			cmt.ID = strArr[1]
+			cmt.CmtTime = file.ModTime().Format("2006-01-02 15:04:05")
+
+			cmtContent, err := ioutil.ReadFile(postDir + postNo + fileName)
+			printErr(err)
+			cmt.Comment = string(cmtContent)
+			po.CmtList = append(po.CmtList, cmt)
+		} else {
+			break
+		}
+	}
+	c.JSON(http.StatusOK, postNo)
 }

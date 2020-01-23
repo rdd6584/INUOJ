@@ -156,8 +156,9 @@ type postInfo struct {
 }
 
 type cmtInfo struct {
+	PostNo  int    `json:"post_no" binding:"required"`
 	ID      string `json:"id" binding:"required"`
-	Comment string `json:"comment"`
+	Comment string `json:"comment" binding:"required"`
 	CmtTime string `json:"cmt_time"`
 }
 
