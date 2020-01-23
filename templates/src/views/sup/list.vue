@@ -3,7 +3,10 @@
     <v-data-table
       :headers="headers"
       :items="desserts"
+      :page.sync="page"
       :items-per-page="15"
+      hide-default-footer
+      @page-count="pageCount = $event"
       class="elevation-1"
     >
       <template v-slot:top>
@@ -80,6 +83,7 @@
       </template>
       <template v-slot:no-data>등록된 문제가 없습니다</template>
     </v-data-table>
+    <v-pagination class="pt-1" total-visible="10" v-model="page" :length="pageLength"></v-pagination>
   </v-container>
 </template>
 
@@ -105,7 +109,16 @@
       },
       sel: 0,
       tsel: 0,
+      page: 1,
     }),
+    computed: {
+      pageLength() {
+        var data_num = this.desserts.length
+        var ret = parseInt(data_num / 15)
+        if (ret === 0 || data_num % 15 != 0) ret++
+        return ret
+      },
+    },
     created () {
       this.$axios.get("/api/bdmin/list?id=" + this.$f.decodeToken().id, this.$f.makeHeaderObject())
       .then(re => {

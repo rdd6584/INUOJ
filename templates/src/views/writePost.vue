@@ -50,7 +50,7 @@
     </v-card>
 
 
-    <textEditor ref="textEdit" place="내용을 입력해주세요."></textEditor>
+    <textEditor ref="textEdit" place="내용을 작성해주세요."></textEditor>
     <codeEditor ref="codeEdit" readOnly="3"></codeEditor>
     <div class="pb-6"></div>
   </v-container>

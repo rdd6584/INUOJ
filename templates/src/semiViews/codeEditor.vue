@@ -35,7 +35,6 @@
 }
 </style>
 
-
 <script>
 import { codemirror } from 'vue-codemirror-lite'
 require('codemirror/mode/go/go')

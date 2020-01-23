@@ -27,7 +27,12 @@
       </template>
 
       <template v-slot:item.prob_no="{ item }">
-        <a @click="$router.push({path:'/problem/' + item.prob_no})">{{item.prob_no}}</a>
+        <v-tooltip right>
+          <template v-slot:activator="{ on }">
+            <a v-on="on" @click="$router.push({path:'/problem/' + item.prob_no})">{{item.prob_no}}</a>
+          </template>
+          <span>{{item.prob_title}}</span>
+        </v-tooltip>
       </template>
 
       <template v-slot:item.id="{ item }">
@@ -69,7 +74,7 @@ import codeEditor from '../semiViews/codeEditor.vue'
     components: {
       codeEditor,
     },
-    created() {
+    mounted() {
       this.$axios.get('/api/source/' + this.$route.params.subm_no, this.$f.makeHeaderObject())
       .then(res => {
         this.$refs.codeView.code = res.data.code

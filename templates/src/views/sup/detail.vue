@@ -157,7 +157,7 @@ import textEditor from "../../semiViews/textEditor.vue"
        datas: [],
        selected: [],
      }),
-     async created() {
+     mounted() {
        this.ori_no = Number(this.$route.params.ori_no)
        this.$axios.get("/api/bdmin/detail/" + this.ori_no, this.$f.makeHeaderObject())
        .then(res => {
