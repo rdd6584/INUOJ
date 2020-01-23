@@ -104,7 +104,15 @@ func onlyMeAuthorizator(data interface{}, c *gin.Context) bool {
 
 func bdminAuthorizator(data interface{}, c *gin.Context) bool {
 	v, ok := data.(*user)
-	if ok && isBdmin(v.ID) {
+	if ok && whatDmin(v.ID, Bdmin) {
+		return true
+	}
+	return false
+}
+
+func adminAuthorizator(data interface{}, c *gin.Context) bool {
+	v, ok := data.(*user)
+	if ok && whatDmin(v.ID, Admin) {
 		return true
 	}
 	return false

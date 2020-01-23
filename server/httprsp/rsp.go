@@ -31,6 +31,9 @@ func ResRouter(e *gin.Engine) {
 		app1.GET("/user/problem", getUserProbList)           // user의 성공, 실패 문제 리스트
 		app1.GET("/list", getProbList)                       // 문제 목록
 		app1.GET("/source/:subm_no", getUserCode)            // 소스코드 보기
+		app1.POST("/board/new/post", addNewPost)             // 새 게시글 작성
+		app1.POST("/board/new/comment", addNewComment)
+		app1.GET("/board/list", getPostList) // 게시글 리스트
 	}
 
 	// *************** auth 1 && only me ***************
@@ -42,7 +45,7 @@ func ResRouter(e *gin.Engine) {
 		app2.POST("/pr", editUserPR)         // user 한마디 변경
 	}
 
-	// *************** admin 1 ***************
+	// *************** bdmin ***************
 	var authBdmin = initJWT(bdminAuthorizator)
 	app3 := e.Group("/api/bdmin")
 	app3.Use(authBdmin.MiddlewareFunc())
@@ -54,6 +57,14 @@ func ResRouter(e *gin.Engine) {
 		app3.GET("/detail/:ori_no", viewProbDetail) // 문제 디테일
 		app3.GET("/list", myProbList)               // 권한이 있는 문제 목록
 		app3.POST("/update/stat", changeStat)       // 문제 공개 상태 변경
+	}
+
+	// *************** admin ***************
+	var authAdmin = initJWT(adminAuthorizator)
+	app4 := e.Group("/api/admin")
+	app4.Use(authAdmin.MiddlewareFunc())
+	{
+		app4.POST("/update/notice")
 	}
 
 	e.NoRoute(toMain)

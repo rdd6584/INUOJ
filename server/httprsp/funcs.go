@@ -26,13 +26,13 @@ func fileType(lang int) string {
 	return ""
 }
 
-func isBdmin(userID string) bool {
+func whatDmin(userID string, dmin int) bool {
 	var res int
 	err := Udb.QueryRow("select admin from users where id=?", userID).Scan(&res)
 	if err != nil {
 		log.Println(err)
 	}
-	return (res >= 1)
+	return (res >= dmin)
 }
 
 func isCorrectInfo(userID string, userPass string) bool {

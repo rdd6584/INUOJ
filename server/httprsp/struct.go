@@ -137,3 +137,29 @@ type modStat struct {
 	FromStat int `json:"fromstat"`
 	ToStat   int `json:"tostat"`
 }
+
+//************************ start board
+type postInfo struct {
+	PostNo   int       `json:"post_no"`
+	Title    string    `json:"title" binding:"required"`
+	Content  string    `json:"content" binding:"required"`
+	Code     string    `json:"code"`
+	ID       string    `json:"id" binding:"required"`
+	Category int       `json:"category"`
+	ProbNo   int       `json:"prob_no"`
+	CmtNo    int       `json:"cmt_no"`
+	CmtList  []cmtInfo `json:"cmt_list"`
+	Result   int       `json:"result"`
+	PostTime string    `json:"post_time"`
+}
+
+type cmtInfo struct {
+	ID      string `json:"id" binding:"required"`
+	Comment string `json:"comment"`
+	CmtTime string `json:"cmt_time"`
+}
+
+type noticeInfo struct {
+	PostNo int  `json:"post_no" binding:"required"`
+	Notice bool `json:"notice"`
+}
