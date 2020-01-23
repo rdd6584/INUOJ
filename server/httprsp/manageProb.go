@@ -82,7 +82,7 @@ func getProbList(c *gin.Context) {
 	err = Udb.QueryRow("select count(*) "+qry, userID).Scan(&json.DataNum)
 	printErr(err)
 
-	qry += "order by prob_no desc limit ?, ?"
+	qry += "order by pr.prob_no desc limit ?, ?"
 	rows, err := Udb.Query("select pr.title, pr.prob_no, pr.attempt, pr.accept, pr.stat, ifnull(rl.result,0) as result "+
 		qry, userID, top, pageSize)
 	printErr(err)

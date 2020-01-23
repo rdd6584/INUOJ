@@ -2,10 +2,17 @@ package httprsp
 
 import (
 	"crypto/rand"
+	"database/sql"
 	"log"
 	"math/big"
 	"net/smtp"
 )
+
+func affectedOneRow(result sql.Result) bool {
+	n, err := result.RowsAffected()
+	printErr(err)
+	return (n == 1)
+}
 
 func isAuthUser(userID string) bool {
 	var auth bool
