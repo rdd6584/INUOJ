@@ -154,7 +154,7 @@ func viewPost(c *gin.Context) {
 			cmt.ID = strArr[1]
 			cmt.CmtTime = file.ModTime().Format("2006-01-02 15:04:05")
 
-			cmtContent, err := ioutil.ReadFile(postDir + postNo + fileName)
+			cmtContent, err := ioutil.ReadFile(postDir + postNo + "/" + fileName)
 			printErr(err)
 			cmt.Comment = string(cmtContent)
 			po.CmtList = append(po.CmtList, cmt)
