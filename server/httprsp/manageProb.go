@@ -71,9 +71,9 @@ func getProbList(c *gin.Context) {
 	top, _ := strconv.Atoi(page)
 	top = (top - 1) * pageSize
 
-	qry := "from probs as pr left join result_list as rl on pr.prob_no=rl.prob_no and rl.id=? "
+	qry := "from probs as pr left join result_list as rl on pr.prob_no=rl.prob_no and rl.id=? where (pr.stat=1 or pr.stat=2) "
 	if title != "" {
-		qry += "where rl.title like '%" + title + "%' "
+		qry += "and rl.title like '%" + title + "%' "
 	}
 
 	var json probListPage
