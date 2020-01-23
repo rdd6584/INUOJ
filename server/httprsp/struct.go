@@ -51,15 +51,16 @@ type authInfo struct {
 }
 
 type submitInfo struct {
-	SubmNo   int    `json:"subm_no"`
-	ID       string `json:"id"`
-	ProbNo   int    `json:"prob_no"`
-	Result   int    `json:"result"`
-	Lang     int    `json:"lang"`
-	RunTime  int    `json:"run_time"`
-	Memory   int    `json:"memory"`
-	Codelen  int    `json:"codelen"`
-	SubmTime string `json:"subm_time"`
+	SubmNo    int    `json:"subm_no"`
+	ID        string `json:"id"`
+	ProbNo    int    `json:"prob_no"`
+	ProbTitle string `json:"prob_title"`
+	Result    int    `json:"result"`
+	Lang      int    `json:"lang"`
+	RunTime   int    `json:"run_time"`
+	Memory    int    `json:"memory"`
+	Codelen   int    `json:"codelen"`
+	SubmTime  string `json:"subm_time"`
 }
 
 type newSubmit struct {
@@ -140,17 +141,18 @@ type modStat struct {
 
 //************************ start board
 type postInfo struct {
-	PostNo   int       `json:"post_no"`
-	Title    string    `json:"title" binding:"required"`
-	Content  string    `json:"content" binding:"required"`
-	Code     string    `json:"code"`
-	ID       string    `json:"id" binding:"required"`
-	Category int       `json:"category"`
-	ProbNo   int       `json:"prob_no"`
-	CmtNo    int       `json:"cmt_no"`
-	CmtList  []cmtInfo `json:"cmt_list"`
-	Result   int       `json:"result"`
-	PostTime string    `json:"post_time"`
+	PostNo    int       `json:"post_no"`
+	Title     string    `json:"title" binding:"required"`
+	Content   string    `json:"content" binding:"required"`
+	Code      string    `json:"code"`
+	ID        string    `json:"id" binding:"required"`
+	Category  int       `json:"category"`
+	ProbNo    int       `json:"prob_no"`
+	ProbTitle string    `json:"prob_title"`
+	CmtNo     int       `json:"cmt_no"`
+	CmtList   []cmtInfo `json:"cmt_list"`
+	Result    int       `json:"result"`
+	PostTime  string    `json:"post_time"`
 }
 
 type cmtInfo struct {

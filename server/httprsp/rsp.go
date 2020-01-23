@@ -34,6 +34,7 @@ func ResRouter(e *gin.Engine) {
 		app1.POST("/board/new/post", addNewPost)             // 새 게시글 작성
 		app1.POST("/board/new/comment", addNewComment)
 		app1.GET("/board/list", getPostList) // 게시글 리스트
+		app1.GET("/board/view/:post_no", viewPost)
 	}
 
 	// *************** auth 1 && only me ***************

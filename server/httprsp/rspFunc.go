@@ -20,6 +20,9 @@ func getUserCode(c *gin.Context) {
 		&subm.ID, &subm.ProbNo, &subm.Result, &subm.Lang, &subm.RunTime, &subm.Memory, &subm.Codelen, &subm.SubmTime)
 	printErr(err)
 
+	err = Udb.QueryRow("select title from probs where prob_no=?", subm.ProbNo).Scan(&subm.ProbTitle)
+	printErr(err)
+
 	dir := codeDir + submNo
 	code, err := ioutil.ReadFile(dir + fileType(subm.Lang))
 	printErr(err)
@@ -170,9 +173,10 @@ func getStatus(c *gin.Context) {
 	for rows.Next() {
 		err := rows.Scan(&tmp.SubmNo, &tmp.ID, &tmp.ProbNo, &tmp.Result,
 			&tmp.Lang, &tmp.RunTime, &tmp.Memory, &tmp.Codelen, &tmp.SubmTime)
-		if err != nil {
-			log.Fatal(err)
-		}
+		printErr(err)
+		err = Udb.QueryRow("select title from probs where prob_no=?", tmp.ProbNo).Scan(&tmp.ProbTitle)
+		printErr(err)
+
 		json.Datas = append(json.Datas, tmp)
 	}
 

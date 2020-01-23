@@ -41,6 +41,10 @@ func getPostList(c *gin.Context) {
 		err = rows2.Scan(&po.PostNo, &po.Title, &po.ID, &po.Category, &no, &po.ProbNo,
 			&po.CmtNo, &po.PostTime, &po.Result)
 		printErr(err)
+		if po.ProbNo != 0 {
+			err = Udb.QueryRow("select title from probs where prob_no=?", po.ProbNo).Scan(&po.ProbTitle)
+			printErr(err)
+		}
 		noticeList = append(noticeList, po)
 	}
 
@@ -53,6 +57,10 @@ func getPostList(c *gin.Context) {
 		err = rows.Scan(&po.PostNo, &po.Title, &po.ID, &po.Category, &no, &po.ProbNo,
 			&po.CmtNo, &po.PostTime, &po.Result)
 		printErr(err)
+		if po.ProbNo != 0 {
+			err = Udb.QueryRow("select title from probs where prob_no=?", po.ProbNo).Scan(&po.ProbTitle)
+			printErr(err)
+		}
 		postList = append(postList, po)
 	}
 
@@ -86,5 +94,9 @@ func addNewPost(c *gin.Context) {
 }
 
 func addNewComment(c *gin.Context) {
+
+}
+
+func viewPost(c *gin.Context) {
 
 }
