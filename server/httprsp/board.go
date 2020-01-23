@@ -3,6 +3,7 @@ package httprsp
 import (
 	"io/ioutil"
 	"net/http"
+	"os"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
@@ -73,6 +74,8 @@ func addNewPost(c *gin.Context) {
 	err = tx.Commit()
 	panicErr(err)
 
+	err = os.MkdirAll(postDir+postNo, os.ModePerm)
+	printErr(err)
 	err = ioutil.WriteFile(postDir+postNo+"/content.txt", []byte(po.Content), 0644)
 	printErr(err)
 	err = ioutil.WriteFile(postDir+postNo+"/code.txt", []byte(po.Code), 0644)
