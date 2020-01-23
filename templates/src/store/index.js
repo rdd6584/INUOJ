@@ -18,10 +18,10 @@ export default new Vuex.Store({
     statOrd: {"미등록" : 0, "채점불가" : 1, "공개" : 2, "비공개" : 3},
     statNedg: [1, 0, 0, 0],
 
-    category2: ['공지사항', '질문', '자유'],
-    category: ['전체', '공지사항', '질문', '자유'],
+    category2: ['공지', '질문', '자유'],
+    category: ['전체', '공지', '질문', '자유'],
     category0: ['질문', '자유'],
-    categoryOrd: {"전체" : 0, "공지사항" : 1, "질문" : 2, "자유" : 3},
+    categoryOrd: {"전체" : 0, "공지" : 1, "질문" : 2, "자유" : 3},
   },
   getters: {
 

@@ -8,8 +8,27 @@
     >
       <template v-slot:top>
         <v-toolbar flat dark color="blue">
+          <v-btn @click="if(category!='전체') {category='전체'; search();}" text>전체</v-btn>
+          <v-btn @click="if(category!='공지') {category='공지'; search();}" text>공지</v-btn>
+          <v-btn @click="if(category!='질문') {category='질문'; search();}" text>질문</v-btn>
+          <v-btn @click="if(category!='자유') {category='자유'; search();}" text>자유</v-btn>
+          <v-btn router :to="{path:'/writepost'}" text large>글 작성</v-btn>
+
           <v-spacer></v-spacer>
-          <v-col class="pr-0 pl-5" cols="2">
+          <v-col class="pr-0" cols="2">
+            <v-select
+              class="pt-6 mt-1"
+              :items="selectList"
+              label="분류"
+              dense
+              solo
+              light
+              outlined
+              v-model="select"
+            ></v-select>
+          </v-col>
+
+          <v-col class="ml-3 pr-0 pl-0" cols="3">
             <v-text-field
               v-model="searchM"
               background-color="rgb(250, 252, 255)"
@@ -26,28 +45,32 @@
         </v-toolbar>
       </template>
 
-      <template v-slot:item="{ index }">
-        <div v-if="index < notice_num" style="background-color:green;"></div>
-      </template>
-
       <template v-slot:item.title="{ item }">
+        <i v-if="desserts.indexOf(item) < notice_num" class="pr-2 fas fa-star"></i>
         <a style="color:black;" @click="$router.push({path:'/post/' + item.post_no})">{{item.title}}</a>
+        <div class="pr-1" v-if="item.cmt_no">({{item.cmt_no}})</div>
       </template>
 
       <template v-slot:item.category="{ item }">
-        <div v-if="item.prob_no == 0">
+        <div v-if="item.prob_no==0 || item.prob_title==''">
           {{item.category}}
         </div>
-        <div v-else>
-          <a style="color:black;" @click="$router.push({path:'/problem/' + item.prob_no})">{{item.prob_no}}번 {{item.category}}</a>
-        </div>
+        <v-tooltip right v-else>
+          <template v-slot:activator="{ on }">
+            <a v-if="item.result==0" v-on="on" style="color:black;" @click="$router.push({path:'/problem/' + item.prob_no})">{{item.prob_no}}번 </a>
+            <a v-else-if="item.result==1" v-on="on" style="color:#00C853;" @click="$router.push({path:'/problem/' + item.prob_no})">{{item.prob_no}}번 </a>
+            <a v-else v-on="on" style="color:red;" @click="$router.push({path:'/problem/' + item.prob_no})">{{item.prob_no}}번 </a>
+            {{item.category}}
+          </template>
+          <span>{{item.prob_title}}</span>
+        </v-tooltip>
       </template>
 
       <template v-slot:item.id="{ item }">
         <a style="color:black;" @click="$router.push({path:'/profile/' + item.id})">{{item.id}}</a>
       </template>
 
-      <template v-slot:no-data>등록된 문제가 없습니다</template>
+      <template v-slot:no-data>등록된 글이 없습니다</template>
     </v-data-table>
     <v-pagination
       v-model="page"
@@ -66,28 +89,25 @@
 
 <script>
 // 검색 인터페이스 구축하고.
-// 마우스 올리면 문제 나오는 거 해야되고
 
 export default {
   data: () => ({
     page: 1,
-    select: "제목", // 검색을 뭐로 할건지?
+    select: "제목",
+    selectList: ["제목", "문제 번호", "작성자"],
     searchM: "",
     category: "전체",
     headers: [
-      { text: '제목', value: 'title', divider: true, width: "50%" },  // 옆에 댓글 수
-      { text: '분류', value: 'category', divider: true, width: "15%" },
-      { text: '작성자', value: 'id', divider: true, width: "15%" },
-      { text: '작성일', value: 'post_time', divider: true, width: "20%" },
+      { text: '제목', value: 'title', sortable:false, divider: true, width: "50%" },  // 옆에 댓글 수
+      { text: '분류', value: 'category', sortable:false, divider: true, width: "15%" },
+      { text: '작성자', value: 'id', sortable:false, divider: true, width: "15%" },
+      { text: '작성일', value: 'post_time', sortable:false, divider: true, width: "20%" },
     ],
     desserts: [],
-    notice: [],
-    normal: [],
     data_num: -1,
     notice_num: 0,
   }),
   created () {
-
     if (typeof this.$route.query.page !== 'undefined') this.page = this.$route.query.page
     if (typeof this.$route.query.title !== 'undefined') {
       this.searchM = this.$route.query.title
@@ -157,10 +177,10 @@ export default {
             this.desserts = res.data.notice
             this.notice_num = this.desserts.length
           }
-          if (res.data.normal) this.desserts.concat(res.data.notice)
 
+          if (res.data.normal) this.desserts = this.desserts.concat(res.data.normal)
           for (var i of this.desserts)
-            i.category = this.$store.state.category2[i.category]
+            i.category = this.$store.state.category[i.category]
         })
       })
     },

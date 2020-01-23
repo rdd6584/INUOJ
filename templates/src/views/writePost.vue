@@ -15,7 +15,7 @@
           ></v-text-field>
         </v-col>
         <v-spacer></v-spacer>
-        <v-btn class="mt-4 mr-6" color="success">업로드</v-btn>
+        <v-btn @click="save()" class="mt-4 mr-6" color="success">업로드</v-btn>
       </v-row>
       <v-col class="pt-0" cols="8">
         <v-row>
@@ -30,7 +30,7 @@
           <v-col class="pr-12 mt-0 pt-0" cols="6">
             <v-select
               v-if="$f.admin==2"
-              :items="$store.state.category"
+              :items="$store.state.category0"
               label="분류"
               dense
               outlined
