@@ -162,7 +162,7 @@ func viewPost(c *gin.Context) {
 			break
 		}
 	}
-	c.JSON(http.StatusOK, postNo)
+	c.JSON(http.StatusOK, po)
 }
 
 func setNotice(c *gin.Context) {
