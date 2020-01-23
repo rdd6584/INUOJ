@@ -2,7 +2,7 @@
   <v-container>
     <v-card>
       <v-row class="pl-8 pt-4">
-        <a @click="$router.push({path:'/problem/' + prob_no})"><h4>{{prob_no}} - {{prob_title}}</h4></a>
+        <a v-if="prob_no" @click="$router.push({path:'/problem/' + prob_no})"><h4>{{prob_no}} - {{prob_title}}</h4></a>
         <h4 class="pl-3">{{category}}</h4>
       </v-row>
       <v-row class="pl-4">
@@ -67,8 +67,8 @@ export default{
     codeEditor,
   },
   mounted() {
-    this.post_no = this.$route.params.num
-    
+    this.post_no = Number(this.$route.params.num)
+
     this.$axios.get('/api/board/view/' + this.post_no, this.$f.makeHeaderObject())
     .then(res => {
       this.title = res.data.title
@@ -78,7 +78,7 @@ export default{
 
       this.id = res.data.id
       this.category = this.$store.state.category[res.data.category]
-      this.prob_no = Number(res.data.prob_no)
+      this.prob_no = res.data.prob_no
       this.prob_title = res.data.prob_title
       if (res.data.cmt_list) this.cmt_list = res.data.cmt_list
       this.post_time = res.data.post_time

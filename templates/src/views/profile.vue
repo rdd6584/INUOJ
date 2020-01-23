@@ -1,6 +1,6 @@
 <template>
   <v-container>
-    <v-card elevation="1">
+    <v-card class="pb-2" elevation="1">
       <v-row class="mb-0 my-2 px-6">
         <h1>{{userId}}</h1>
         <v-btn
@@ -36,8 +36,8 @@
             <i class="fas fa-pencil-alt"></i>
           </v-btn>
       </v-row>
-
     </v-card>
+
       <v-hover v-slot:default="{ hover }">
         <v-card :elevation="hover ? 16 : 1" @click="getList(1)">
           <v-card-title>맞은 문제 {{ac_count}}개</v-card-title>
