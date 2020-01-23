@@ -32,9 +32,10 @@ func ResRouter(e *gin.Engine) {
 		app1.GET("/list", getProbList)                       // 문제 목록
 		app1.GET("/source/:subm_no", getUserCode)            // 소스코드 보기
 		app1.POST("/board/new/post", addNewPost)             // 새 게시글 작성
-		app1.POST("/board/new/comment", addNewComment)
-		app1.GET("/board/list", getPostList) // 게시글 리스트
-		app1.GET("/board/view/:post_no", viewPost)
+		app1.POST("/board/new/comment", addNewComment)       // 새 댓글 작성
+		app1.GET("/board/list", getPostList)                 // 게시글 리스트
+		app1.GET("/board/view/:post_no", viewPost)           // 게시글 보기
+		app1.GET("/ranking", getRankingPage)                 // 랭킹 불러오기
 	}
 
 	// *************** auth 1 && only me ***************
@@ -65,7 +66,7 @@ func ResRouter(e *gin.Engine) {
 	app4 := e.Group("/api/admin")
 	app4.Use(authAdmin.MiddlewareFunc())
 	{
-		app4.POST("/update/notice")
+		app4.POST("/update/notice", setNotice)
 	}
 
 	e.NoRoute(toMain)

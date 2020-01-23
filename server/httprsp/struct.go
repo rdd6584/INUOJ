@@ -89,6 +89,13 @@ type userPage struct {
 	Rank     int    `json:"rank"`
 }
 
+type rankPage struct {
+	ID      string `json:"id"`
+	PR      string `json:"pr"`
+	ACcount int    `json:"ac_count"`
+	Rank    int    `json:"rank"`
+}
+
 //************************ start probs
 type probDetail struct {
 	OriNo       int      `json:"ori_no" form:"ori_no"`

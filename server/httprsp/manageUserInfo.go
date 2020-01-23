@@ -2,10 +2,35 @@ package httprsp
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
 )
+
+const rankPageSize int = 50
+
+func getRankingPage(c *gin.Context) {
+	page := c.Query("page")
+	top, err := strconv.Atoi(page)
+	if err != nil {
+		c.String(http.StatusBadRequest, "")
+		return
+	}
+	top = (top - 1) * rankPageSize
+
+	rows, err := Udb.Query("select id, pr, ac_count, rank() over (order by ac_count desc) "+
+		"as ranking from user_info limit ?, ?", top, rankPageSize)
+	printErr(err)
+	var tmp rankPage
+	var rankList []rankPage
+	for rows.Next() {
+		err = rows.Scan(&tmp.ID, &tmp.PR, &tmp.ACcount, &tmp.Rank)
+		printErr(err)
+		rankList = append(rankList, tmp)
+	}
+	c.JSON(http.StatusOK, rankList)
+}
 
 func getUserInfo(c *gin.Context) {
 	userID := c.Param("userid")

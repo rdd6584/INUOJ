@@ -62,6 +62,8 @@ func getPostList(c *gin.Context) {
 		if po.ProbNo != 0 {
 			err = Udb.QueryRow("select title from probs where prob_no=?", po.ProbNo).Scan(&po.ProbTitle)
 			printErr(err)
+		} else {
+			po.ProbTitle = ""
 		}
 		postList = append(postList, po)
 	}
@@ -78,8 +80,12 @@ func addNewPost(c *gin.Context) {
 	}
 	var postNo string
 	tx, err := Udb.Begin()
+	defer func() {
+		tx.Rollback()
+		_ = recover()
+	}()
 	panicErr(err)
-	_, err = tx.Exec("insert into posts(title, id, prob_no, category)", po.Title, po.ID, po.ProbNo, po.Category)
+	_, err = tx.Exec("insert into posts(title, id, prob_no, category) values(?,?,?,?)", po.Title, po.ID, po.ProbNo, po.Category)
 	panicErr(err)
 	err = tx.QueryRow("select last_insert_id()").Scan(&postNo)
 	panicErr(err)
@@ -154,4 +160,15 @@ func viewPost(c *gin.Context) {
 		}
 	}
 	c.JSON(http.StatusOK, postNo)
+}
+
+func setNotice(c *gin.Context) {
+	var no noticeInfo
+	if err := c.ShouldBind(&no); err != nil {
+		c.String(http.StatusBadRequest, "")
+		return
+	}
+	_, err := Udb.Exec("update posts set notice=? where post_no=?", no.Notice, no.PostNo)
+	printErr(err)
+	c.String(http.StatusOK, "")
 }
