@@ -11,9 +11,9 @@ import (
 
 func getPostList(c *gin.Context) {
 	page := c.Query("page")
-	author := paramInfo{"pt.id", 1, c.Query("author")}
-	probNo := paramInfo{"pt.prob_no", 0, c.Query("prob_no")}
-	title := paramInfo{"pt.title", 1, c.Query("title")}
+	author := paramInfo{"pt.id", 1, c.DefaultQuery("author", "")}
+	probNo := paramInfo{"pt.prob_no", 0, c.DefaultQuery("prob_no", "0")}
+	title := paramInfo{"pt.title", 1, c.DefaultQuery("title", "")}
 	category := paramInfo{"pt.category", 0, c.Query("category")}
 	userID := c.Query("id")
 
@@ -48,6 +48,7 @@ func getPostList(c *gin.Context) {
 	rows, err := Udb.Query("select pt.*, ifnull(rl.result,0) as result "+qry, userID, top, pageSize)
 	defer rows.Close()
 	printErr(err)
+
 	for rows.Next() {
 		err = rows.Scan(&po.PostNo, &po.Title, &po.ID, &po.Category, &no, &po.ProbNo,
 			&po.CmtNo, &po.PostTime, &po.Result)
