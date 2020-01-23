@@ -28,14 +28,25 @@ func getPostList(c *gin.Context) {
 	err = Udb.QueryRow("select count(*) "+qry, userID).Scan(&dataNum)
 	printErr(err)
 
-	rows, err := Udb.Query("select pt.*, ifnull(rl.result,0) as result " + qry +
-		makeWhere(author, probNo, title, category))
-	defer rows.Close()
-	printErr(err)
-
 	var po postInfo
 	var postList, noticeList []postInfo
 	var no bool
+
+	rows2, err := Udb.Query("select pt.*, ifnull(rl.result,0) as result "+qry+"where notice=1", userID)
+	printErr(err)
+	defer rows2.Close()
+
+	for rows2.Next() {
+		err = rows2.Scan(&po.PostNo, &po.Title, &po.ID, &po.Category, &no, &po.ProbNo,
+			&po.CmtNo, &po.PostTime, &po.Result)
+		printErr(err)
+		noticeList = append(noticeList, po)
+	}
+
+	qry += makeWhere(author, probNo, title, category) + "order by post_no desc limit ?, ?"
+	rows, err := Udb.Query("select pt.*, ifnull(rl.result,0) as result "+qry, userID, top, pageSize)
+	defer rows.Close()
+	printErr(err)
 	for rows.Next() {
 		err = rows.Scan(&po.PostNo, &po.Title, &po.ID, &po.Category, &no, &po.ProbNo,
 			&po.CmtNo, &po.PostTime, &po.Result)
@@ -43,16 +54,6 @@ func getPostList(c *gin.Context) {
 		postList = append(postList, po)
 	}
 
-	rows2, err := Udb.Query("select pt.*, ifnull(rl.result,0) as result " + qry + "where notice=1")
-	printErr(err)
-	defer rows2.Close()
-
-	for rows.Next() {
-		err = rows.Scan(&po.PostNo, &po.Title, &po.ID, &po.Category, &no, &po.ProbNo,
-			&po.CmtNo, &po.PostTime, &po.Result)
-		printErr(err)
-		noticeList = append(noticeList, po)
-	}
 	c.JSON(http.StatusOK, gin.H{"data_num": dataNum, "notice": noticeList, "normal": postList})
 }
 
