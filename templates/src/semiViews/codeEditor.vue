@@ -1,6 +1,6 @@
 <template>
   <div class="ma-0">
-    <v-row v-if="readOnly!=2" class="ma-0 pa-0">
+    <v-row v-if="readOnly!=2 && readOnly!=3" class="ma-0 pa-0">
       <v-btn @click="$emit('send')" large class="mt-4 ml-4" color="success" v-if="readOnly!=1">제출</v-btn>
       <v-spacer></v-spacer>
       <v-col class="pa-2" cols="2">

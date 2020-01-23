@@ -12,6 +12,16 @@ import axios from 'axios'
           if (i < '0' || i > '9') return false
         return true
       },
+      modifyString(val) {
+        val = val + ""
+        var ret = ""
+        for (var i of val)
+          if (i >= '0' && i <= '9')
+            ret += i
+
+        if (ret.length == 0) ret = "0"
+        return ret
+      },
       makeHeaderObject() {
         var token = {'headers' : {'Authorization' : 'INUser ' + this.getToken()}}
         return token

@@ -50,6 +50,7 @@
   export default {
     created(){
       this.$f.getUserValid()
+      this.$forceUpdate()
     },
     data: () => ({
 

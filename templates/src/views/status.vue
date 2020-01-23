@@ -152,16 +152,7 @@ export default{
         if (typeof i.lang == 'number') i.lang = this.$store.state.lang[i.lang]
       }
     },
-    modifyString(val) {
-      val = val + ""
-      var ret = ""
-      for (var i of val)
-        if (i >= '0' && i <= '9')
-          ret += i
 
-      if (ret.length == 0) ret = "0"
-      return ret
-    },
     async makeQuery() {
       return await this.$f.getUserValid().
       then(res => {
@@ -170,11 +161,11 @@ export default{
           return null
         }
         var req = {
-          prob_no: Number(this.modifyString(this.prob_no)),
+          prob_no: Number(this.$f.modifyString(this.prob_no)),
           id: this.id,
           lang: this.$store.state.langOrd[this.lang],
           result: this.$store.state.resultOrd[this.result],
-          page: Number(this.modifyString(this.page)),
+          page: Number(this.$f.modifyString(this.page)),
         }
         return req
       })

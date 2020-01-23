@@ -45,6 +45,10 @@ const routes = [
   { path: '/problem/:num', beforeEnter: forUsers, component: () => import('../views/problem.vue') },
   { path: '/source/:subm_no', beforeEnter: forUsers, component: () => import('../views/source.vue') },
 
+  { path: '/writepost', component: () => import('../views/writePost.vue') },
+  { path: '/post/:num', component: () => import('../views/post.vue') },
+  { path: '/board', component: () => import('../views/board.vue') },
+
   { path: '/sup/list', beforeEnter: forBdmin, component: () => import('../views/sup/list.vue') },
   { path: '/sup/detail/:ori_no', beforeEnter: forBdmin, component: () => import('../views/sup/detail.vue') },
 
