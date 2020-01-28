@@ -49,6 +49,8 @@ const routes = [
   { path: '/writepost', beforeEnter: forUsers, component: () => import('../views/writePost.vue') },
   { path: '/post/:num', beforeEnter: forUsers, component: () => import('../views/post.vue') },
 
+  { path: '/ranking', beforeEnter: forUsers, component: () => import('../views/ranking.vue') },
+
   { path: '/sup/list', beforeEnter: forBdmin, component: () => import('../views/sup/list.vue') },
   { path: '/sup/detail/:ori_no', beforeEnter: forBdmin, component: () => import('../views/sup/detail.vue') },
 
