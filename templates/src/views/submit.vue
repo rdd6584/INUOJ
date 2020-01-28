@@ -33,7 +33,13 @@ export default{
         }, this.$f.makeHeaderObject())
         .then(res => {
           this.$router.push({path:'/status?prob_no=' + this.$route.params.num})
-        }).catch(err => {this.$f.malert()})
+        }).catch(err => {
+          if (err.response.status == 404) {
+            alert("존재하지 않는 문제입니다.")
+            return
+          }
+          this.$f.malert()}
+        )
       })
     }
   },

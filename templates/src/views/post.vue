@@ -89,7 +89,12 @@ export default{
       this.prob_title = res.data.prob_title
       if (res.data.cmt_list) this.cmt_list = res.data.cmt_list
       this.post_time = res.data.post_time
-    }).catch(err => {this.$f.malert()})
+    }).catch(err => {
+      if (err.response.status == 404) {
+        this.$router.push('/wrongaccess')
+        return
+      }
+      this.$f.malert()})
   },
   data: () => ({
     post_no: 0,

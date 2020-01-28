@@ -5,7 +5,7 @@
         <v-btn color="success" class="mx-3" router :to="{path: '/submit/' + prob_no}">제출</v-btn>
         <v-spacer></v-spacer>
         <v-btn dark class="mx-3" router :to="{path: '/status?prob_no=' + prob_no}">채점현황</v-btn>
-        <v-btn dark class="mx-3">게시판</v-btn>
+        <v-btn dark class="mx-3" router :to="{path: '/board?&prob_no=' + prob_no}">게시판</v-btn>
       </v-row>
       <v-row>
         <h2>{{title}}</h2>
@@ -117,7 +117,7 @@
      }),
      async created() {
        this.prob_no = Number(this.$route.params.num)
-       await this.$axios.get(`/api/problem/detail/${this.prob_no}?id=${this.$f.id}`,
+       await this.$axios.get(`/api/problem/detail/${this.prob_no}?id=${this.$f.userId}`,
          this.$f.makeHeaderObject())
        .then(res => {
          this.t_limit = res.data.t_limit
@@ -134,7 +134,12 @@
          if (res.data.samplein) this.samplein = res.data.samplein
          if (res.data.sampleout) this.sampleout = res.data.sampleout
        })
-       .catch(err => {this.$f.malert()})
+       .catch(err => {
+         if (err.response.status == 404) {
+           this.$router.push('/wrongaccess')
+           return
+        }
+         this.$f.malert()})
      },
   }
 </script>

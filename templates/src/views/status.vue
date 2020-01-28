@@ -196,9 +196,7 @@ export default{
              if (res.data.datas) this.datas = res.data.datas
              else this.datas = []
              this.modifyDatas()
-           }).catch(err => {
-             // alert("문제 불러오기 오류")
-           })
+           }).catch(err => {this.$f.malert()})
        })
      }
    }

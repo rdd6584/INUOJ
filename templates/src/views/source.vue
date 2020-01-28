@@ -81,7 +81,13 @@ import codeEditor from '../semiViews/codeEditor.vue'
         this.compile_msg = res.data.compile_msg
         this.$refs.codeView.choice = this.$store.state.lang[res.data.submit.lang]
         this.datas.push(res.data.submit)
-      }).catch(err => {this.$f.malert()})
+      }).catch(err => {
+        if (err.response.status == 404) {
+          this.$router.push('/wrongaccess')
+          return
+        }
+        this.$f.malert()}
+      )
     },
     data: () => ({
       compile_msg: "",

@@ -9,7 +9,7 @@ const forBdmin = (to, from, next) => {
   f.getUserValid().then(
     res => {
     if (res === null) next('/login')
-    else if (f.admin == '' || parseInt(f.admin) < 1) next('/wrongAccess')
+    else if (f.admin == '' || parseInt(f.admin) < 1) next('/wrongaccess')
     else next()
   })
 }
@@ -26,7 +26,7 @@ const forNotUsers = (to, from, next) => {
   f.getUserValid().then(
     res => {
     if(res === null) next()
-    else next('/wrongAccess')
+    else next('/wrongaccess')
   })
 }
 
@@ -52,7 +52,7 @@ const routes = [
   { path: '/sup/list', beforeEnter: forBdmin, component: () => import('../views/sup/list.vue') },
   { path: '/sup/detail/:ori_no', beforeEnter: forBdmin, component: () => import('../views/sup/detail.vue') },
 
-  { path: '/wrongAccess', component: () => import('../views/404page.vue') },
+  { path: '/wrongaccess', component: () => import('../views/404page.vue') },
   { path: '/*', component: () => import('../views/404page.vue') },
 ]
 

@@ -24,6 +24,7 @@
           <v-btn @click="logout()" text>로그아웃</v-btn>
           <v-btn router :to="{path : '/list'}" text>문제 목록</v-btn>
           <v-btn router :to="{path:'/status'}" text>채점 현황</v-btn>
+          <v-btn router :to="{path:'/board'}" text>게시판</v-btn>
         </div>
 
         <div v-if="$f.admin == '1' || $f.admin == '2'">

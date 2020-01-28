@@ -3,6 +3,7 @@
     <v-data-table
       :headers="headers"
       :items="desserts"
+      :items-per-page="15 + notice_num"
       hide-default-footer
       class="elevation-1"
     >
@@ -183,6 +184,7 @@ export default {
           if (res.data.normal) this.desserts = this.desserts.concat(res.data.normal)
           for (var i of this.desserts)
             i.category = this.$store.state.category[i.category]
+          this.data_num = res.data.data_num
         })
       })
     },

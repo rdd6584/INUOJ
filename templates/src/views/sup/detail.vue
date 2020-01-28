@@ -175,7 +175,12 @@ import textEditor from "../../semiViews/textEditor.vue"
          if (res.data.sampleout) this.sampleout = res.data.sampleout
          if (res.data.datas) this.datas = res.data.datas
        })
-       .catch(err => {this.$f.malert()})
+       .catch(err => {
+         if (err.response.status == 404) {
+           this.$router.push('/wrongaccess')
+           return
+         }
+         this.$f.malert()})
      },
      methods: {
        selectAll() {
@@ -268,7 +273,7 @@ import textEditor from "../../semiViews/textEditor.vue"
                 }
                 this.files = []
               })
-              .catch( err => { console.log(err); this.$f.malert() })
+              .catch( err => { this.$f.malert() })
            })
        },
        async save() {

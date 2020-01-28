@@ -58,6 +58,9 @@
       ],
       passConf: '',
     }),
+    created() {
+      if (this.$f.userId != this.$route.params.id) { this.$router.push('/wrongaccess'); return; }
+    },
     methods: {
       save () {
         this.$axios.post('/api/edit/password', {

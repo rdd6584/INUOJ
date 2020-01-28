@@ -135,7 +135,12 @@ export default{
       this.wa_count = res.data.wa_count
       this.all_count = res.data.all_count
       this.rank = res.data.rank
-    }).catch(err => {this.$f.malert()})
+    }).catch(err => {
+       if (err.response.status == 404) {
+         this.$router.push('/wrongaccess')
+         return
+      }
+       this.$f.malert()})
   },
   methods: {
     savePr() {

@@ -89,7 +89,6 @@
             this.$router.push('/login')
             return null
           }
-
           var req = {
             title: this.title,
             page: this.page,
@@ -115,7 +114,7 @@
           this.$axios.get('/api/list', req)
           .then(res => {
             if (res.data.problems) this.desserts = res.data.problems
-            else this.desserts = []
+            this.data_num = res.data.data_num
           })
         })
       },
