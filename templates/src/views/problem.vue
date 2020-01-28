@@ -117,7 +117,7 @@
      }),
      async created() {
        this.prob_no = Number(this.$route.params.num)
-       await this.$axios.get(`/api/problem/detail?prob_no=${this.prob_no}&id=${this.$f.userId}`,
+       await this.$axios.get(`/api/problem/detail/${this.prob_no}/${this.$f.userId}`,
          this.$f.makeHeaderObject())
        .then(res => {
          this.t_limit = res.data.t_limit
