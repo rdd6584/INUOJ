@@ -27,9 +27,6 @@ func getPostList(c *gin.Context) {
 	top = (top - 1) * pageSize
 
 	qry := "from posts as pt left join result_list as rl on pt.prob_no=rl.prob_no and rl.id=? "
-	var dataNum int
-	_ = Udb.QueryRow("select count(*) "+qry, userID).Scan(&dataNum)
-
 	var po postInfo
 	var postList, noticeList []postInfo
 	var no bool
@@ -51,8 +48,12 @@ func getPostList(c *gin.Context) {
 		noticeList = append(noticeList, po)
 	}
 
-	qry += makeWhere(author, probNo, title, category) + "order by pt.post_no desc limit ?, ?"
-	rows, err := Udb.Query("select pt.*, ifnull(rl.result,0) as result "+qry, userID, top, pageSize)
+	qry += makeWhere(author, probNo, title, category)
+	var dataNum int
+	_ = Udb.QueryRow("select count(*) "+qry, userID).Scan(&dataNum)
+
+	rows, err := Udb.Query("select pt.*, ifnull(rl.result,0) as result "+qry+
+		"order by pt.post_no desc limit ?, ?", userID, top, pageSize)
 	defer rows.Close()
 	printErr(err)
 

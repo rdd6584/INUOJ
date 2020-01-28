@@ -19,7 +19,11 @@ func changeStat(c *gin.Context) {
 		return
 	}
 	var stat int
-	Udb.QueryRow("select stat from probs where ori_no=?", json.OriNo).Scan(&stat)
+	err = Udb.QueryRow("select stat from probs where ori_no=?", json.OriNo).Scan(&stat)
+	if err != nil {
+		c.String(http.StatusNotFound, "")
+		return
+	}
 	if stat != json.FromStat {
 		c.String(http.StatusInternalServerError, "fromstat is dif")
 		return
@@ -31,14 +35,14 @@ func changeStat(c *gin.Context) {
 		return
 	}
 	if json.FromStat == 0 {
-		moveFile(strconv.Itoa(json.OriNo))
-		// 트랜젝션 ?
 		var probNo int
 		err = Udb.QueryRow("select max(prob_no) from probs").Scan(&probNo)
 		printErr(err)
 
 		_, err = Udb.Exec("update probs set prob_no=? where ori_no=?", probNo+1, json.OriNo)
 		printErr(err)
+
+		moveFile(strconv.Itoa(json.OriNo))
 	}
 	c.String(http.StatusOK, "")
 }
@@ -192,51 +196,85 @@ func discardData(c *gin.Context) {
 	c.String(http.StatusOK, "")
 }
 
+func viewMyProbDetail(c *gin.Context) {
+	var pb probDetail
+	var err error
+	var pNum int
+	ori := c.Param("ori_no")
+	pNum, err = strconv.Atoi(ori)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	var dir, qry string
+	qry = "select t_limit, m_limit, owner, title, stat from probs where ori_no=?"
+	err = Udb.QueryRow(qry, pNum).Scan(&pb.TimeLimit, &pb.MemoryLimit, &pb.Owner, &pb.Title, &pb.Stat)
+	if err != nil {
+		c.String(http.StatusNotFound, "")
+		return
+	}
+
+	dir = makeDir(pNum)
+	files, err := ioutil.ReadDir(dir + inDir)
+	printErr(err)
+
+	for _, file := range files {
+		fileName := file.Name()
+		if !strings.HasPrefix(fileName, "sample") {
+			pb.Datas = append(pb.Datas, fileName[0:len(fileName)-3])
+		}
+	}
+
+	var file []byte
+	for i := 0; i < len(descName); i++ {
+		file, err = ioutil.ReadFile(dir + descName[i])
+		pb.Description = append(pb.Description, string(file))
+	}
+
+	for i := 1; ; i++ {
+		file, err = ioutil.ReadFile(dir + inDir + "sample" + strconv.Itoa(i) + ".in")
+		if err != nil {
+			break
+		}
+		pb.SampleIn = append(pb.SampleIn, string(file))
+
+		file, err = ioutil.ReadFile(dir + outDir + "sample" + strconv.Itoa(i) + ".out")
+		if err != nil {
+			log.Println(err)
+			break
+		}
+		pb.SampleOut = append(pb.SampleOut, string(file))
+	}
+	c.JSON(http.StatusOK, pb)
+}
+
 func viewProbDetail(c *gin.Context) {
 	var pb probDetail
 	var err error
 	var pNum int
-	qry := "select * from probs where ori_no=?"
-	ori := c.Param("ori_no")
 	prob := c.Param("prob_no")
+	userID := c.Param("id")
 
-	var dir string
-	if ori == "" {
-		pNum, err = strconv.Atoi(prob)
-		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-			return
-		}
-
-		Udb.QueryRow("select ori_no from probs where prob_no=?", prob).Scan(&pNum)
-		dir = makeDir(pNum)
-	} else {
-		pNum, err = strconv.Atoi(ori)
-		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-			return
-		}
-
-		dir = makeDir(pNum)
-		files, err := ioutil.ReadDir(dir + inDir)
-		printErr(err)
-
-		for _, file := range files {
-			fileName := file.Name()
-			if !strings.HasPrefix(fileName, "sample") {
-				pb.Datas = append(pb.Datas, fileName[0:len(fileName)-3])
-			}
-		}
-	}
-
-	err = Udb.QueryRow(qry, pNum).Scan(&pb.OriNo, &pb.ProbNo, &pb.TimeLimit,
-		&pb.MemoryLimit, &pb.Attempt, &pb.Accept, &pb.Owner, &pb.Title, &pb.Stat)
+	var dir, qry string
+	pNum, err = strconv.Atoi(prob)
 	if err != nil {
-		log.Println(err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
+	err = Udb.QueryRow("select ori_no from probs where prob_no=?", prob).Scan(&pNum)
+	if err != nil {
+		c.String(http.StatusNotFound, "")
+		return
+	}
+
+	Udb.QueryRow("select result from result_list where id=? and prob_no=?", userID, pNum).Scan(&pb.Result)
+	qry = "select t_limit, m_limit, attempt, accept, owner, title, stat from probs where ori_no=?"
+	err = Udb.QueryRow(qry, pNum).Scan(&pb.TimeLimit, &pb.MemoryLimit, &pb.Attempt, &pb.Accept,
+		&pb.Owner, &pb.Title, &pb.Stat)
+
+	dir = makeDir(pNum)
 	var file []byte
 	for i := 0; i < len(descName); i++ {
 		file, err = ioutil.ReadFile(dir + descName[i])

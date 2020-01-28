@@ -111,6 +111,7 @@ type probDetail struct {
 	SampleIn    []string `json:"samplein" form:"samplein"`
 	SampleOut   []string `json:"sampleout" form:"sampleout"`
 	Datas       []string `json:"datas"`
+	Result      int      `json:"result"`
 }
 
 type probListMy struct {
@@ -141,7 +142,7 @@ type fileArray struct {
 }
 
 type modStat struct {
-	OriNo    int `json:"ori_no"`
+	OriNo    int `json:"ori_no" binding:"required"`
 	FromStat int `json:"fromstat"`
 	ToStat   int `json:"tostat"`
 }

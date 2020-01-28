@@ -208,7 +208,6 @@ func emailAuth(c *gin.Context) {
 	}
 
 	var res bool
-
 	// TODO : column 한 줄 체크 필요
 	err = Udb.QueryRow("select exists (select * from authtokens where email=? and token=?)", json.Email, json.Token).Scan(&res)
 	printErr(err)

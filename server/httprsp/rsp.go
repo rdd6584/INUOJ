@@ -34,7 +34,7 @@ func ResRouter(e *gin.Engine) {
 		app1.POST("/board/new/post", addNewPost)             // 새 게시글 작성
 		app1.POST("/board/new/comment", addNewComment)       // 새 댓글 작성
 		app1.GET("/board/list", getPostList)                 // 게시글 리스트
-		app1.GET("/board/view/:post_no", viewPost)           // 게시글 보기
+		app1.GET("/board/view/:post_no/:id", viewPost)       // 게시글 보기
 		app1.GET("/ranking", getRankingPage)                 // 랭킹 불러오기
 	}
 
@@ -52,13 +52,13 @@ func ResRouter(e *gin.Engine) {
 	app3 := e.Group("/api/bdmin")
 	app3.Use(authBdmin.MiddlewareFunc())
 	{
-		app3.GET("/new", getNewOriNo)               // 문제 추가
-		app3.POST("/upload/desc", uploadDesc)       // 문제 디스크립션
-		app3.POST("/upload/data", uploadData)       // 문제 데이터 추가
-		app3.POST("/discard/data", discardData)     // 문제 데이터 삭제
-		app3.GET("/detail/:ori_no", viewProbDetail) // 문제 디테일
-		app3.GET("/list", myProbList)               // 권한이 있는 문제 목록
-		app3.POST("/update/stat", changeStat)       // 문제 공개 상태 변경
+		app3.GET("/new", getNewOriNo)                 // 문제 추가
+		app3.POST("/upload/desc", uploadDesc)         // 문제 디스크립션
+		app3.POST("/upload/data", uploadData)         // 문제 데이터 추가
+		app3.POST("/discard/data", discardData)       // 문제 데이터 삭제
+		app3.GET("/detail/:ori_no", viewMyProbDetail) // 문제 디테일
+		app3.GET("/list", myProbList)                 // 권한이 있는 문제 목록
+		app3.POST("/update/stat", changeStat)         // 문제 공개 상태 변경
 	}
 
 	// *************** admin ***************

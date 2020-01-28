@@ -36,19 +36,14 @@ func fileType(lang int) string {
 func whatDmin(userID string, dmin int) bool {
 	var res int
 	err := Udb.QueryRow("select admin from users where id=?", userID).Scan(&res)
-	if err != nil {
-		log.Println(err)
-	}
+	printErr(err)
 	return (res >= dmin)
 }
 
 func isCorrectInfo(userID string, userPass string) bool {
 	var dbPass string
 	err := Udb.QueryRow("select password from users where id=?", userID).Scan(&dbPass)
-	if err != nil {
-		log.Println(err)
-	}
-	log.Println(dbPass, userPass)
+	printErr(err)
 	return (dbPass == userPass)
 }
 
@@ -56,17 +51,13 @@ func userAuthValid(userID string) (bool, int) {
 	var auth bool
 	var admin int
 	err := Udb.QueryRow("select auth, admin from users where id=?", userID).Scan(&auth, &admin)
-	if err != nil {
-		log.Println(err)
-	}
+	printErr(err)
 	return auth, admin
 }
 
 func editPass(userID string, newPass string) {
 	_, err := Udb.Exec("update users set password=? where id=?", newPass, userID)
-	if err != nil {
-		log.Println(err)
-	}
+	printErr(err)
 }
 
 func isNotNull(x paramInfo) bool {

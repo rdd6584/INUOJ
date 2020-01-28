@@ -14,14 +14,18 @@ func getRankingPage(c *gin.Context) {
 	page := c.Query("page")
 	top, err := strconv.Atoi(page)
 	if err != nil {
-		c.String(http.StatusBadRequest, "")
-		return
+		top = 1
 	}
 	top = (top - 1) * rankPageSize
+
+	var dataNum int
+	err = Udb.QueryRow("select count(*) from user_info").Scan(&dataNum)
+	printErr(err)
 
 	rows, err := Udb.Query("select id, pr, ac_count, rank() over (order by ac_count desc) "+
 		"as ranking from user_info limit ?, ?", top, rankPageSize)
 	printErr(err)
+
 	var tmp rankPage
 	var rankList []rankPage
 	for rows.Next() {
@@ -29,7 +33,7 @@ func getRankingPage(c *gin.Context) {
 		printErr(err)
 		rankList = append(rankList, tmp)
 	}
-	c.JSON(http.StatusOK, rankList)
+	c.JSON(http.StatusOK, gin.H{"data_num": dataNum, "ranklist": rankList})
 }
 
 func getUserInfo(c *gin.Context) {
@@ -50,11 +54,10 @@ func getUserInfo(c *gin.Context) {
 func getUserProbList(c *gin.Context) {
 	userID := c.Query("id")
 	result := c.Query("result")
-	if userID == "" || result == "" {
+	if tmp, err := strconv.Atoi(result); err != nil || tmp < 0 || tmp > WA || userID == "" {
 		c.String(http.StatusBadRequest, "")
 		return
 	}
-	// result string 가능한지 보자
 	rows, err := Udb.Query("select pr.title, pr.prob_no from probs as pr join "+
 		"result_list as rl where pr.prob_no=rl.prob_no and rl.id=? and rl.result=?", userID, result)
 	printErr(err)
