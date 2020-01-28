@@ -13,9 +13,9 @@ type user struct {
 }
 
 type regiInfo struct {
-	ID       string `form:"id" json:"id"`
-	Password string `form:"pass" json:"pass"`
-	Email    string `form:"email" json:"email"`
+	ID       string `json:"id" binding:"required"`
+	Password string `json:"pass" binding:"required"`
+	Email    string `json:"email" binding:"required"`
 }
 
 type loginInfo struct {
@@ -46,8 +46,8 @@ type paramInfo struct {
 }
 
 type authInfo struct {
-	Email string `json:"email"`
-	Token string `json:"token"`
+	Email string `json:"email" binding:"required"`
+	Token string `json:"token" binding:"required"`
 }
 
 type submitInfo struct {

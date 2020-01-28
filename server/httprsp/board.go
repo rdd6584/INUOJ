@@ -111,7 +111,7 @@ func addNewComment(c *gin.Context) {
 	}
 	_ = Udb.QueryRow("select cmt_no from posts where post_no=?", cmt.PostNo).Scan(&cmtNo)
 
-	err = ioutil.WriteFile(postDir+strconv.Itoa(cmt.PostNo)+"/"+cmtNo+"."+cmt.ID+".txt", []byte(cmt.Comment), 0644)
+	err = ioutil.WriteFile(postDir+paddingZero(cmt.PostNo, 1000)+"/"+cmtNo+"."+cmt.ID+".txt", []byte(cmt.Comment), 0644)
 	printErr(err)
 }
 
@@ -174,4 +174,13 @@ func setNotice(c *gin.Context) {
 	_, err := Udb.Exec("update posts set notice=? where post_no=?", no.Notice, no.PostNo)
 	printErr(err)
 	c.String(http.StatusOK, "")
+}
+
+func paddingZero(num int, fm int) string {
+	ret := ""
+	for fm > 0 {
+		ret += strconv.Itoa(num / fm)
+		fm /= 10
+	}
+	return ret
 }
