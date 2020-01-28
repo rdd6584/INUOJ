@@ -14,6 +14,7 @@
             type="password"
             label="현재 비밀번호"
             maxlength="20"
+            @keyup.enter="save()"
             required
           ></v-text-field>
           <v-text-field
@@ -22,6 +23,7 @@
             type="password"
             label="비밀번호"
             maxlength="20"
+            @keyup.enter="save()"
             required
           ></v-text-field>
           <v-text-field
@@ -30,6 +32,7 @@
             type="password"
             label="비밀번호 확인"
             maxlength="20"
+            @keyup.enter="save()"
             required
           ></v-text-field>
           <v-btn

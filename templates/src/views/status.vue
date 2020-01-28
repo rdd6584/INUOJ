@@ -7,6 +7,7 @@
             class="px-3"
             label="문제"
             maxlength="4"
+            @keyup.enter="search()"
             v-model="prob_no"
           ></v-text-field>
         </v-col>
@@ -15,6 +16,7 @@
             class="pr-3"
             label="아이디"
             maxlength="20"
+            @keyup.enter="search()"
             v-model="id"
           ></v-text-field>
         </v-col>

@@ -11,6 +11,7 @@
           label="아이디"
           maxlength="20"
           required
+          @keyup.enter="login()"
         ></v-text-field>
 
         <v-text-field
@@ -20,6 +21,7 @@
           label="비밀번호"
           maxlength="20"
           required
+          @keyup.enter="login()"
         ></v-text-field>
 
         <v-btn

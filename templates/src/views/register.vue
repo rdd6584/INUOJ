@@ -12,6 +12,7 @@
           :counter="20"
           label="아이디"
           maxlength="20"
+          @keyup.enter="register()"
           @keyup="valCheck(1)"
           required
         ></v-text-field>
@@ -21,6 +22,7 @@
           :rules="passRules"
           type="password"
           label="비밀번호"
+          @keyup.enter="register()"
           maxlength="20"
           required
         ></v-text-field>
@@ -30,6 +32,7 @@
           :rules="passConfRules"
           type="password"
           label="비밀번호 확인"
+          @keyup.enter="register()"
           maxlength="20"
           required
         ></v-text-field>
@@ -40,6 +43,7 @@
           label="E-mail"
           maxlength="50"
           @keyup="valCheck(2)"
+          @keyup.enter="register()"
           required
         ></v-text-field>
         <v-btn

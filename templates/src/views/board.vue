@@ -37,6 +37,7 @@
               class="pt-6 mt-1"
               outlined
               dense
+              @keyup.enter="search()"
               placeholder="검색">
             </v-text-field>
           </v-col>

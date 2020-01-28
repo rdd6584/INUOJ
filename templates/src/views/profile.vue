@@ -21,6 +21,7 @@
           full-width
           flat
           dense
+          @keyup.enter="savePr()"
           counter="50"
           v-model="pr">
         </v-text-field>
