@@ -23,19 +23,19 @@ func ResRouter(e *gin.Engine) {
 	app1 := e.Group("/api")
 	app1.Use(authAll.MiddlewareFunc())
 	{
-		app1.GET("/status", getStatus)                       // 전체 데이터 개수, 제출기록
-		app1.GET("/logout", authAll.LogoutHandler)           //***한번 보기
-		app1.GET("/problem/detail/:prob_no", viewProbDetail) // 문제 디테일
-		app1.POST("/problem/submit", probSubmit)             // 답안 제출
-		app1.GET("/profile/:userid", getUserInfo)            // ac, wa, all 카운트
-		app1.GET("/user/problem", getUserProbList)           // user의 성공, 실패 문제 리스트
-		app1.GET("/list", getProbList)                       // 문제 목록
-		app1.GET("/source/:subm_no", getUserCode)            // 소스코드 보기
-		app1.POST("/board/new/post", addNewPost)             // 새 게시글 작성
-		app1.POST("/board/new/comment", addNewComment)       // 새 댓글 작성
-		app1.GET("/board/list", getPostList)                 // 게시글 리스트
-		app1.GET("/board/view/:post_no/:id", viewPost)       // 게시글 보기
-		app1.GET("/ranking", getRankingPage)                 // 랭킹 불러오기
+		app1.GET("/status", getStatus)                           // 전체 데이터 개수, 제출기록
+		app1.GET("/logout", authAll.LogoutHandler)               //***한번 보기
+		app1.GET("/problem/detail/:prob_no/:id", viewProbDetail) // 문제 디테일
+		app1.POST("/problem/submit", probSubmit)                 // 답안 제출
+		app1.GET("/profile/:userid", getUserInfo)                // ac, wa, all 카운트
+		app1.GET("/user/problem", getUserProbList)               // user의 성공, 실패 문제 리스트
+		app1.GET("/list", getProbList)                           // 문제 목록
+		app1.GET("/source/:subm_no", getUserCode)                // 소스코드 보기
+		app1.POST("/board/new/post", addNewPost)                 // 새 게시글 작성
+		app1.POST("/board/new/comment", addNewComment)           // 새 댓글 작성
+		app1.GET("/board/list", getPostList)                     // 게시글 리스트
+		app1.GET("/board/view/:post_no", viewPost)               // 게시글 보기
+		app1.GET("/ranking", getRankingPage)                     // 랭킹 불러오기
 	}
 
 	// *************** auth 1 && only me ***************

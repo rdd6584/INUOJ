@@ -51,9 +51,9 @@ func getPostList(c *gin.Context) {
 	qry += makeWhere(author, probNo, category)
 	if title != "" {
 		if author.Value == "" && probNo.Value == "0" && category.Value == "0" {
-			qry += "and "
-		} else {
 			qry += "where "
+		} else {
+			qry += "and "
 		}
 		qry += "title like '%" + title + "%' "
 	}
