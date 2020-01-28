@@ -32,21 +32,21 @@
       </v-simple-table>
 
       <v-row class="pt-3">
-        <span v-html="description[0]"></span>
+        <span class="viewHtml" v-html="description[0]"></span>
       </v-row>
 
       <v-row>
         <h3 style="color:rgb(0, 98, 184);" class="mt-1">입력</h3>
       </v-row>
       <v-row>
-        <span v-html="description[1]"></span>
+        <span class="viewHtml" v-html="description[1]"></span>
       </v-row>
 
       <v-row>
         <h3 style="color:rgb(0, 98, 184);" class="mt-1">출력</h3>
       </v-row>
       <v-row>
-        <span v-html="description[2]"></span>
+        <span class="viewHtml" v-html="description[2]"></span>
       </v-row>
 
       <v-divider class="mt-6"></v-divider>
@@ -91,6 +91,13 @@
     </v-card>
   </v-container>
 </template>
+
+<style scoped>
+.viewHtml >>> img { max-width: 100%; max-height: 70%;}
+.viewHtml >>> .ql-align-left { text-align: left; }
+.viewHtml >>> .ql-align-center { text-align: center; }
+.viewHtml >>> .ql-align-right { text-align: right; }
+</style>
 
 <script>
   export default{

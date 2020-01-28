@@ -11,19 +11,19 @@
       </v-row>
 
     </v-card>
-    <v-card class="mt-1 pl-4">
+    <v-card class="mt-1 px-4">
       <v-row class="pl-4">
         <v-card-title class="px-0 pb-0">본문</v-card-title>
         <v-spacer/>
-        <v-col class="pr-6" style="text-align:right;" align-self="end">
+        <v-col class="pr-2" style="text-align:right;" align-self="end">
           <a @click="$router.push({path: '/profile/' + id})">{{id}} </a>
           <div>{{post_time}}</div>
         </v-col>
       </v-row>
       <v-divider></v-divider>
       <div class="pt-6"/>
-      <span v-html="content"/>
-      <div class="py-6"/>
+      <span class="viewHtml" v-html="content"/>
+      <div class="py-3"/>
     </v-card>
 
     <div class="pt-1" v-if="codeExist==true">
@@ -35,19 +35,19 @@
     </div>
 
 
-    <v-card v-for="(val, i) in cmt_list" class="mt-1 pl-4">
+    <v-card v-for="(val, i) in cmt_list" class="mt-1 px-4">
       <v-row class="pl-4">
         <v-card-title class="px-0 pb-0">댓글</v-card-title>
         <v-spacer/>
-        <v-col class="pr-6" style="text-align:right;" align-self="end">
+        <v-col class="pr-2" style="text-align:right;" align-self="end">
           <a @click="$router.push({path: '/profile/' + val.id})">{{val.id}} </a>
           <div>{{val.cmt_time}}</div>
         </v-col>
       </v-row>
       <v-divider></v-divider>
       <div class="pt-6"/>
-      <span v-html="val.comment"/>
-      <div class="py-6"/>
+      <span class="viewHtml" v-html="val.comment"/>
+      <div class="py-3"/>
     </v-card>
 
     <textEditor ref="textEdit" place="댓글을 작성해주세요."></textEditor>
@@ -56,6 +56,13 @@
     </v-row>
   </v-container>
 </template>
+
+<style scoped>
+.viewHtml >>> img { max-width: 100%; max-height: 70%;}
+.viewHtml >>> .ql-align-left { text-align: left; }
+.viewHtml >>> .ql-align-center { text-align: center; }
+.viewHtml >>> .ql-align-right { text-align: right; }
+</style>
 
 <script>
 import textEditor from '../semiViews/textEditor.vue'
@@ -107,14 +114,10 @@ export default{
         this.$axios.post('/api/board/new/comment', {
           post_no: this.post_no,
           id: this.$f.userId,
-          content: this.$refs.textEdit.content,
+          comment: this.$refs.textEdit.content,
         }, this.$f.makeHeaderObject())
         .then(res => {
-          this.cmt_list.push({
-            post_no: this.post_no,
-            id: this.$f.userId,
-            comment: this.$refs.textEdit.content})
-          this.$refs.textEditor.content = ""
+          this.$router.go(0)
         }).catch(err => {this.$f.malert()})
       })
     },

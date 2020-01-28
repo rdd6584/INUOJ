@@ -12,7 +12,7 @@
           <v-btn @click="if(category!='공지') {category='공지'; search();}" text>공지</v-btn>
           <v-btn @click="if(category!='질문') {category='질문'; search();}" text>질문</v-btn>
           <v-btn @click="if(category!='자유') {category='자유'; search();}" text>자유</v-btn>
-          <v-btn router :to="{path:'/writepost'}" text large>글 작성</v-btn>
+          <v-btn @click="$router.push({path:'/writepost'})" text large>글 작성</v-btn>
 
           <v-spacer></v-spacer>
           <v-col class="pr-0" cols="2">
@@ -46,9 +46,11 @@
       </template>
 
       <template v-slot:item.title="{ item }">
-        <i v-if="desserts.indexOf(item) < notice_num" class="pr-2 fas fa-star"></i>
-        <a style="color:black;" @click="$router.push({path:'/post/' + item.post_no})">{{item.title}}</a>
-        <div class="pr-1" v-if="item.cmt_no">({{item.cmt_no}})</div>
+        <p>
+          <i v-if="desserts.indexOf(item) < notice_num" class="pr-2 fas fa-star"></i>
+          <a style="color:black;" @click="$router.push({path:'/post/' + item.post_no})">{{item.title}}</a>
+          <span class="pl-1" v-if="item.cmt_no">({{item.cmt_no}})</span>
+        </p>
       </template>
 
       <template v-slot:item.category="{ item }">

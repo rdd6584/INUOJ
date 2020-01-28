@@ -1,6 +1,6 @@
 <template>
   <v-container>
-    <v-card class="pb-2" elevation="1">
+    <v-card class="pb-1 mb-2" elevation="1">
       <v-row class="mb-0 my-2 px-6">
         <h1>{{userId}}</h1>
         <v-btn
