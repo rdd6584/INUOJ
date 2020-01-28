@@ -15,8 +15,8 @@ func getPostList(c *gin.Context) {
 	page := c.Query("page")
 	author := paramInfo{"pt.id", 1, c.DefaultQuery("author", "")}
 	probNo := paramInfo{"pt.prob_no", 0, c.DefaultQuery("prob_no", "0")}
-	title := paramInfo{"pt.title", 1, c.DefaultQuery("title", "")}
-	category := paramInfo{"pt.category", 0, c.Query("category")}
+	category := paramInfo{"pt.category", 0, c.DefaultQuery("category", "0")}
+	title := c.DefaultQuery("title", "")
 	userID := c.Query("id")
 
 	top, err := strconv.Atoi(page)
@@ -48,7 +48,16 @@ func getPostList(c *gin.Context) {
 		noticeList = append(noticeList, po)
 	}
 
-	qry += makeWhere(author, probNo, title, category)
+	qry += makeWhere(author, probNo, category)
+	if title != "" {
+		if author.Value == "" && probNo.Value == "0" && category.Value == "0" {
+			qry += "and "
+		} else {
+			qry += "where "
+		}
+		qry += "title like '%" + title + "%' "
+	}
+
 	var dataNum int
 	_ = Udb.QueryRow("select count(*) "+qry, userID).Scan(&dataNum)
 

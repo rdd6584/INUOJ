@@ -49,7 +49,7 @@ func changeStat(c *gin.Context) {
 
 func myProbList(c *gin.Context) {
 	id := c.Query("id")
-	rows, err := Udb.Query("select pr.ori_no, pr.prob_no, pr.title, pr.stat "+
+	rows, err := Udb.Query("select pr.ori_no, ifnull(pr.prob_no,0), pr.title, pr.stat "+
 		"from probs as pr join prob_auth as pa where pr.ori_no=pa.ori_no and pa.id=? order by pr.ori_no desc", id)
 	printErr(err)
 	defer rows.Close()
@@ -77,7 +77,7 @@ func getProbList(c *gin.Context) {
 
 	qry := "from probs as pr left join result_list as rl on pr.prob_no=rl.prob_no and rl.id=? where (pr.stat=1 or pr.stat=2) "
 	if title != "" {
-		qry += "and rl.title like '%" + title + "%' "
+		qry += "and pr.title like '%" + title + "%' "
 	}
 
 	var json probListPage
