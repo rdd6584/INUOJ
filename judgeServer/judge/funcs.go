@@ -98,7 +98,7 @@ func run(oriNo int, lang int, submNo int) {
 			" --output_path=" + judgerDir + "/output.txt" + " --error_path=" + judgerDir + "/error.txt" +
 			" --uid=0 --gid=0 --seccomp_rule_name=c_cpp"
 
-		c := exec.Command("cmd", "/C", script)
+		c := exec.Command("/bin/bash", "-c", script)
 		stdout, err := c.CombinedOutput()
 		printErr(err)
 
@@ -151,13 +151,13 @@ func compile(lang int, submNo string) bool {
 	var script string
 	switch lang {
 	case C:
-		script = submitDir + submNo +
+		script = "gcc " + submitDir + submNo +
 			".c -o /home/Main.o -O2 -Wall -lm -static -std=c99 -DONLINE_JUDGE -DBOJ"
 	case Cpp:
-		script = submitDir + submNo +
+		script = "g++ " + submitDir + submNo +
 			".cpp -o /home/Main.o -O2 -Wall -lm -static -std=gnu++17 -DONLINE_JUDGE -DBOJ"
 	}
-	c := exec.Command(exeType(lang), script)
+	c := exec.Command("/bin/bash", "-c", script)
 	stdout, err := c.CombinedOutput()
 	ioutil.WriteFile(submitDir+submNo+".txt", stdout, 0644)
 	if err != nil {
