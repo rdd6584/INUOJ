@@ -169,7 +169,7 @@ func viewPost(c *gin.Context) {
 	var cmt cmtInfo
 	for _, file := range files {
 		fileName := file.Name()
-		if match, _ := regexp.MatchString("^[1-9]", fileName); match {
+		if match, _ := regexp.MatchString("^[0-9]", fileName); match {
 			strArr := strings.Split(fileName, ".")
 			cmt.ID = strArr[1]
 			cmt.CmtTime = file.ModTime().Format("2006-01-02 15:04:05")
