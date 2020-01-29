@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"log"
+	"os"
 	"os/exec"
 	"strconv"
 	"strings"
@@ -94,7 +95,7 @@ func run(oriNo int, lang int, submNo int) {
 		script = judgerDir + "/libjudger.so " + "--max_cpu_time=" + strconv.Itoa(proT) +
 			" --max_real_time=" + strconv.Itoa(proT) + " --max_memory=" + strconv.Itoa(proM*1024*1024) +
 			" --max_process_number=" + maxProcessNum + " --max_output_size=" + maxOutputSize +
-			" --exe_path=" + judgerDir + "/Main.o" + " --input_path=" + inputDir + file.Name() +
+			" --exe_path=" + judgerDir + getExeFile(lang) + " --input_path=" + inputDir + file.Name() +
 			" --output_path=" + judgerDir + "/output.txt" + " --error_path=" + judgerDir + "/error.txt" +
 			" --uid=0 --gid=0 --seccomp_rule_name=c_cpp"
 
@@ -152,19 +153,35 @@ func compile(lang int, submNo string) bool {
 	switch lang {
 	case C:
 		script = "gcc " + submitDir + submNo +
-			".c -o " + judgerDir + "/Main.o -O2 -Wall -lm -static -std=c99 -DONLINE_JUDGE -DBOJ"
+			"/Main.c -o " + judgerDir + "/Main.o -O2 -Wall -lm -static -std=c99 -DONLINE_JUDGE -DBOJ"
 	case Cpp:
 		script = "g++ " + submitDir + submNo +
-			".cpp -o " + judgerDir + "/Main.o -O2 -Wall -lm -static -std=gnu++17 -DONLINE_JUDGE -DBOJ"
+			"/Main.cpp -o " + judgerDir + "/Main.o -O2 -Wall -lm -static -std=gnu++17 -DONLINE_JUDGE -DBOJ"
+	case Java:
+		script = "javac -J-Xms1024m -J-Xmx1024m -J-Xss512m -encoding UTF-8" +
+			submitDir + submNo + "/Main.java"
+		err := os.Rename(submitDir+submNo+"/Main.class", judgerDir+"/Main.class")
+		printErr(err)
 	}
 	c := exec.Command("/bin/bash", "-c", script)
 	stdout, err := c.CombinedOutput()
-	ioutil.WriteFile(submitDir+submNo+".txt", stdout, 0644)
+	ioutil.WriteFile(submitDir+submNo+"/compileMsg.txt", stdout, 0644)
 	if err != nil {
 		log.Println("compile : ", err)
 		return false
 	}
 	return true
+}
+
+func getExeFile(lang int) string {
+	var ret string
+	switch lang {
+	case C, Cpp:
+		ret = "/Main.o"
+	case Java:
+		ret = "/Main.class"
+	}
+	return ret
 }
 
 func toOut(name string) string {

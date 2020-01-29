@@ -32,9 +32,9 @@ func getUserCode(c *gin.Context) {
 	printErr(err)
 
 	dir := codeDir + submNo
-	code, err := ioutil.ReadFile(dir + fileType(subm.Lang))
+	code, err := ioutil.ReadFile(dir + "/Main" + fileType(subm.Lang))
 	printErr(err)
-	msg, err := ioutil.ReadFile(dir + ".txt")
+	msg, err := ioutil.ReadFile(dir + "/compileMsg.txt")
 	printErr(err)
 
 	c.JSON(http.StatusOK, gin.H{"code": string(code), "compile_msg": string(msg), "submit": subm})
@@ -72,7 +72,7 @@ func probSubmit(c *gin.Context) {
 	err = tx.Commit()
 	panicErr(err)
 
-	err = ioutil.WriteFile(codeDir+strconv.Itoa(int(res))+fileType(json.Lang), code, 0644)
+	err = ioutil.WriteFile(codeDir+strconv.Itoa(int(res))+"/Main"+fileType(json.Lang), code, 0644)
 	printErr(err)
 
 	c.String(http.StatusOK, "")
