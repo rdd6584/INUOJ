@@ -95,6 +95,10 @@ func addNewPost(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err})
 		return
 	}
+	if po.Category == Notice && !whatDmin(po.ID, Admin) {
+		c.String(http.StatusForbidden, "")
+		return
+	}
 	var postNo string
 	result, err := Udb.Exec("insert into posts(title, id, prob_no, category) values(?,?,?,?)", po.Title, po.ID, po.ProbNo, po.Category)
 	printErr(err)
