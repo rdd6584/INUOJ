@@ -30,7 +30,7 @@
           <v-col class="pr-12 mt-0 pt-0" cols="6">
             <v-select
               v-if="$f.admin==2"
-              :items="$store.state.category0"
+              :items="$store.state.category2"
               label="분류"
               dense
               outlined
@@ -38,7 +38,7 @@
             ></v-select>
             <v-select
               v-else
-              :items="$store.state.category2"
+              :items="$store.state.category0"
               label="분류"
               dense
               outlined

@@ -48,7 +48,7 @@
       </template>
 
       <template v-slot:item.title="{ item }">
-        <p>
+        <p class="pa-0 ma-0">
           <i v-if="desserts.indexOf(item) < notice_num" class="pr-2 fas fa-star"></i>
           <a style="color:black;" @click="$router.push({path:'/post/' + item.post_no})">{{item.title}}</a>
           <span class="pl-1" v-if="item.cmt_no">({{item.cmt_no}})</span>
