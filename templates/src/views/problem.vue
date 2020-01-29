@@ -9,6 +9,12 @@
       </v-row>
       <v-row>
         <h2>{{title}}</h2>
+        <i v-if="result==1" style="color:#00C853;" class="mx-2 mt-3 fas fa-circle"></i>
+        <i v-else-if="result!=0" style="color:red;" class="mx-2 mt-3 fas fa-circle"></i>
+        <v-spacer></v-spacer>
+        <span class="pr-1 pt-3" v-if="owner != ''">
+          출제자:<a class="line" style="color:black;" @click="$router.push({path:'/profile/' + owner})">{{owner}}</a>
+        </span>
       </v-row>
       <v-simple-table dense>
         <template v-slot:default>
@@ -93,6 +99,9 @@
 </template>
 
 <style scoped>
+a.line {text-decoration:none;}
+a.line:hover {text-decoration:underline;}
+
 .viewHtml >>> img { max-width: 100%; max-height: 70%;}
 .viewHtml >>> .ql-align-left { text-align: left; }
 .viewHtml >>> .ql-align-center { text-align: center; }

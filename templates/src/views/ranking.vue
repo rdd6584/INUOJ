@@ -3,7 +3,7 @@
     <v-data-table
       :headers="headers"
       :items="desserts"
-      :items-per-page="15"
+      :items-per-page="50"
       hide-default-footer
       class="elevation-1"
     >
@@ -47,8 +47,8 @@
     },
     computed: {
       pageLength() {
-        var ret = parseInt(this.data_num / 15)
-        if (ret === 0 || this.data_num % 15 != 0) ret++
+        var ret = parseInt(this.data_num / 50)
+        if (ret === 0 || this.data_num % 50 != 0) ret++
         return ret
       },
     },
