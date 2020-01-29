@@ -152,16 +152,16 @@ func compile(lang int, submNo string) bool {
 	switch lang {
 	case C:
 		script = "gcc " + submitDir + submNo +
-			".c -o /home/Main.o -O2 -Wall -lm -static -std=c99 -DONLINE_JUDGE -DBOJ"
+			".c -o " + judgerDir + "/Main.o -O2 -Wall -lm -static -std=c99 -DONLINE_JUDGE -DBOJ"
 	case Cpp:
 		script = "g++ " + submitDir + submNo +
-			".cpp -o /home/Main.o -O2 -Wall -lm -static -std=gnu++17 -DONLINE_JUDGE -DBOJ"
+			".cpp -o " + judgerDir + "/Main.o -O2 -Wall -lm -static -std=gnu++17 -DONLINE_JUDGE -DBOJ"
 	}
 	c := exec.Command("/bin/bash", "-c", script)
 	stdout, err := c.CombinedOutput()
 	ioutil.WriteFile(submitDir+submNo+".txt", stdout, 0644)
 	if err != nil {
-		log.Println("compile err : ", err)
+		log.Println("compile : ", err)
 		return false
 	}
 	return true
