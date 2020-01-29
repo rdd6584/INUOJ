@@ -158,10 +158,8 @@ func compile(lang int, submNo string) bool {
 		script = "g++ " + submitDir + submNo +
 			"/Main.cpp -o " + judgerDir + "/Main.o -O2 -Wall -lm -static -std=gnu++17 -DONLINE_JUDGE -DBOJ"
 	case Java:
-		script = "javac -J-Xms1024m -J-Xmx1024m -J-Xss512m -encoding UTF-8" +
+		script = "javac -J-Xms1024m -J-Xmx1024m -J-Xss512m -encoding UTF-8 " +
 			submitDir + submNo + "/Main.java"
-		err := os.Rename(submitDir+submNo+"/Main.class", judgerDir+"/Main.class")
-		printErr(err)
 	}
 	c := exec.Command("/bin/bash", "-c", script)
 	stdout, err := c.CombinedOutput()
@@ -169,6 +167,10 @@ func compile(lang int, submNo string) bool {
 	if err != nil {
 		log.Println("compile : ", err)
 		return false
+	}
+	if lang == Java {
+		err := os.Rename(submitDir+submNo+"/Main.class", judgerDir+"/Main.class")
+		printErr(err)
 	}
 	return true
 }
