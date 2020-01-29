@@ -1,12 +1,7 @@
-/Judger
+/judger/
 /posts/
-/server/bin/
-/server/src/
-/server/pkg/
 /templates/.DS_Store
 /templates/node_modules
-/templates/dist
-publy.go
 
 # local env files
 .env.local
