@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"io/ioutil"
 	"net/http"
+	"os"
 	"regexp"
 	"strconv"
 
@@ -72,6 +73,8 @@ func probSubmit(c *gin.Context) {
 	err = tx.Commit()
 	panicErr(err)
 
+	err = os.MkdirAll(codeDir+strconv.Itoa(int(res)), os.ModePerm)
+	printErr(err)
 	err = ioutil.WriteFile(codeDir+strconv.Itoa(int(res))+"/Main"+fileType(json.Lang), code, 0644)
 	printErr(err)
 
