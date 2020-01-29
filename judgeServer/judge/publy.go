@@ -1,7 +1,7 @@
 package judge
 
 const (
-	OurMysql      string = "root:ojbydduck0325!@tcp(192.168.0.42:3306)/inuoj"
+	OurMysql      string = "root:ojbydduck0325!@tcp(127.0.0.1:3306)/inuoj"
 	judgerDir     string = "../Judger"
 	privDir       string = "../Judger/problems/private/"
 	pubDir        string = "../Judger/problems/public/"

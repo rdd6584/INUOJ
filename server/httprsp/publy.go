@@ -4,7 +4,7 @@ const (
 	mailSender string = "inuojteam@gmail.com"
 	mailPass   string = "inu20190325"
 	ourKey     string = "Rs9b6w22qGB1po1a7^$37agXez"
-	OurMysql   string = "root:ojbydduck0325!@tcp(192.168.0.42:3306)/inuoj"
+	OurMysql   string = "root:ojbydduck0325!@tcp(127.0.0.1:3306)/inuoj"
 	privDir    string = "../Judger/problems/private/"
 	pubDir     string = "../Judger/problems/public/"
 	codeDir    string = "../Judger/usercodes/"
