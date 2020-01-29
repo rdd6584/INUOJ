@@ -29,6 +29,8 @@ func fileType(lang int) string {
 		return ".cpp"
 	case C:
 		return ".c"
+	case Java:
+		return ".java"
 	}
 	return ""
 }
