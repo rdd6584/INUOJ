@@ -82,8 +82,8 @@ func run(oriNo int, lang int, submNo int) {
 	printErr(err)
 
 	// stat에 따라 경로 설정해야함
-	inputDir := dockerDir + pubDir + strconv.Itoa(oriNo) + inDir
-	dataDir := "../Judger" + pubDir + strconv.Itoa(oriNo) + outDir
+	inputDir := pubDir + strconv.Itoa(oriNo) + inDir
+	dataDir := pubDir + strconv.Itoa(oriNo) + outDir
 
 	files, err := ioutil.ReadDir("../Judger/problems/public/" + strconv.Itoa(oriNo) + inDir)
 	printErr(err)
@@ -91,12 +91,11 @@ func run(oriNo int, lang int, submNo int) {
 	var script string
 	var maxTime, maxMem int
 	for _, file := range files {
-		script = "docker run --rm -v " + hostDir + ":" + dockerDir + " " +
-			"gcc " + dockerDir + "/libjudger.so --max_cpu_time=" + strconv.Itoa(proT) +
+		script = judgerDir + "/libjudger.so " + "--max_cpu_time=" + strconv.Itoa(proT) +
 			" --max_real_time=" + strconv.Itoa(proT) + " --max_memory=" + strconv.Itoa(proM*1024*1024) +
 			" --max_process_number=" + maxProcessNum + " --max_output_size=" + maxOutputSize +
-			" --exe_path=" + dockerDir + "/Main.o" + " --input_path=" + inputDir + file.Name() +
-			" --output_path=" + dockerDir + "/output.txt" + " --error_path=" + dockerDir + "/error.txt" +
+			" --exe_path=" + judgerDir + "/Main.o" + " --input_path=" + inputDir + file.Name() +
+			" --output_path=" + judgerDir + "/output.txt" + " --error_path=" + judgerDir + "/error.txt" +
 			" --uid=0 --gid=0 --seccomp_rule_name=c_cpp"
 
 		c := exec.Command("cmd", "/C", script)
@@ -118,7 +117,7 @@ func run(oriNo int, lang int, submNo int) {
 			} else if data.Result == 3 {
 				setStatus(submNo, MLE) // 메모리초과
 			} else if data.Result == 5 {
-				setStatus(submNo, SERVER_ERR) // 서버 에러
+				setStatus(submNo, ServerError) // 서버 에러
 			}
 			return
 		}
@@ -149,18 +148,18 @@ func run(oriNo int, lang int, submNo int) {
 }
 
 func compile(lang int, submNo string) bool {
-	script := "docker run --rm -v " + hostDir + ":" + dockerDir + " "
+	var script string
 	switch lang {
 	case C:
-		script += "gcc gcc /home" + submitDir + submNo +
+		script += "gcc " + submitDir + submNo +
 			".c -o /home/Main.o -O2 -Wall -lm -static -std=c99 -DONLINE_JUDGE -DBOJ"
 	case Cpp:
-		script += "gcc g++ /home" + submitDir + submNo +
+		script += "g++ " + submitDir + submNo +
 			".cpp -o /home/Main.o -O2 -Wall -lm -static -std=gnu++17 -DONLINE_JUDGE -DBOJ"
 	}
-	c := exec.Command("cmd", "/C", script)
+	c := exec.Command(script)
 	stdout, err := c.CombinedOutput()
-	ioutil.WriteFile("../Judger/usercodes/"+submNo+".txt", stdout, 0644)
+	ioutil.WriteFile(submitDir+submNo+".txt", stdout, 0644)
 	if err != nil {
 		return false
 	}

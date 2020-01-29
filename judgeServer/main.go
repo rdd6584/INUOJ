@@ -4,12 +4,15 @@ import (
 	jg "INUOJ/judgeServer/judge"
 	"database/sql"
 	"log"
+	"runtime"
 	"time"
 
 	_ "github.com/go-sql-driver/mysql"
 )
 
 func main() {
+	runtime.GOMAXPROCS(runtime.NumCPU() / 2)
+
 	var err error
 	jg.Udb, err = sql.Open("mysql", jg.OurMysql)
 	if err != nil {

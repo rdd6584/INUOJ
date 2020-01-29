@@ -19,10 +19,16 @@ func getPostList(c *gin.Context) {
 	title := c.DefaultQuery("title", "")
 	userID := c.Query("id")
 
-	top, err := strconv.Atoi(page)
-	if err != nil {
-		c.String(http.StatusBadRequest, "")
-		return
+	var top int
+	var err error
+	if top, err = strconv.Atoi(page); err != nil {
+		top = 1
+	}
+	if _, err = strconv.Atoi(probNo.Value); err != nil {
+		probNo.Value = "0"
+	}
+	if tmp, err := strconv.Atoi(category.Value); err != nil || tmp < 0 || tmp >= CategorySize {
+		category.Value = "0"
 	}
 	top = (top - 1) * pageSize
 

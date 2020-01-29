@@ -29,21 +29,28 @@ func changeStat(c *gin.Context) {
 		return
 	}
 
-	_, err = Udb.Exec("update probs set stat=? where ori_no=?", json.ToStat, json.OriNo)
-	if err != nil {
-		log.Println(err)
-		return
-	}
+	tx, err := Udb.Begin()
+	panicErr(err)
+	defer func() {
+		recover()
+		tx.Rollback()
+	}()
+
+	_, err = tx.Exec("update probs set stat=? where ori_no=?", json.ToStat, json.OriNo)
+	panicErr(err)
 	if json.FromStat == 0 {
 		var probNo int
-		err = Udb.QueryRow("select max(prob_no) from probs").Scan(&probNo)
-		printErr(err)
+		err = tx.QueryRow("select max(prob_no) from probs").Scan(&probNo)
+		panicErr(err)
 
-		_, err = Udb.Exec("update probs set prob_no=? where ori_no=?", probNo+1, json.OriNo)
-		printErr(err)
+		_, err = tx.Exec("update probs set prob_no=? where ori_no=?", probNo+1, json.OriNo)
+		panicErr(err)
 
 		moveFile(strconv.Itoa(json.OriNo))
 	}
+	err = tx.Commit()
+	panicErr(err)
+
 	c.String(http.StatusOK, "")
 }
 
@@ -72,7 +79,11 @@ func getProbList(c *gin.Context) {
 		c.String(http.StatusBadRequest, "")
 		return
 	}
-	top, _ := strconv.Atoi(page)
+	var top int
+	var err error
+	if top, err = strconv.Atoi(page); err != nil {
+		top = 1
+	}
 	top = (top - 1) * pageSize
 
 	qry := "from probs as pr left join result_list as rl on pr.prob_no=rl.prob_no and rl.id=? where (pr.stat=1 or pr.stat=2) "
@@ -82,7 +93,6 @@ func getProbList(c *gin.Context) {
 
 	var json probListPage
 	var tmp probListAll
-	var err error
 	err = Udb.QueryRow("select count(*) "+qry, userID).Scan(&json.DataNum)
 	printErr(err)
 
@@ -99,25 +109,26 @@ func getProbList(c *gin.Context) {
 }
 
 func getNewOriNo(c *gin.Context) {
-	var ret int
 	var err error
 	id := c.Query("id")
+
 	tx, err := Udb.Begin()
 	panicErr(err)
 	defer func() {
 		tx.Rollback()
 	}()
 
-	_, err = tx.Exec("insert into probs(owner) values(?)", id)
+	result, err := tx.Exec("insert into probs(owner) values(?)", id)
 	panicErr(err)
-	err = tx.QueryRow("select last_insert_id()").Scan(&ret)
+	ret, err := result.LastInsertId()
 	panicErr(err)
+
 	_, err = tx.Exec("insert into prob_auth values(?,?)", id, ret)
 	panicErr(err)
 	tx.Commit()
 
-	_ = os.MkdirAll(privDir+strconv.Itoa(ret)+inDir, os.ModePerm)
-	_ = os.MkdirAll(privDir+strconv.Itoa(ret)+outDir, os.ModePerm)
+	_ = os.MkdirAll(privDir+strconv.Itoa(int(ret))+inDir, os.ModePerm)
+	_ = os.MkdirAll(privDir+strconv.Itoa(int(ret))+outDir, os.ModePerm)
 
 	c.JSON(http.StatusOK, gin.H{"ori_no": ret})
 }
