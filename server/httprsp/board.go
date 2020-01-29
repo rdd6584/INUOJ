@@ -123,7 +123,7 @@ func addNewComment(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err})
 		return
 	}
-	var cmtNo string
+	var cmtNo int
 	result, _ := Udb.Exec("update posts set cmt_no=cmt_no+1 where post_no=?", cmt.PostNo)
 	if !affectedOneRow(result) {
 		c.String(http.StatusNotFound, "post_no not exist")
@@ -131,7 +131,7 @@ func addNewComment(c *gin.Context) {
 	}
 	_ = Udb.QueryRow("select cmt_no from posts where post_no=?", cmt.PostNo).Scan(&cmtNo)
 
-	err = ioutil.WriteFile(postDir+paddingZero(cmt.PostNo, 1000)+"/"+cmtNo+"."+cmt.ID+".txt", []byte(cmt.Comment), 0644)
+	err = ioutil.WriteFile(postDir+strconv.Itoa(cmt.PostNo)+"/"+paddingZero(cmtNo, 1000)+"."+cmt.ID+".txt", []byte(cmt.Comment), 0644)
 	printErr(err)
 }
 
