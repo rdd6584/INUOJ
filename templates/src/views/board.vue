@@ -65,13 +65,14 @@
             <a v-else-if="item.result==1" v-on="on" style="color:#00C853;" @click="$router.push({path:'/problem/' + item.prob_no})">{{item.prob_no}}번 </a>
             <a v-else v-on="on" style="color:red;" @click="$router.push({path:'/problem/' + item.prob_no})">{{item.prob_no}}번 </a>
             {{item.category}}
-            <div class="pa-0 ma-0" v-if="$f.admin==2">
-              <a class="pl-2" @click="modifyNotice(item.post_no, 1)">올림</a>
-              <a class="pl-2" @click="modifyNotice(item.post_no, 2)">내림</a>
-            </div>
           </template>
           <span>{{item.prob_title}}</span>
         </v-tooltip>
+        <div class="pa-0 ma-0" v-if="$f.admin==2 && item.category=='공지'">
+          <a class="pl-2" @click="modifyNotice(item.post_no, 1)">올림</a>
+          /
+          <a class="pl-2" @click="modifyNotice(item.post_no, 2)">내림</a>
+        </div>
       </template>
 
       <template v-slot:item.id="{ item }">
