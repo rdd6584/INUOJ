@@ -91,8 +91,8 @@ func run(oriNo int, lang int, submNo int) {
 	var script string
 	var maxTime, maxMem int
 	for _, file := range files {
-		script = "./libjudger.so " + "--max_cpu_time=" + strconv.Itoa(proT) +
-			" --max_real_time=" + strconv.Itoa(proT) + " --max_memory=" + strconv.Itoa(proM*1024*1024) +
+		script = "./libjudger.so " + "--max_cpu_time=" + getTimeLimit(lang, proT) +
+			" --max_real_time=" + getTimeLimit(lang, proT) + " --max_memory=" + getMemoryLimit(lang, proM) +
 			" --max_process_number=" + maxProcessNum + " --max_output_size=" + maxOutputSize +
 			" --exe_path=" + getExeFile(lang) + getArgs(lang) + " --input_path=" + inputDir + file.Name() +
 			" --output_path=./output.txt" + " --error_path=./error.txt" +
@@ -174,6 +174,31 @@ func compile(lang int, submNo string) bool {
 	return true
 }
 
+func getTimeLimit(lang int, probT int) string {
+	ret := probT
+	switch lang {
+	case Java:
+		ret = ret + 2000
+	case Python, Pypy:
+		ret = ret*2 + 1000
+	case Go:
+		ret += 500
+	}
+	return strconv.Itoa(ret)
+}
+
+func getMemoryLimit(lang int, probM int) string {
+	ret := probM
+	switch lang {
+	case Java, Python, Pypy:
+		ret *= 2
+	case Go:
+		ret += 256
+	}
+	ret = getMin(ret, 1024) * 1024 * 1024
+	return strconv.Itoa(ret)
+}
+
 func seccompRule(lang int) string {
 	switch lang {
 	case C, Cpp:
@@ -206,7 +231,8 @@ func getExeFile(lang int) string {
 func getArgs(lang int) string {
 	switch lang {
 	case Java:
-		return " --args=-Dfile.encoding=UTF-8 --args=Main --memory_limit_check_only=1"
+		return " --args=-Djava.security.manager --args=-Djava.security.policy==/etc/java_policy" +
+			" --args=-Djava.awt.headless=true --args=-Dfile.encoding=UTF-8 --args=Main --memory_limit_check_only=1"
 	case Python, Pypy:
 		return " --args=Main.py"
 	}
@@ -238,6 +264,13 @@ func getMax(a int, b int) int {
 		return b
 	}
 	return a
+}
+
+func getMin(a int, b int) int {
+	if a < b {
+		return a
+	}
+	return b
 }
 
 func printErr(e error) {
