@@ -95,7 +95,7 @@ func run(oriNo int, lang int, submNo int) {
 		script = judgerDir + "/libjudger.so " + "--max_cpu_time=" + strconv.Itoa(proT) +
 			" --max_real_time=" + strconv.Itoa(proT) + " --max_memory=" + strconv.Itoa(proM*1024*1024) +
 			" --max_process_number=" + maxProcessNum + " --max_output_size=" + maxOutputSize +
-			" --exe_path=" + judgerDir + getExeFile(lang) + " --input_path=" + inputDir + file.Name() +
+			" --exe_path=" + getExeFile(lang) + " --input_path=" + inputDir + file.Name() +
 			" --output_path=" + judgerDir + "/output.txt" + " --error_path=" + judgerDir + "/error.txt" +
 			" --uid=0 --gid=0 --seccomp_rule_name=" + seccompRule(lang)
 
@@ -186,9 +186,9 @@ func getExeFile(lang int) string {
 	var ret string
 	switch lang {
 	case C, Cpp:
-		ret = "/Main.o"
+		ret = judgerDir + "/Main.o"
 	case Java:
-		ret = "/Main.class"
+		ret = "/usr/bin/java -cp /home/GoApp/src/INUOJ/Judger -Xms1024m -Xmx1024m -Xss512m -Dfile.encoding=UTF-8 Main"
 	}
 	return ret
 }
