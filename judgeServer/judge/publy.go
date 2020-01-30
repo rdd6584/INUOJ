@@ -18,7 +18,6 @@ const (
 	Java
 	Pypy
 	Python
-	Kotlin
 	LangSize
 )
 
