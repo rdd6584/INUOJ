@@ -161,6 +161,8 @@ func compile(lang int, submNo string) bool {
 		script = "javac -J-Xms1024m -J-Xmx1024m -J-Xss512m -encoding UTF-8 Main.java"
 	case Python, Pypy:
 		script = "python3 -m py_compile Main.py"
+	case Go:
+		script = "go build Main.go"
 	}
 
 	c := exec.Command("/bin/bash", "-c", script)
@@ -176,7 +178,9 @@ func seccompRule(lang int) string {
 	switch lang {
 	case C, Cpp:
 		return " --seccomp_rule_name=c_cpp"
-	case Python:
+	case Java:
+		return ""
+	case Python, Pypy, Go:
 		return " --seccomp_rule_name=general"
 	}
 	return ""
@@ -193,6 +197,8 @@ func getExeFile(lang int) string {
 		ret = "/usr/bin/python3"
 	case Pypy:
 		ret = "/usr/bin/pypy3"
+	case Go:
+		ret = "./Main"
 	}
 	return ret
 }
@@ -221,6 +227,8 @@ func fileType(lang int) string {
 		return ".java"
 	case Python, Pypy:
 		return ".py"
+	case Go:
+		return ".go"
 	}
 	return ""
 }

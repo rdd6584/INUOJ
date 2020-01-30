@@ -33,6 +33,8 @@ func fileType(lang int) string {
 		return ".java"
 	case Python, Pypy:
 		return ".py"
+	case Go:
+		return ".go"
 	}
 	return ""
 }
