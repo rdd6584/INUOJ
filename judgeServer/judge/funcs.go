@@ -195,7 +195,7 @@ func getExeFile(lang int) string {
 func getArgs(lang int) string {
 	switch lang {
 	case Java:
-		return " --args=Main"
+		return " --args=-Dfile.encoding=UTF-8 --args=Main --memory_limit_check_only=1"
 	case Python:
 		return " --args=Main.py"
 	}
