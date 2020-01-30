@@ -31,7 +31,7 @@ func fileType(lang int) string {
 		return ".c"
 	case Java:
 		return ".java"
-	case Python:
+	case Python, Pypy:
 		return ".py"
 	}
 	return ""

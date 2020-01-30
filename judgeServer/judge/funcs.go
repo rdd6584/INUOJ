@@ -159,7 +159,7 @@ func compile(lang int, submNo string) bool {
 		script = "g++ Main.cpp -o Main.o -O2 -Wall -lm -static -std=gnu++17 -DONLINE_JUDGE -DBOJ"
 	case Java:
 		script = "javac -J-Xms1024m -J-Xmx1024m -J-Xss512m -encoding UTF-8 Main.java"
-	case Python:
+	case Python, Pypy:
 		script = "python3 -m py_compile Main.py"
 	}
 
@@ -191,6 +191,8 @@ func getExeFile(lang int) string {
 		ret = "/usr/bin/java"
 	case Python:
 		ret = "/usr/bin/python3"
+	case Pypy:
+		ret = "/usr/bin/pypy3"
 	}
 	return ret
 }
@@ -199,7 +201,7 @@ func getArgs(lang int) string {
 	switch lang {
 	case Java:
 		return " --args=-Dfile.encoding=UTF-8 --args=Main --memory_limit_check_only=1"
-	case Python:
+	case Python, Pypy:
 		return " --args=Main.py"
 	}
 	return ""
@@ -217,7 +219,7 @@ func fileType(lang int) string {
 		return ".c"
 	case Java:
 		return ".java"
-	case Python:
+	case Python, Pypy:
 		return ".py"
 	}
 	return ""
