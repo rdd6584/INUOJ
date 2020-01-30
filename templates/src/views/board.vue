@@ -65,6 +65,10 @@
             <a v-else-if="item.result==1" v-on="on" style="color:#00C853;" @click="$router.push({path:'/problem/' + item.prob_no})">{{item.prob_no}}번 </a>
             <a v-else v-on="on" style="color:red;" @click="$router.push({path:'/problem/' + item.prob_no})">{{item.prob_no}}번 </a>
             {{item.category}}
+            <div class="pa-0 ma-0" v-if="$f.admin==2">
+              <a class="pl-2" @click="modifyNotice(item.post_no, 1)">올림</a>
+              <a class="pl-2" @click="modifyNotice(item.post_no, 2)">내림</a>
+            </div>
           </template>
           <span>{{item.prob_title}}</span>
         </v-tooltip>
@@ -141,6 +145,22 @@ export default {
     },
   },
   methods: {
+    modifyNotice(no, tice) {
+      this.$f.getUserValid()
+      .then(re => {
+        if (re === null) {
+          this.$router.push('/login')
+          return null
+        }
+        this.$axios.post('/api/admin/update/notice', {
+            post_no : no,
+            notice : tice,
+          }, this.$f.makeHeaderObject()
+        ).then(res => {
+          alert("정상적으로 변경되었습니다.")
+        }).catch(err => {this.$f.malert()})
+      })
+    },
     async makeQuery() {
       return await this.$f.getUserValid()
       .then(re => {
