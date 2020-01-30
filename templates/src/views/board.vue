@@ -56,22 +56,19 @@
       </template>
 
       <template v-slot:item.category="{ item }">
-        <div v-if="item.prob_no==0 || item.prob_title==''">
-          {{item.category}}
-        </div>
-        <v-tooltip right v-else>
+        <v-tooltip right v-if="item.prob_no!=0">
           <template v-slot:activator="{ on }">
             <a v-if="item.result==0" v-on="on" style="color:black;" @click="$router.push({path:'/problem/' + item.prob_no})">{{item.prob_no}}번 </a>
             <a v-else-if="item.result==1" v-on="on" style="color:#00C853;" @click="$router.push({path:'/problem/' + item.prob_no})">{{item.prob_no}}번 </a>
             <a v-else v-on="on" style="color:red;" @click="$router.push({path:'/problem/' + item.prob_no})">{{item.prob_no}}번 </a>
-            {{item.category}}
           </template>
           <span>{{item.prob_title}}</span>
         </v-tooltip>
-        <div class="pa-0 ma-0" v-if="$f.admin==2 && item.category=='공지'">
-          <a class="pl-2" @click="modifyNotice(item.post_no, 1)">올림</a>
+        {{item.category}}
+        <div v-if="$f.admin==2 && item.category=='공지'">
+          <a class="pl-2" @click="modifyNotice(item.post_no, true)">올림</a>
           /
-          <a class="pl-2" @click="modifyNotice(item.post_no, 2)">내림</a>
+          <a class="pl-2" @click="modifyNotice(item.post_no, false)">내림</a>
         </div>
       </template>
 
