@@ -195,10 +195,10 @@ func getExeFile(lang int) string {
 func getArgs(lang int) string {
 	switch lang {
 	case Java:
-		return "--args=-cp --args=/home/GoApp/src/INUOJ/Judger --args=-Xms1024m --args=-Xmx1024m " +
+		return " --args=-cp --args=/home/GoApp/src/INUOJ/Judger --args=-Xms1024m --args=-Xmx1024m " +
 			"--args=-Xss512m --args=-Dfile.encoding=UTF-8 --args=Main"
 	case Python:
-		return "--args=Main.py"
+		return " --args=Main.py"
 	}
 	return ""
 }
