@@ -105,10 +105,12 @@ func run(oriNo int, lang int, submNo int) {
 
 		var data judgeResult
 		json.Unmarshal(stdout, &data)
+		log.Println(data)
 
 		if data.Result != 0 {
 			if data.Result == 4 {
 				if data.Signal == 25 {
+					log.Println("pass")
 					setStatus(submNo, WA) // 출력 초과
 				} else {
 					setStatus(submNo, RE) // 런타임에러
