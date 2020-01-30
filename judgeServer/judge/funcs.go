@@ -98,6 +98,7 @@ func run(oriNo int, lang int, submNo int) {
 			" --output_path=./output.txt" + " --error_path=./error.txt" +
 			" --uid=0 --gid=0 --seccomp_rule_name=" + seccompRule(lang)
 
+		log.Println(script)
 		c := exec.Command("/bin/bash", "-c", script)
 		stdout, err := c.CombinedOutput()
 		printErr(err)
