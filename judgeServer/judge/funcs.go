@@ -96,7 +96,7 @@ func run(oriNo int, lang int, submNo int) {
 			" --max_process_number=" + maxProcessNum + " --max_output_size=" + maxOutputSize +
 			" --exe_path=" + getExeFile(lang) + getArgs(lang) + " --input_path=" + inputDir + file.Name() +
 			" --output_path=./output.txt" + " --error_path=./error.txt" +
-			" --uid=0 --gid=0 --seccomp_rule_name=" + seccompRule(lang)
+			" --uid=0 --gid=0" + seccompRule(lang)
 
 		c := exec.Command("/bin/bash", "-c", script)
 		stdout, err := c.CombinedOutput()
@@ -173,10 +173,13 @@ func compile(lang int, submNo string) bool {
 }
 
 func seccompRule(lang int) string {
-	if lang == C || lang == Cpp {
-		return "c_cpp"
+	switch lang {
+	case C, Cpp:
+		return " --seccomp_rule_name=c_cpp"
+	case Python:
+		return " --seccomp_rule_name=general"
 	}
-	return "general"
+	return ""
 }
 
 func getExeFile(lang int) string {
