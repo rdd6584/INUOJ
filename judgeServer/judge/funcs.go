@@ -190,7 +190,7 @@ func getExeFile(lang int) string {
 	case C, Cpp:
 		ret = judgerDir + "/Main.o"
 	case Java:
-		ret = "/usr/bin/java -cp /home/GoApp/src/INUOJ/Judger -Xms1024m -Xmx1024m -Xss512m -Dfile.encoding=UTF-8 Main"
+		ret = "'/usr/bin/java -cp /home/GoApp/src/INUOJ/Judger -Xms1024m -Xmx1024m -Xss512m -Dfile.encoding=UTF-8 Main'"
 	}
 	return ret
 }
