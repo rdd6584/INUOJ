@@ -94,18 +94,16 @@ func run(oriNo int, lang int, submNo int) {
 		script = "./libjudger.so " + "--max_cpu_time=" + strconv.Itoa(proT) +
 			" --max_real_time=" + strconv.Itoa(proT) + " --max_memory=" + strconv.Itoa(proM*1024*1024) +
 			" --max_process_number=" + maxProcessNum + " --max_output_size=" + maxOutputSize +
-			" --exe_path=" + getExeFile(lang) + " --input_path=" + inputDir + file.Name() +
+			" --exe_path=" + getExeFile(lang) + getArgs(lang) + " --input_path=" + inputDir + file.Name() +
 			" --output_path=./output.txt" + " --error_path=./error.txt" +
 			" --uid=0 --gid=0 --seccomp_rule_name=" + seccompRule(lang)
 
-		log.Println(script)
 		c := exec.Command("/bin/bash", "-c", script)
 		stdout, err := c.CombinedOutput()
 		printErr(err)
 
 		var data judgeResult
 		json.Unmarshal(stdout, &data)
-		log.Println(data)
 
 		if data.Result != 0 {
 			if data.Result == 4 {
