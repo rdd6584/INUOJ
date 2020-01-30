@@ -178,9 +178,9 @@ func seccompRule(lang int) string {
 	switch lang {
 	case C, Cpp:
 		return " --seccomp_rule_name=c_cpp"
-	case Java:
+	case Java, Go:
 		return ""
-	case Python, Pypy, Go:
+	case Python, Pypy:
 		return " --seccomp_rule_name=general"
 	}
 	return ""
