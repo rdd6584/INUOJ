@@ -2,10 +2,9 @@ package judge
 
 const (
 	OurMysql      string = "root:ojbydduck0325!@tcp(127.0.0.1:3306)/inuoj"
-	judgerDir     string = "../Judger"
-	privDir       string = "../Judger/problems/private/"
-	pubDir        string = "../Judger/problems/public/"
-	submitDir     string = "../Judger/usercodes/"
+	privDir       string = "problems/private/"
+	pubDir        string = "problems/public/"
+	submitDir     string = "usercodes/"
 	inDir         string = "/data/in/"
 	outDir        string = "/data/out/"
 	maxProcessNum string = "100"

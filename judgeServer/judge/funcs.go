@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"log"
-	"os"
 	"os/exec"
 	"strconv"
 	"strings"
@@ -92,11 +91,11 @@ func run(oriNo int, lang int, submNo int) {
 	var script string
 	var maxTime, maxMem int
 	for _, file := range files {
-		script = judgerDir + "/libjudger.so " + "--max_cpu_time=" + strconv.Itoa(proT) +
+		script = "./libjudger.so " + "--max_cpu_time=" + strconv.Itoa(proT) +
 			" --max_real_time=" + strconv.Itoa(proT) + " --max_memory=" + strconv.Itoa(proM*1024*1024) +
 			" --max_process_number=" + maxProcessNum + " --max_output_size=" + maxOutputSize +
 			" --exe_path=" + getExeFile(lang) + " --input_path=" + inputDir + file.Name() +
-			" --output_path=" + judgerDir + "/output.txt" + " --error_path=" + judgerDir + "/error.txt" +
+			" --output_path=./output.txt" + " --error_path=./error.txt" +
 			" --uid=0 --gid=0 --seccomp_rule_name=" + seccompRule(lang)
 
 		c := exec.Command("/bin/bash", "-c", script)
@@ -126,7 +125,7 @@ func run(oriNo int, lang int, submNo int) {
 		}
 
 		outfile := toOut(file.Name())
-		userOutput, _ := ioutil.ReadFile("../Judger/output.txt")
+		userOutput, _ := ioutil.ReadFile("./output.txt")
 		solOutput, _ := ioutil.ReadFile(dataDir + outfile)
 
 		userOutputArr := strings.Split(strings.TrimRight(string(userOutput), " \n"), "\n")
@@ -151,28 +150,25 @@ func run(oriNo int, lang int, submNo int) {
 }
 
 func compile(lang int, submNo string) bool {
+	copyFile(submitDir+submNo+"/Main"+fileType(lang), "./Main"+fileType(lang))
+
 	var script string
 	switch lang {
 	case C:
-		script = "gcc " + submitDir + submNo +
-			"/Main.c -o " + judgerDir + "/Main.o -O2 -Wall -lm -static -std=c99 -DONLINE_JUDGE -DBOJ"
+		script = "gcc Main.c -o Main.o -O2 -Wall -lm -static -std=c99 -DONLINE_JUDGE -DBOJ"
 	case Cpp:
-		script = "g++ " + submitDir + submNo +
-			"/Main.cpp -o " + judgerDir + "/Main.o -O2 -Wall -lm -static -std=gnu++17 -DONLINE_JUDGE -DBOJ"
+		script = "g++ Main.cpp -o Main.o -O2 -Wall -lm -static -std=gnu++17 -DONLINE_JUDGE -DBOJ"
 	case Java:
-		script = "javac -J-Xms1024m -J-Xmx1024m -J-Xss512m -encoding UTF-8 " +
-			submitDir + submNo + "/Main.java"
+		script = "javac -J-Xms1024m -J-Xmx1024m -J-Xss512m -encoding UTF-8 Main.java"
+	case Python:
+		script = "python3 -m py_compile Main.py"
 	}
+
 	c := exec.Command("/bin/bash", "-c", script)
 	stdout, err := c.CombinedOutput()
 	ioutil.WriteFile(submitDir+submNo+"/compileMsg.txt", stdout, 0644)
 	if err != nil {
-		log.Println("compile : ", err)
 		return false
-	}
-	if lang == Java {
-		err := os.Rename(submitDir+submNo+"/Main.class", judgerDir+"/Main.class")
-		printErr(err)
 	}
 	return true
 }
@@ -188,11 +184,24 @@ func getExeFile(lang int) string {
 	var ret string
 	switch lang {
 	case C, Cpp:
-		ret = judgerDir + "/Main.o"
+		ret = "Main.o"
 	case Java:
-		ret = "'/usr/bin/java -cp /home/GoApp/src/INUOJ/Judger -Xms1024m -Xmx1024m -Xss512m -Dfile.encoding=UTF-8 Main'"
+		ret = "/usr/bin/java"
+	case Python:
+		ret = "/usr/bin/python3"
 	}
 	return ret
+}
+
+func getArgs(lang int) string {
+	switch lang {
+	case Java:
+		return "--args=-cp --args=/home/GoApp/src/INUOJ/Judger --args=-Xms1024m --args=-Xmx1024m " +
+			"--args=-Xss512m --args=-Dfile.encoding=UTF-8 --args=Main"
+	case Python:
+		return "--args=Main.py"
+	}
+	return ""
 }
 
 func toOut(name string) string {
@@ -207,16 +216,8 @@ func fileType(lang int) string {
 		return ".c"
 	case Java:
 		return ".java"
-	}
-	return ""
-}
-
-func exeType(lang int) string {
-	switch lang {
-	case Cpp:
-		return "g++"
-	case C:
-		return "gcc"
+	case Python:
+		return ".py"
 	}
 	return ""
 }
@@ -238,4 +239,11 @@ func panicErr(e error) {
 	if e != nil {
 		log.Panic(e)
 	}
+}
+
+func copyFile(src, dst string) {
+	content, err := ioutil.ReadFile(src)
+	printErr(err)
+	err = ioutil.WriteFile(dst, content, 0644)
+	printErr(err)
 }
