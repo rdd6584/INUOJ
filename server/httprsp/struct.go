@@ -4,7 +4,7 @@ import "mime/multipart"
 
 const (
 	pageSize int    = 15
-	domain   string = "inuoj.pe.kr"
+	domain   string = "https://inuoj.pe.kr"
 )
 
 type user struct {
