@@ -99,9 +99,6 @@
 </template>
 
 <style scoped>
-a.line {text-decoration:none;}
-a.line:hover {text-decoration:underline;}
-
 .viewHtml >>> img { max-width: 100%; max-height: 70%;}
 .viewHtml >>> .ql-align-left { text-align: left; }
 .viewHtml >>> .ql-align-center { text-align: center; }

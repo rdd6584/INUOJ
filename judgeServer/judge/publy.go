@@ -1,34 +1,34 @@
 package judge
 
 const (
-	OurMysql      string = "root:ojbydduck0325!@tcp(127.0.0.1:3306)/inuoj"
-	privDir       string = "problems/private/"
-	pubDir        string = "problems/public/"
-	submitDir     string = "usercodes/"
-	inDir         string = "/data/in/"
-	outDir        string = "/data/out/"
-	maxProcessNum string = "100"
-	maxOutputSize string = "16384"
+   OurMysql      string = "rdd:20190325@tcp(192.168.0.42:3306)/inuoj"
+   privDir       string = "problems/private/"
+   pubDir        string = "problems/public/"
+   submitDir     string = "usercodes/"
+   inDir         string = "/data/in/"
+   outDir        string = "/data/out/"
+   maxProcessNum string = "100"
+   maxOutputSize string = "16384"
 )
 
 const (
-	Cpp = iota + 1
-	C
-	Go
-	Java
-	Pypy
-	Python
-	LangSize
+   Cpp = iota + 1
+   C
+   Go
+   Java
+   Pypy
+   Python
+   LangSize
 )
 
 const (
-	All = iota
-	AC
-	WA
-	TLE
-	MLE
-	RE
-	CE
-	ServerError
-	ResultSize
+   All = iota
+   AC
+   WA
+   TLE
+   MLE
+   RE
+   CE
+   ServerError
+   ResultSize
 )

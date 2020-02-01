@@ -35,6 +35,7 @@ const routes = [
 
   { path: '/register', beforeEnter: forNotUsers, component: () => import('../views/register.vue') },
   { path: '/login', beforeEnter: forNotUsers, component: () => import('../views/login.vue') },
+  { path: '/reset', beforeEnter: forNotUsers, component: () => import('../views/reset.vue') },
   { path: '/auth', beforeEnter: forNotUsers, component: () => import('../views/auth.vue') },
 
   { path: '/profile/:id', beforeEnter: forUsers, component: () => import('../views/profile.vue') },

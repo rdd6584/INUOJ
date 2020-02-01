@@ -50,7 +50,7 @@
       <template v-slot:item.title="{ item }">
         <p class="pa-0 ma-0">
           <i v-if="desserts.indexOf(item) < notice_num" class="pr-2 fas fa-star"></i>
-          <a style="color:black;" @click="$router.push({path:'/post/' + item.post_no})">{{item.title}}</a>
+          <a class="line" style="color:black;" @click="$router.push({path:'/post/' + item.post_no})">{{item.title}}</a>
           <span class="pl-1" v-if="item.cmt_no">({{item.cmt_no}})</span>
         </p>
       </template>
@@ -58,22 +58,22 @@
       <template v-slot:item.category="{ item }">
         <v-tooltip right v-if="item.prob_no!=0">
           <template v-slot:activator="{ on }">
-            <a v-if="item.result==0" v-on="on" style="color:black;" @click="$router.push({path:'/problem/' + item.prob_no})">{{item.prob_no}}번 </a>
-            <a v-else-if="item.result==1" v-on="on" style="color:#00C853;" @click="$router.push({path:'/problem/' + item.prob_no})">{{item.prob_no}}번 </a>
-            <a v-else v-on="on" style="color:red;" @click="$router.push({path:'/problem/' + item.prob_no})">{{item.prob_no}}번 </a>
+            <a v-if="item.result==0" v-on="on" class="line" style="color:black;" @click="$router.push({path:'/problem/' + item.prob_no})">{{item.prob_no}}번 </a>
+            <a v-else-if="item.result==1" v-on="on" clase="line" style="color:#00C853;" @click="$router.push({path:'/problem/' + item.prob_no})">{{item.prob_no}}번 </a>
+            <a v-else v-on="on" class="line" style="color:red;" @click="$router.push({path:'/problem/' + item.prob_no})">{{item.prob_no}}번 </a>
           </template>
           <span>{{item.prob_title}}</span>
         </v-tooltip>
         {{item.category}}
         <div v-if="$f.admin==2 && item.category=='공지'">
-          <a class="pl-2" @click="modifyNotice(item.post_no, true)">올림</a>
+          <a class="pl-2" @click="modifyNotice(item.post_no, 1)">올림</a>
           /
-          <a class="pl-2" @click="modifyNotice(item.post_no, false)">내림</a>
+          <a class="pl-2" @click="modifyNotice(item.post_no, 2)">내림</a>
         </div>
       </template>
 
       <template v-slot:item.id="{ item }">
-        <a style="color:black;" @click="$router.push({path:'/profile/' + item.id})">{{item.id}}</a>
+        <a class="line" style="color:black;" @click="$router.push({path:'/profile/' + item.id})">{{item.id}}</a>
       </template>
 
       <template v-slot:no-data>등록된 글이 없습니다</template>
@@ -87,12 +87,6 @@
     ></v-pagination>
   </v-container>
 </template>
-
-<style scoped>
-  a {text-decoration:none;}
-  a:hover {text-decoration:underline;}
-</style>
-
 <script>
 // 검색 인터페이스 구축하고.
 

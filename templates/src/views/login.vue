@@ -24,12 +24,18 @@
           @keyup.enter="login()"
         ></v-text-field>
 
-        <v-btn
-          color="success"
-          class="mr-4"
-          @click="login()"
-        >로그인
-        </v-btn>
+        <v-row>
+          <v-btn
+            color="success"
+            class="ml-4"
+            @click="login()"
+          >로그인
+          </v-btn>
+          <v-spacer></v-spacer>
+          <v-col class="pt-2">
+            <a class="hover-line" @click="$router.push({path: '/reset'})">비밀번호를 잊어버리셨나요?</a>
+          </v-col>
+        </v-row>
       </v-form>
     </v-row>
   </v-container>

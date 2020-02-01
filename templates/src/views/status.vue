@@ -57,20 +57,20 @@
     class="mt-0 pt-0 elevation-2">
 
     <template v-slot:item.subm_no="{ item }">
-      <a @click="$router.push({path:'/source/' + item.subm_no})">{{item.subm_no}}</a>
+      <a class="line" style="color:black;" @click="$router.push({path:'/source/' + item.subm_no})">{{item.subm_no}}</a>
     </template>
 
     <template v-slot:item.prob_no="{ item }">
       <v-tooltip right>
         <template v-slot:activator="{ on }">
-          <a v-on="on" @click="$router.push({path:'/problem/' + item.prob_no})">{{item.prob_no}}</a>
+          <a class="line" style="color:black;" v-on="on" @click="$router.push({path:'/problem/' + item.prob_no})">{{item.prob_no}}</a>
         </template>
         <span>{{item.prob_title}}</span>
       </v-tooltip>
     </template>
 
     <template v-slot:item.id="{ item }">
-      <a @click="$router.push({path:'/profile/' + item.id})">{{item.id}}</a>
+      <a class="line" style="color:black;" @click="$router.push({path:'/profile/' + item.id})">{{item.id}}</a>
     </template>
 
     <template v-slot:item.result="{ item }">
@@ -100,11 +100,6 @@
     ></v-pagination>
   </v-container>
 </template>
-
-<style scoped>
-  a {color:black; text-decoration:none;}
-  a:hover {color:black; text-decoration:underline;}
-</style>
 
 <script>
 export default{

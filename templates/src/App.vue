@@ -40,12 +40,21 @@
 </template>
 
 <style>
-    .my-case {
-      text-transform: none;
-    }
-    .centered-input >>> input {
-      text-align: center;
-    }
+  a.line {
+    text-decoration: underline;
+  }
+  a.hover-line {
+    text-decoration: none;
+  }
+  a.hover-line:hover {
+    text-decoration: underline;
+  }
+  .my-case {
+    text-transform: none;
+  }
+  .centered-input >>> input {
+    text-align: center;
+  }
 </style>
 
 <script>

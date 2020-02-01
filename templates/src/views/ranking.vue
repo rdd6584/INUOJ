@@ -8,7 +8,7 @@
       class="elevation-1"
     >
       <template v-slot:item.id="{ item }">
-        <a style="color:black;" @click="$router.push({path: '/profile/' + item.id})">{{item.id}}</a>
+        <a class="line" style="color:black;" @click="$router.push({path: '/profile/' + item.id})">{{item.id}}</a>
       </template>
 
       <template v-slot:no-data>등록된 유저가 없습니다</template>
@@ -22,11 +22,6 @@
     ></v-pagination>
   </v-container>
 </template>
-
-<style scoped>
-  a {text-decoration:none;}
-  a:hover {text-decoration:underline;}
-</style>
 
 <script>
   export default {

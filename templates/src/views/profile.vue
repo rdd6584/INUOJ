@@ -56,7 +56,7 @@
           >close</v-btn>
           <v-card elevation="0">
             <v-card-text v-if="ac_count != 0" class="py-0 px-3">
-              <a class="line px-3" v-for="(val, i) in numbers" @click="$router.push({path:'/problem/' + val})">
+              <a class="hover-line px-3" v-for="(val, i) in numbers" @click="$router.push({path:'/problem/' + val})">
                 <font color="black">{{val}}:</font><font color="#00C853">{{titles[i]}}</font>
               </a>
             </v-card-text>
@@ -85,7 +85,7 @@
           >close</v-btn>
           <v-card elevation="0">
             <v-card-text v-if="wa_count != 0" class="py-0 px-3">
-              <a class="line px-3" v-for="(val, i) in numbers" @click="$router.push({path:'/problem/' + val})">
+              <a class="hover-line px-3" v-for="(val, i) in numbers" @click="$router.push({path:'/problem/' + val})">
                 <font color="black">{{val}}:</font><font color="red">{{titles[i]}}</font>
               </a>
             </v-card-text>
@@ -106,11 +106,6 @@
 
   </v-container>
 </template>
-
-<style scoped>
-  a.line {text-decoration:none;}
-  a.line:hover {text-decoration:underline;}
-</style>
 
 <script>
 export default{
