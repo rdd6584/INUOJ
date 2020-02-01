@@ -175,7 +175,7 @@ func sendNewPassMail(userID string, rcpt string, cnt int) {
 	if cnt == 0 {
 		_, err = tx.Exec("insert into reset_pass(id, token) values(?, ?)", userID, authkey)
 	} else if cnt < 3 {
-		_, err = tx.Exec("update reset_pass set token=?, auth_time=current_timestamp, count=count+1 where id=?", authkey, cnt, userID)
+		_, err = tx.Exec("update reset_pass set token=?, reset_time=current_timestamp, count=count+1 where id=?", authkey, userID)
 	} else {
 		return
 	}
