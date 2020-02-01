@@ -12,6 +12,16 @@ type user struct {
 	Admin int    `json:"admin"`
 }
 
+type resetPassInfo struct {
+	ID    string `json:"id" binding:"required"`
+	Email string `json:"email" binding:"required"`
+}
+
+type resetPassDone struct {
+	Token    string `json:"token" binding:"required"`
+	Password string `json:"pass" binding:"required"`
+}
+
 type regiInfo struct {
 	ID       string `json:"id" binding:"required"`
 	Password string `json:"pass" binding:"required"`

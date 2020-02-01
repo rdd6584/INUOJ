@@ -127,7 +127,6 @@ func sendMail(rcpt string) {
 	to := []string{rcpt}
 	authkey := makeAuthKey()
 
-	// 메시지 작성
 	headerSubject := "To: " + rcpt + "\r\nSubject: INUOJ 이메일 주소 인증\r\n\r\n"
 	body := "아래 링크를 누르시면 이메일 인증이 완료됩니다.\r\n"
 	link := domain + "/auth?token=" + authkey + "&email=" + to[0]
@@ -137,31 +136,59 @@ func sendMail(rcpt string) {
 	var err error
 
 	tx, err := Udb.Begin()
-	if err != nil {
-		log.Panic(err)
-	}
-	defer tx.Rollback()
+	panicErr(err)
+	defer func() {
+		recover()
+		tx.Rollback()
+	}()
 
 	_ = tx.QueryRow("select count from authtokens where email=?", rcpt).Scan(&cnt)
 	if cnt == 0 {
 		_, err = tx.Exec("insert into authtokens(email, token) values(?, ?)", rcpt, authkey)
 	} else {
-		_, err = tx.Exec("update authtokens set token=?, auth_time=current_timestamp, count=? where email=?", authkey, cnt, rcpt)
+		_, err = tx.Exec("update authtokens set token=?, auth_time=current_timestamp, count=count+1 where email=?", authkey, rcpt)
 	}
-	if err != nil {
-		log.Panic(err)
-	}
+	panicErr(err)
 
-	// 메일 보내기
 	err = smtp.SendMail("smtp.gmail.com:587", auth, from, to, msg)
-	if err != nil {
-		log.Panic(err)
-	}
+	panicErr(err)
 
 	err = tx.Commit()
-	if err != nil {
-		log.Panic(err)
+	panicErr(err)
+}
+
+func sendNewPassMail(userID string, rcpt string, cnt int) {
+	auth := smtp.PlainAuth("", mailSender, mailPass, "smtp.gmail.com")
+
+	from := mailSender
+	to := []string{rcpt}
+	authkey := makeAuthKey()
+
+	var err error
+	tx, err := Udb.Begin()
+	panicErr(err)
+	defer func() {
+		recover()
+		tx.Rollback()
+	}()
+
+	if cnt == 0 {
+		_, err = tx.Exec("insert into reset_pass(id, token) values(?, ?)", rcpt, authkey)
+	} else if cnt < 3 {
+		_, err = tx.Exec("update reset_pass set token=?, auth_time=current_timestamp, count=count+1 where id=?", authkey, cnt, userID)
 	}
+	panicErr(err)
+
+	headerSubject := "To: " + rcpt + "\r\nSubject: INUOJ 비밀번호 재설정\r\n\r\n"
+	body := "아래 링크를 누르시면 비밀번호 재설정이 가능합니다.\r\n"
+	link := domain + "/reset?token=" + authkey
+	msg := []byte(headerSubject + body + link)
+
+	err = smtp.SendMail("smtp.gmail.com:587", auth, from, to, msg)
+	panicErr(err)
+
+	err = tx.Commit()
+	panicErr(err)
 }
 
 func printErr(e error) {
@@ -169,6 +196,7 @@ func printErr(e error) {
 		log.Println(e)
 	}
 }
+
 func panicErr(e error) {
 	if e != nil {
 		log.Panic(e)

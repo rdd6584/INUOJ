@@ -11,12 +11,14 @@ func ResRouter(e *gin.Engine) {
 	// *************** for all ***************
 	app := e.Group("/api")
 	{
-		app.POST("/regi-done", regiComplete)     // id, pass, email 정보 저장
-		app.GET("/register/valid", regiValid)    // id or email의 unique 여부
-		app.POST("/login", authAll.LoginHandler) // 로그인기능, 인증 받은 계정만
-		app.POST("/emailauth", emailAuth)        // 이메일 인증 링크 눌렀을 때의 과정
-		app.POST("/sendauth", reSendMail)        // 인증 메일 다시 보내기, 최대 5회
-		app.GET("/refresh", authAll.RefreshHandler)
+		app.POST("/login", authAll.LoginHandler)        // 로그인기능, 인증 받은 계정만
+		app.GET("/refresh", authAll.RefreshHandler)     // 인증 연장
+		app.POST("/regi-done", regiComplete)            // id, pass, email 정보 저장
+		app.GET("/register/valid", regiValid)           // id or email의 unique 여부
+		app.POST("/emailauth", emailAuth)               // 이메일 인증 링크 눌렀을 때의 과정
+		app.POST("/sendauth", reSendMail)               // 인증 메일 다시 보내기, 최대 5회
+		app.POST("/reset/pass", resetPass)              // 비밀번호 재설정 메일
+		app.POST("/reset/pass/done", resetPassComplete) // 비밀번호 재설정
 	}
 
 	// *************** auth 1 ***************
@@ -66,7 +68,7 @@ func ResRouter(e *gin.Engine) {
 	app4 := e.Group("/api/admin")
 	app4.Use(authAdmin.MiddlewareFunc())
 	{
-		app4.POST("/update/notice", setNotice)
+		app4.POST("/update/notice", setNotice) // 상단 공지
 	}
 
 	e.NoRoute(toMain)

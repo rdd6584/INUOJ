@@ -102,3 +102,45 @@ func editUserPass(c *gin.Context) {
 	editPass(json.ID, json.NewPassword)
 	c.JSON(http.StatusOK, gin.H{"status": "ok"})
 }
+
+func resetPass(c *gin.Context) {
+	var json resetPassInfo
+	if err := c.ShouldBind(&json); err != nil {
+		c.String(http.StatusBadRequest, "")
+		return
+	}
+	var tmpEmail string
+	Udb.QueryRow("select email from users where id=?", json.ID).Scan(&tmpEmail)
+	if tmpEmail != json.Email {
+		c.JSON(http.StatusOK, gin.H{"status": "no info"})
+		return
+	}
+
+	var cnt int
+	Udb.QueryRow("select count from reset_pass where id=?", json.ID).Scan(&cnt)
+	if cnt >= 3 {
+		c.JSON(http.StatusOK, gin.H{"status": "fail"})
+		return
+	}
+
+	go sendNewPassMail(json.ID, json.Email, cnt)
+	c.JSON(http.StatusOK, gin.H{"status": "ok"})
+}
+
+func resetPassComplete(c *gin.Context) {
+	var json resetPassDone
+	if err := c.ShouldBind(&json); err != nil {
+		c.String(http.StatusBadRequest, "")
+		return
+	}
+
+	var userID string
+	err := Udb.QueryRow("select id from reset_pass where token=?", json.Token).Scan(&userID)
+	if err != nil {
+		c.JSON(http.StatusOK, gin.H{"status": "fail"})
+		return
+	}
+
+	editPass(userID, json.Password)
+	c.JSON(http.StatusOK, gin.H{"status": "ok"})
+}
