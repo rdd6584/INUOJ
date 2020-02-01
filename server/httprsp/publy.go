@@ -1,6 +1,11 @@
 package httprsp
 
 const (
+	pageSize int    = 15
+	domain   string = "https://inuoj.pe.kr"
+)
+
+const (
 	mailSender string = "inuojteam@gmail.com"
 	mailPass   string = "inu20190325"
 	ourKey     string = "Rs9b6w22qGB1po1a7^$37agXez"

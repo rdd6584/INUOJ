@@ -2,11 +2,6 @@ package httprsp
 
 import "mime/multipart"
 
-const (
-	pageSize int    = 15
-	domain   string = "https://inuoj.pe.kr"
-)
-
 type user struct {
 	ID    string `json:"id"`
 	Admin int    `json:"admin"`
