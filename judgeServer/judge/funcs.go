@@ -85,7 +85,7 @@ func run(oriNo int, lang int, submNo int) {
 	inputDir := pubDir + strconv.Itoa(oriNo) + inDir
 	dataDir := pubDir + strconv.Itoa(oriNo) + outDir
 
-	files, err := ioutil.ReadDir("../Judger/problems/public/" + strconv.Itoa(oriNo) + inDir)
+	files, err := ioutil.ReadDir("../judgeData/problems/public/" + strconv.Itoa(oriNo) + inDir)
 	printErr(err)
 
 	var script string
