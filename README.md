@@ -1,5 +1,6 @@
 # INUOJ
 INU 알고리즘 문제 채점 사이트
+Thank "Qingdao University Online Judge Dev Team" for providing Judger.
 
 ## 개발 환경
 + Vue.js
@@ -27,4 +28,3 @@ INU 알고리즘 문제 채점 사이트
 
 + 게시판
 <img src="https://user-images.githubusercontent.com/38060133/80925317-c4ec8800-8dc9-11ea-8b72-d6927bd15b84.jpg" width="70%">
-
