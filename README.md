@@ -1,7 +1,7 @@
 # INUOJ
 INU 알고리즘 문제 채점 사이트
 
-Thank "Qingdao University Online Judge Dev Team" for providing Judger.
+Thank "Qingdao University Online Judge Dev Team" for providing [Judger](https://github.com/QingdaoU/Judger).
 
 ## 개발 환경
 + Vue.js
