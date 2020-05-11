@@ -144,7 +144,7 @@ func sendMail(rcpt string) {
 
 	_ = tx.QueryRow("select count from authtokens where email=?", rcpt).Scan(&cnt)
 	if cnt == 0 {
-		_, err = tx.Exec("insert into authtokens(email, token) values(?, ?)", rcpt, authkey)
+		_, err = Udb.Exec("insert into authtokens(email, token) values(?, ?)", rcpt, authkey)
 	} else {
 		_, err = tx.Exec("update authtokens set token=?, auth_time=current_timestamp, count=count+1 where email=?", authkey, rcpt)
 	}
